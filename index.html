@@ -81,6 +81,9 @@
   .head-btns { display: flex; gap: 10px; align-items: center; }
   .stars-pill { display: inline-flex; align-items: center; gap: 6px; height: 52px; padding-inline: 14px; border-radius: 18px; background: #fff; box-shadow: 0 5px 0 #E6D2E0; font-size: 24px; font-variant-numeric: tabular-nums; }
   .stars-pill svg { width: 30px; height: 30px; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; max-width: 1100px; margin: 0 auto 16px; }
+  .chip { height: 46px; padding-inline: 16px; border-radius: 23px; background: #fff; box-shadow: 0 4px 0 #E6D2E0; font-size: 18px; }
+  .chip[aria-pressed="true"] { background: var(--ink); color: #fff; box-shadow: 0 4px 0 #1f1227; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; max-width: 1100px; margin: 0 auto; }
   .card {
     position: relative; display: flex; flex-direction: column; gap: 6px; padding: 8px 8px 10px;
@@ -182,6 +185,7 @@
         <button class="candy plain" id="soundBtn" aria-label="소리 켜고 끄기"></button>
       </div>
     </div>
+    <div class="chips" id="chips"></div>
     <div class="grid" id="grid"></div>
   </section>
 
@@ -651,6 +655,370 @@ const PICTURES = [
   },
 ];
 
+// ───────── 동화 나라 그림 (pictures.js 의 도우미 함수 사용) ─────────
+function starN(cx, cy, R, r, n, rot = -90) {
+  let d = '';
+  for (let i = 0; i < 2 * n; i++) {
+    const rr = i % 2 ? r : R, a = (rot + i * 180 / n) * Math.PI / 180;
+    d += (i ? 'L' : 'M') + F(cx + rr * Math.cos(a)) + ',' + F(cy + rr * Math.sin(a));
+  }
+  return `<path d="${d}Z"/>`;
+}
+function snowflake(cx, cy, R) {
+  let d = '';
+  for (let i = 0; i < 6; i++) {
+    const a = (i * 60 - 90) * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
+    const bx = cx + c * R * .58, by = cy + s * R * .58;
+    d += `M${F(cx + c * R * .22)},${F(cy + s * R * .22)} L${F(cx + c * R)},${F(cy + s * R)} `;
+    for (const t of [a + .65, a - .65]) d += `M${F(bx)},${F(by)} L${F(bx + Math.cos(t) * R * .32)},${F(by + Math.sin(t) * R * .32)} `;
+  }
+  return `<path class="n" d="${d}"/><circle cx="${cx}" cy="${cy}" r="${F(R * .22)}"/>`;
+}
+function bumpRing(cx, cy, R, n, b) {
+  let d = '';
+  for (let i = 0; i <= n; i++) {
+    const a = (-90 + i * 360 / n) * Math.PI / 180, x = F(cx + R * Math.cos(a)), y = F(cy + R * Math.sin(a));
+    d += i ? ` A${b},${b} 0 0 1 ${x},${y}` : `M${x},${y}`;
+  }
+  return `<path d="${d}Z"/>`;
+}
+function pine(cx, base, h) {
+  const w = h * .42, t = base - 14;
+  return `<rect x="${cx - 7}" y="${t}" width="14" height="16"/>` +
+    `<path d="M${F(cx - w)},${t} L${cx},${F(t - h * .5)} L${F(cx + w)},${t}Z"/>` +
+    `<path d="M${F(cx - w * .8)},${F(t - h * .3)} L${cx},${F(t - h * .75)} L${F(cx + w * .8)},${F(t - h * .3)}Z"/>` +
+    `<path d="M${F(cx - w * .6)},${F(t - h * .58)} L${cx},${F(t - h)} L${F(cx + w * .6)},${F(t - h * .58)}Z"/>`;
+}
+function tulip(cx, cy, stem) {
+  return `<path class="n" d="M${cx},${cy} L${cx},${cy + stem}"/>` +
+    `<path d="M${cx},${cy + stem} Q${cx - 22},${cy + stem * .6} ${cx - 16},${cy + stem * .35} Q${cx - 4},${cy + stem * .6} ${cx},${cy + stem}Z"/>` +
+    `<path d="M${cx - 18},${cy} Q${cx - 21},${cy - 30} ${cx - 11},${cy - 34} L${cx},${cy - 22} L${cx + 11},${cy - 34} Q${cx + 21},${cy - 30} ${cx + 18},${cy} Q${cx},${cy + 12} ${cx - 18},${cy}Z"/>`;
+}
+function bee(cx, cy, flip = 1) {
+  return `<ellipse cx="${cx - 3 * flip}" cy="${cy - 10}" rx="7" ry="9" transform="rotate(${-25 * flip} ${cx - 3 * flip} ${cy - 10})"/>` +
+    `<ellipse cx="${cx + 5 * flip}" cy="${cy - 9}" rx="6" ry="8" transform="rotate(${25 * flip} ${cx + 5 * flip} ${cy - 9})"/>` +
+    `<ellipse cx="${cx}" cy="${cy}" rx="13" ry="9"/>` +
+    `<path class="n" d="M${cx - 4},${cy - 8} Q${cx - 6},${cy} ${cx - 4},${cy + 8} M${cx + 3},${cy - 8} Q${cx + 1},${cy} ${cx + 3},${cy + 8}"/>` +
+    `<circle class="k" cx="${cx + 8 * flip}" cy="${cy - 2}" r="2"/>`;
+}
+const winArch = (cx, y, w, h) => `<path d="M${cx - w / 2},${y + h} L${cx - w / 2},${y + w / 2} A${w / 2},${w / 2} 0 0 1 ${cx + w / 2},${y + w / 2} L${cx + w / 2},${y + h}Z"/>`;
+const sparkle = (x, y, r) => starN(x, y, r, r * .32, 4);
+
+const FAIRY_PICTURES = [
+  {
+    id: 'snow-princess', name: '눈꽃 공주', cat: 'princess',
+    svg: () => BG +
+      `<path d="M30,340 L30,250 L50,196 L70,250 L70,340Z"/><path d="M330,340 L330,250 L350,196 L370,250 L370,340Z"/>` +
+      `<path d="M92,334 L92,206 L118,150 L144,206 L144,334Z"/><path d="M256,334 L256,206 L282,150 L308,206 L308,334Z"/>` +
+      `<path d="M150,330 L150,160 L200,58 L250,160 L250,330Z"/>` +
+      winArch(118, 230, 20, 30) + winArch(282, 230, 20, 30) + winArch(50, 270, 16, 24) + winArch(350, 270, 16, 24) +
+      snowflake(44, 60, 20) + snowflake(356, 70, 24) + snowflake(300, 20, 12) + snowflake(96, 118, 12) + snowflake(372, 150, 12) +
+      `<path d="M0,340 Q200,316 400,340 L400,480 L0,480Z"/>` +
+      `<path class="n" d="M20,380 Q50,370 80,380 M320,392 Q350,382 380,392"/>` +
+      // 망토
+      `<path d="M170,222 Q116,330 62,452 Q116,470 178,458Z"/><path d="M230,222 Q284,330 338,452 Q284,470 222,458Z"/>` +
+      snowflake(104, 420, 13) + snowflake(296, 420, 13) +
+      // 긴 머리
+
+      // 드레스
+      `<path d="M170,272 Q200,280 230,272 Q300,360 312,448 Q200,472 88,448 Q100,360 170,272Z"/>` +
+      `<path d="M184,278 Q200,282 216,278 Q234,360 242,458 Q200,466 158,458 Q166,360 184,278Z"/>` +
+      `<path class="n" d="M150,320 Q128,380 118,440 M250,320 Q272,380 282,440"/>` +
+      snowflake(200, 350, 14) + snowflake(200, 420, 12) + sparkle(140, 400, 7) + sparkle(262, 392, 7) +
+      `<path d="M176,214 Q200,222 224,214 L230,276 Q200,284 170,276Z"/>` +
+      `<path d="M178,230 Q200,244 222,230 L224,240 Q200,254 176,240Z"/>` +
+      capsule(172, 226, 134, 190, 14) + capsule(228, 226, 248, 270, 14) +
+      face(200, 160, .9, { bangs: `<path d="M136,176 C128,108 170,86 206,90 C248,94 272,124 264,172 Q256,136 228,122 Q198,112 176,130 Q160,146 150,150 Q140,160 136,176Z"/><path class="n" d="M168,112 Q196,100 232,112 M186,100 Q214,96 246,118"/>` }) +
+      [[150, 214], [146, 238], [145, 262], [146, 286], [149, 308]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="15" ry="14"/>`).join('') +
+      `<path d="M140,318 Q150,346 156,318Z"/>` +
+      `<path d="M176,108 L184,92 L192,102 L200,82 L208,102 L216,92 L224,108 Q200,100 176,108Z"/><circle cx="200" cy="98" r="4"/>` +
+      `<circle cx="132" cy="188" r="9"/><circle cx="250" cy="274" r="9"/>` +
+      snowflake(110, 156, 22) + sparkle(84, 186, 8) + sparkle(138, 130, 6)
+  },
+  {
+    id: 'forest-princess', name: '숲속 공주', cat: 'princess',
+    svg: () => BG +
+      `<path d="M28,384 L38,210 L62,210 L72,384Z"/>` + bumpRing(50, 170, 52, 9, 16) +
+      `<path d="M332,384 L340,200 L364,200 L372,384Z"/>` + bumpRing(352, 160, 56, 9, 17) +
+      `<circle cx="34" cy="160" r="7"/><circle cx="64" cy="190" r="7"/><circle cx="344" cy="140" r="7"/><circle cx="372" cy="178" r="7"/>` +
+      `<path d="M0,380 Q200,356 400,380 L400,480 L0,480Z"/>` +
+      `<path d="M60,452 L62,428 L80,428 L82,452Z"/><path d="M42,432 Q71,390 100,432 Q71,440 42,432Z"/>` +
+      `<circle cx="60" cy="418" r="5"/><circle cx="80" cy="410" r="5"/><circle cx="72" cy="424" r="4"/>` +
+      flower(140, 448, 9, 28) + flower(240, 452, 8, 24) + butterfly(110, 90, .8) +
+      `<path class="n" d="M280,70 q8,-8 16,0 q8,-8 16,0"/>` +
+      // 공주
+      `<path d="M150,210 Q134,170 158,180 L190,208 L222,180 Q246,170 230,210Z"/>` +
+      `<path d="M132,150 Q120,196 138,214 Q190,228 242,214 Q260,196 248,150Z"/>` +
+      `<path d="M162,236 Q190,244 218,236 Q262,330 270,424 Q190,444 110,424 Q118,330 162,236Z"/>` +
+      `<path d="M114,404 Q190,420 266,404 L270,424 Q190,444 110,424Z"/>` +
+      `<path class="n" d="M170,260 Q150,330 140,400 M190,262 L190,410 M210,260 Q230,330 240,400"/>` +
+      `<path d="M166,200 Q190,208 214,200 L220,244 Q190,252 160,244Z"/>` +
+      `<path class="n" d="M184,214 L196,222 M196,214 L184,222 M184,226 L196,234 M196,226 L184,234"/>` +
+      `<path d="M170,202 Q176,222 190,212 Q204,222 210,202 Q190,208 170,202Z"/>` +
+      capsule(166, 220, 138, 258, 12) + capsule(214, 220, 252, 190, 12) +
+      `<circle cx="166" cy="214" r="14"/><circle cx="214" cy="214" r="14"/>` +
+      face(190, 150, .86) +
+      `<path d="M190,96 L162,80 Q154,98 162,114Z"/><path d="M190,96 L218,80 Q226,98 218,114Z"/><circle cx="190" cy="96" r="9"/>` +
+      `<path d="M118,290 L162,290 L156,320 L124,320Z"/><path d="M122,292 Q140,252 158,292 L151,292 Q140,266 129,292Z"/>` +
+      `<circle cx="130" cy="286" r="7"/><circle cx="148" cy="284" r="7"/>` +
+      `<circle cx="139" cy="276" r="10"/><path class="n" d="M139,266 L141,258"/><ellipse cx="148" cy="258" rx="6" ry="3" transform="rotate(-20 148 258)"/>` +
+      `<circle cx="140" cy="262" r="8"/>` +
+      `<path d="M246,176 L232,168 L236,182Z"/><ellipse cx="256" cy="174" rx="15" ry="11"/>` +
+      `<path d="M248,172 Q258,164 266,174 Q256,180 248,172Z"/>` +
+      `<circle cx="268" cy="162" r="9"/><path d="M276,159 L286,162 L276,165Z"/><circle class="k" cx="270" cy="160" r="2"/>` +
+      `<circle cx="254" cy="188" r="8"/>` +
+      // 토끼
+      `<ellipse cx="318" cy="372" rx="9" ry="24" transform="rotate(-10 318 372)"/><ellipse cx="340" cy="370" rx="9" ry="24" transform="rotate(10 340 370)"/>` +
+      `<ellipse cx="318" cy="374" rx="4" ry="16" transform="rotate(-10 318 374)"/><ellipse cx="340" cy="372" rx="4" ry="16" transform="rotate(10 340 372)"/>` +
+      `<circle cx="362" cy="432" r="8"/><ellipse cx="334" cy="426" rx="30" ry="24"/>` +
+      `<ellipse cx="318" cy="446" rx="12" ry="7"/><ellipse cx="344" cy="448" rx="12" ry="7"/>` +
+      `<circle cx="330" cy="400" r="22"/>` +
+      `<circle class="k" cx="322" cy="398" r="3"/><circle class="k" cx="338" cy="398" r="3"/>` +
+      `<ellipse cx="316" cy="408" rx="5" ry="3"/><ellipse cx="344" cy="408" rx="5" ry="3"/>` +
+      `<path d="M327,405 L333,405 L330,409Z"/>`
+  },
+  {
+    id: 'glass-slipper', name: '유리구두 공주', cat: 'princess',
+    svg: () => {
+      let ticks = '';
+      for (let i = 0; i < 12; i++) {
+        const a = i * 30 * Math.PI / 180;
+        ticks += `M${F(200 + 30 * Math.sin(a))},${F(62 - 30 * Math.cos(a))} L${F(200 + 36 * Math.sin(a))},${F(62 - 36 * Math.cos(a))} `;
+      }
+      return BG +
+        `<path d="M0,0 L74,0 Q60,120 84,250 Q40,262 0,250Z"/><path d="M400,0 L326,0 Q340,120 316,250 Q360,262 400,250Z"/>` +
+        `<ellipse cx="64" cy="180" rx="16" ry="8"/><ellipse cx="336" cy="180" rx="16" ry="8"/>` +
+        `<path class="n" d="M20,0 Q16,100 30,240 M46,0 Q40,110 58,250 M380,0 Q384,100 370,240 M354,0 Q360,110 342,250"/>` +
+        `<circle cx="200" cy="62" r="46"/><circle cx="200" cy="62" r="38"/>` +
+        `<path class="n" d="${ticks}M200,62 L200,36 M200,62 L204,44"/><circle class="k" cx="200" cy="62" r="4"/>` +
+        sparkle(120, 50, 10) + sparkle(280, 50, 10) + sparkle(100, 140, 7) + sparkle(300, 140, 7) +
+        `<path d="M0,380 L400,380 L400,480 L0,480Z"/>` +
+        `<path class="n" d="M0,420 L400,420 M80,380 L40,480 M160,380 L150,480 M240,380 L250,480 M320,380 L360,480"/>` +
+        // 공주
+        `<circle cx="200" cy="106" r="22"/>` +
+        `<path d="M168,276 Q200,284 232,276 Q320,360 332,450 Q200,478 68,450 Q80,360 168,276Z"/>` +
+        `<path d="M86,420 Q200,446 314,420 Q326,436 332,450 Q200,478 68,450 Q74,436 86,420Z"/>` +
+        `<path d="M168,280 Q128,330 110,380 Q150,372 186,300Z"/><path d="M232,280 Q272,330 290,380 Q250,372 214,300Z"/>` +
+        `<path class="n" d="M170,320 Q150,380 140,420 M200,296 L200,440 M230,320 Q250,380 260,420"/>` +
+        heart(118, 384, 8) + heart(282, 384, 8) + sparkle(160, 400, 6) + sparkle(240, 400, 6) +
+        `<path d="M178,222 Q200,230 222,222 L232,282 Q200,290 168,282Z"/>` +
+        `<ellipse cx="170" cy="230" rx="16" ry="12"/><ellipse cx="230" cy="230" rx="16" ry="12"/>` +
+        capsule(166, 238, 140, 290, 13) + capsule(234, 238, 260, 290, 13) +
+        capsule(148, 274, 140, 290, 15) + capsule(252, 274, 260, 290, 15) +
+        face(200, 170, .8) +
+        `<path d="M160,128 Q200,106 240,128 L238,136 Q200,116 162,136Z"/>` +
+        `<path class="n" d="M184,226 Q200,236 216,226"/><circle cx="200" cy="236" r="5"/>` +
+        `<circle cx="147" cy="200" r="4"/><circle cx="253" cy="200" r="4"/>` +
+        `<circle cx="138" cy="294" r="9"/><circle cx="262" cy="294" r="9"/>` +
+        // 방석과 유리구두
+        `<path d="M312,440 Q352,428 394,440 Q400,456 394,468 Q352,478 312,468 Q304,456 312,440Z"/>` +
+        `<circle cx="312" cy="440" r="4"/><circle cx="394" cy="440" r="4"/>` +
+        `<path d="M330,446 Q326,426 344,426 Q356,428 366,438 L380,438 Q384,432 386,426 L390,426 L390,452 L330,452Z"/>` +
+        sparkle(346, 416, 7) + sparkle(378, 412, 5)
+    }
+  },
+  {
+    id: 'tower-princess', name: '긴 머리 탑 공주', cat: 'princess',
+    svg: () => BG + `<circle cx="60" cy="60" r="30"/>` + cloud(150, 70, .8) +
+      `<path class="n" d="M110,130 q8,-8 16,0 q8,-8 16,0 M150,160 q6,-6 12,0 q6,-6 12,0"/>` +
+      `<path d="M18,420 L24,340 L40,340 L46,420Z"/>` + bumpRing(32, 310, 36, 8, 12) +
+      `<path d="M120,430 L126,360 L140,360 L146,430Z"/>` + bumpRing(133, 336, 30, 8, 10) +
+      `<path d="M0,420 Q120,398 230,408 L400,410 L400,480 L0,480Z"/>` +
+      flower(70, 450, 8, 20) + flower(370, 446, 8, 22) +
+      `<path d="M226,480 L234,160 L326,160 L334,480Z"/>` +
+      `<path class="n" d="M234,200 L262,200 M290,196 L326,196 M236,330 L270,330 M300,334 L330,334 M238,390 L262,390 M290,400 L332,400 M250,330 L250,360 M310,196 L310,168 M282,400 L282,440"/>` +
+      `<path d="M214,164 L280,40 L346,164Z"/><rect x="214" y="160" width="132" height="12" rx="4"/>` +
+      `<path class="n" d="M280,40 L280,16"/><path d="M280,16 L302,24 L280,32Z"/>` +
+      `<path d="M246,292 L246,232 A34,34 0 0 1 314,232 L314,292Z"/>` +
+      `<path d="M254,292 Q256,268 280,266 Q304,268 306,292Z"/>` +
+      face(280, 238, .52) + blossom(262, 210, 4) + blossom(298, 210, 4) +
+      `<rect x="238" y="288" width="84" height="10" rx="4"/>` +
+      `<circle cx="264" cy="288" r="6"/><circle cx="296" cy="288" r="6"/>` +
+      `<path d="M264,296 Q200,322 212,372 Q224,420 168,448 Q118,468 58,462 L62,444 Q112,450 152,432 Q198,410 190,372 Q178,322 256,294Z"/>` +
+      `<path class="n" d="M232,312 L244,318 M212,340 L226,342 M202,372 L218,370 M200,404 L214,398 M178,428 L190,420 M146,444 L154,434 M110,452 L114,440 M82,456 L84,444"/>` +
+      blossom(212, 356, 6) + blossom(190, 414, 6) + blossom(124, 448, 6) + blossom(334, 300, 7) + blossom(236, 250, 6) +
+      butterfly(370, 230, .7)
+  },
+  {
+    id: 'pumpkin-carriage', name: '마법 호박마차', cat: 'princess',
+    svg: () => BG +
+      `<path d="M336,30 A42,42 0 1 0 372,98 A34,34 0 1 1 336,30Z"/>` +
+      star(60, 50, 12, 5) + star(150, 30, 9, 4) + star(250, 60, 11, 5) + sparkle(40, 130, 8) + sparkle(370, 160, 7) +
+      `<path d="M70,196 L70,150 L80,130 L90,150 L90,196Z"/><path d="M92,196 L92,140 L106,112 L120,140 L120,196Z"/><path d="M122,196 L122,156 L132,136 L142,156 L142,196Z"/>` +
+      `<path d="M0,210 Q100,180 200,206 Q300,190 400,214 L400,480 L0,480Z"/>` +
+      `<path d="M0,400 Q200,378 400,400 L400,480 L0,480Z"/>` +
+      `<path class="n" d="M10,440 Q60,430 110,440 M290,444 Q340,434 390,444"/>` +
+      `<ellipse cx="150" cy="292" rx="60" ry="86"/><ellipse cx="262" cy="292" rx="60" ry="86"/><ellipse cx="206" cy="292" rx="64" ry="94"/>` +
+      `<path d="M178,334 L178,282 Q206,248 234,282 L234,334Z"/><path class="n" d="M206,262 L206,334 M178,300 L234,300"/>` +
+      `<circle cx="226" cy="318" r="4"/>` +
+      `<path d="M196,200 Q200,172 214,162 Q222,178 212,200Z"/>` +
+      `<path class="n" d="M214,184 Q240,166 252,180 Q258,194 244,194 M196,190 Q172,172 160,186"/>` +
+      `<ellipse cx="236" cy="200" rx="14" ry="7" transform="rotate(-20 236 200)"/>` +
+      `<path class="n" d="M140,380 Q120,400 96,392 M272,380 Q292,398 318,390"/>` +
+      `<rect x="96" y="250" width="16" height="22" rx="3"/><path d="M92,250 L104,238 L116,250Z"/><path class="n" d="M104,272 L104,300"/>` +
+      `<circle cx="116" cy="386" r="40"/><circle cx="116" cy="386" r="11"/>` +
+      `<path class="n" d="M116,346 L116,375 M116,397 L116,426 M76,386 L105,386 M127,386 L156,386 M88,358 L108,378 M124,394 L144,414 M144,358 L124,378 M108,394 L88,414"/>` +
+      `<circle cx="300" cy="384" r="44"/><circle cx="300" cy="384" r="12"/>` +
+      `<path class="n" d="M300,340 L300,372 M300,396 L300,428 M256,384 L288,384 M312,384 L344,384 M269,353 L291,375 M309,393 L331,415 M331,353 L309,375 M291,393 L269,415"/>` +
+      sparkle(60, 330, 9) + sparkle(356, 300, 9) + sparkle(30, 380, 6)
+  },
+  {
+    id: 'flower-fairy', name: '꽃요정', cat: 'princess',
+    svg: () => BG + sparkle(40, 40, 9) + sparkle(360, 60, 10) + sparkle(200, 30, 7) +
+      `<path d="M0,400 Q200,378 400,400 L400,480 L0,480Z"/>` +
+      `<path d="M40,420 L46,330 L110,330 L116,420Z"/>` + winArch(78, 364, 26, 56) + `<circle cx="56" cy="352" r="9"/><path class="n" d="M47,352 L65,352 M56,343 L56,361"/>` +
+      `<path d="M20,340 Q78,250 136,340 Q78,356 20,340Z"/><circle cx="56" cy="306" r="8"/><circle cx="92" cy="296" r="9"/><circle cx="112" cy="322" r="6"/><circle cx="72" cy="330" r="5"/>` +
+      tulip(344, 330, 70) + tulip(376, 380, 40) + flower(170, 440, 9, 24) + flower(300, 452, 8, 20) +
+      // 날개
+      `<path d="M214,230 Q140,140 116,200 Q112,252 214,246Z"/><path d="M246,230 Q320,140 344,200 Q348,252 246,246Z"/>` +
+      `<path d="M214,248 Q150,280 160,318 Q190,322 218,258Z"/><path d="M246,248 Q310,280 300,318 Q270,322 242,258Z"/>` +
+      `<ellipse cx="152" cy="206" rx="12" ry="18" transform="rotate(-30 152 206)"/><ellipse cx="308" cy="206" rx="12" ry="18" transform="rotate(30 308 206)"/>` +
+      `<circle cx="180" cy="290" r="7"/><circle cx="280" cy="290" r="7"/>` +
+      // 몸
+      `<ellipse cx="230" cy="168" rx="60" ry="56"/>` +
+      `<rect x="220" y="296" width="11" height="58" rx="5"/><rect x="236" y="296" width="11" height="58" rx="5"/>` +
+      `<path d="M216,352 Q206,362 212,366 L232,366 L232,352Z"/><path d="M234,352 L234,366 L254,366 Q260,362 250,352Z"/>` +
+      [196, 264, 213, 247, 230].map(x => `<path d="M${x - 16},252 Q${x - 22},290 ${x},318 Q${x + 22},290 ${x + 16},252Z"/>`).join('') +
+      `<path d="M212,212 Q230,218 248,212 L254,256 Q230,262 206,256Z"/>` +
+      capsule(212, 222, 178, 196, 12) + capsule(248, 222, 270, 250, 12) +
+      `<path d="M181,168 L160,156 L184,188Z"/><path d="M279,168 L300,156 L276,188Z"/>` +
+      face(230, 160, .8) + blossom(262, 112, 7) +
+      capsule(176, 194, 150, 150, 6) + star(146, 142, 17, 7) + sparkle(120, 120, 7) + sparkle(172, 110, 6) +
+      `<circle cx="176" cy="194" r="8"/><circle cx="272" cy="252" r="8"/>`
+  },
+  {
+    id: 'lion-cub', name: '아기 사자', cat: 'animal',
+    svg: () => BG + `<circle cx="300" cy="200" r="70"/>` +
+      `<path class="n" d="M110,80 q8,-8 16,0 q8,-8 16,0 M160,110 q6,-6 12,0 q6,-6 12,0"/>` +
+      `<path d="M0,330 L400,330 L400,480 L0,480Z"/>` +
+      `<path d="M70,330 L78,250 Q60,222 40,212 L46,204 Q70,214 84,236 Q96,212 120,200 L124,206 Q100,222 92,250 L96,330Z"/>` +
+      `<path d="M8,212 Q18,180 60,178 Q92,160 132,176 Q162,180 160,204 Q90,216 8,212Z"/>` +
+      `<path class="n" d="M20,370 l6,-12 l6,12 M90,420 l6,-12 l6,12 M40,450 l6,-12 l6,12"/>` +
+      `<path d="M150,480 L170,390 Q200,352 280,354 Q360,354 390,410 L400,480Z"/>` +
+      `<path class="n" d="M200,420 Q230,410 250,430 M320,440 Q350,430 370,450"/>` +
+      `<g transform="translate(-66,-104) scale(1.25)">` +
+      `<path d="M306,346 Q352,352 348,316 L356,312 Q364,362 306,358Z"/><ellipse cx="352" cy="304" rx="10" ry="13"/>` +
+      `<ellipse cx="236" cy="346" rx="18" ry="16"/><ellipse cx="304" cy="346" rx="18" ry="16"/>` +
+      `<path d="M232,362 Q226,300 270,292 Q314,300 308,362Z"/><ellipse cx="270" cy="336" rx="18" ry="22"/>` +
+      `<rect x="246" y="316" width="16" height="46" rx="8"/><rect x="278" y="316" width="16" height="46" rx="8"/>` +
+      `<ellipse cx="254" cy="360" rx="12" ry="7"/><ellipse cx="286" cy="360" rx="12" ry="7"/>` +
+      `<circle cx="232" cy="208" r="19"/><circle cx="308" cy="208" r="19"/><circle cx="232" cy="210" r="10"/><circle cx="308" cy="210" r="10"/>` +
+      `<ellipse cx="270" cy="242" rx="46" ry="42"/>` +
+      `<path d="M254,206 Q256,184 268,196 Q276,178 282,194 Q292,188 288,208Z"/>` +
+      `<ellipse cx="244" cy="262" rx="9" ry="5"/><ellipse cx="296" cy="262" rx="9" ry="5"/>` +
+      `<ellipse cx="270" cy="262" rx="22" ry="14"/>` +
+      `<ellipse class="k" cx="254" cy="238" rx="6" ry="8"/><circle class="w" cx="256" cy="235" r="2.4"/>` +
+      `<ellipse class="k" cx="286" cy="238" rx="6" ry="8"/><circle class="w" cx="288" cy="235" r="2.4"/>` +
+      `<path d="M262,252 Q270,248 278,252 Q274,260 270,260 Q266,260 262,252Z"/>` +
+      `<path class="n" d="M270,260 Q270,268 262,270 M270,260 Q270,268 278,270"/>` + `</g>` +
+      butterfly(150, 250, .8)
+  },
+  {
+    id: 'baby-elephant', name: '아기 코끼리 서커스', cat: 'animal',
+    svg: () => BG + star(40, 40, 10, 4) + star(360, 40, 10, 4) +
+      `<rect x="50" y="206" width="300" height="136"/>` +
+      [50, 110, 170, 230, 290].map(x => `<rect x="${x}" y="206" width="30" height="136"/>`).join('') +
+      `<path d="M170,342 L200,250 L230,342Z"/>` +
+      `<path d="M30,210 L200,100 L370,210 Q327,232 285,210 Q242,232 200,210 Q158,232 115,210 Q72,232 30,210Z"/>` +
+      `<path class="n" d="M200,100 L115,210 M200,100 L285,210 M200,100 L200,210 M200,100 L200,72"/><path d="M200,72 L224,80 L200,88Z"/>` +
+      `<path d="M0,340 L400,340 L400,480 L0,480Z"/>` +
+      `<path class="n" d="M40,380 Q80,372 120,380 M300,460 Q340,452 380,460"/>` +
+      `<path class="n" d="M346,294 Q360,220 350,192 M346,294 Q320,200 300,152"/>` +
+      `<ellipse cx="350" cy="150" rx="30" ry="38"/><ellipse cx="298" cy="114" rx="26" ry="32"/>` +
+      `<path d="M345,187 L355,187 L350,195Z"/><path d="M293,145 L303,145 L298,153Z"/>` +
+      `<path class="n" d="M92,370 Q70,380 72,404"/><ellipse cx="72" cy="408" rx="6" ry="8"/>` +
+      `<rect x="104" y="400" width="30" height="56" rx="10"/><rect x="228" y="400" width="30" height="56" rx="10"/>` +
+      `<ellipse cx="170" cy="380" rx="80" ry="52"/>` +
+      `<rect x="140" y="410" width="30" height="50" rx="10"/><rect x="196" y="410" width="30" height="50" rx="10"/>` +
+      `<path class="n" d="M110,452 l0,-6 M120,452 l0,-6 M146,456 l0,-6 M156,456 l0,-6 M202,456 l0,-6 M212,456 l0,-6 M234,452 l0,-6 M244,452 l0,-6"/>` +
+      `<path d="M130,336 Q170,320 214,336 L218,374 Q172,386 126,374Z"/>` + heart(172, 354, 9) +
+      `<path class="n" d="M130,366 Q172,378 216,366"/>` +
+      `<circle cx="250" cy="330" r="50"/>` +
+      `<path d="M284,352 Q310,360 318,330 Q324,302 338,292 L348,300 Q336,312 332,334 Q324,380 286,372Z"/>` +
+      `<path class="n" d="M300,362 L304,352 M314,350 L320,342 M322,332 L330,330"/>` +
+      `<path d="M232,300 Q168,270 176,342 Q184,392 238,366Z"/><path d="M226,312 Q186,296 190,340 Q196,370 228,356Z"/>` +
+      `<path d="M234,288 L256,236 L278,288Z"/><circle cx="256" cy="234" r="8"/>` +
+      `<ellipse class="k" cx="268" cy="322" rx="6" ry="8"/><circle class="w" cx="270" cy="319" r="2.4"/>` +
+      `<ellipse cx="270" cy="344" rx="9" ry="5"/>`
+  },
+  {
+    id: 'honey-bear', name: '꿀단지 곰돌이', cat: 'animal',
+    svg: () => BG + cloud(80, 60, .8) +
+      `<path d="M320,480 L330,150 L360,150 L372,480Z"/>` + bumpRing(350, 96, 72, 10, 22) +
+      `<path d="M334,190 Q300,180 280,166 L284,158 Q304,170 338,180Z"/><path class="n" d="M288,168 L290,184"/>` +
+      `<ellipse cx="290" cy="196" rx="20" ry="13"/><ellipse cx="290" cy="216" rx="25" ry="14"/><ellipse cx="290" cy="236" rx="20" ry="12"/>` +
+      `<ellipse class="k" cx="290" cy="222" rx="5" ry="4"/>` +
+      bee(230, 170) + bee(250, 240, -1) + bee(60, 150) +
+      `<path class="n" d="M216,176 q-10,10 -20,4 M264,246 q10,10 20,4"/>` +
+      `<path d="M0,380 Q200,360 400,380 L400,480 L0,480Z"/>` +
+      flower(270, 420, 10, 28) + flower(380, 440, 8, 22) + tulip(30, 410, 40) +
+      // 곰
+      `<ellipse cx="160" cy="320" rx="70" ry="72"/><ellipse cx="160" cy="330" rx="44" ry="50"/>` +
+      `<path d="M96,290 Q160,254 224,290 L230,322 Q160,340 90,322Z"/>` +
+      `<ellipse cx="112" cy="388" rx="28" ry="19"/><ellipse cx="208" cy="388" rx="28" ry="19"/>` +
+      `<ellipse cx="112" cy="390" rx="11" ry="8"/><ellipse cx="208" cy="390" rx="11" ry="8"/>` +
+      `<path d="M124,302 Q118,342 134,366 L186,366 Q202,342 196,302Z"/><ellipse cx="160" cy="302" rx="40" ry="10"/>` +
+      `<path d="M132,306 Q134,326 140,324 Q146,316 150,308Z"/><path d="M172,308 Q176,322 181,318 Q184,312 186,306Z"/>` +
+      `<path class="n" d="M130,334 Q160,344 190,334"/>` +
+      capsule(106, 272, 128, 326, 22) + capsule(214, 272, 192, 326, 22) +
+      `<circle cx="130" cy="330" r="13"/><circle cx="190" cy="330" r="13"/>` +
+      `<circle cx="110" cy="148" r="20"/><circle cx="210" cy="148" r="20"/><circle cx="110" cy="150" r="10"/><circle cx="210" cy="150" r="10"/>` +
+      `<ellipse cx="160" cy="190" rx="64" ry="56"/>` +
+      `<path d="M140,248 L128,238 L128,258Z"/><path d="M180,248 L192,238 L192,258Z"/><circle cx="160" cy="248" r="6"/>` +
+      `<ellipse cx="124" cy="206" rx="10" ry="6"/><ellipse cx="196" cy="206" rx="10" ry="6"/>` +
+      `<ellipse cx="160" cy="214" rx="26" ry="18"/>` +
+      `<ellipse class="k" cx="134" cy="184" rx="7" ry="9"/><circle class="w" cx="136" cy="181" r="2.6"/>` +
+      `<ellipse class="k" cx="186" cy="184" rx="7" ry="9"/><circle class="w" cx="188" cy="181" r="2.6"/>` +
+      `<ellipse class="k" cx="160" cy="204" rx="9" ry="6"/>` +
+      `<path class="n" d="M160,210 L160,218 M150,222 Q160,228 170,222"/>`
+  },
+  {
+    id: 'bow-mouse', name: '리본 생쥐', cat: 'animal',
+    svg: () => BG + heart(50, 60, 16) + heart(350, 70, 14) + heart(40, 250, 10) + heart(362, 250, 12) + sparkle(110, 40, 8) + sparkle(300, 30, 8) +
+      `<path d="M0,420 L400,420 L400,480 L0,480Z"/>` + flower(50, 440, 9, 20) + flower(350, 440, 9, 20) +
+      `<path d="M282,354 Q336,364 326,322 Q318,300 338,294" class="n"/>` +
+      `<circle cx="138" cy="112" r="42"/><circle cx="262" cy="112" r="42"/>` +
+      `<rect x="180" y="370" width="11" height="40" rx="5"/><rect x="209" y="370" width="11" height="40" rx="5"/>` +
+      `<ellipse cx="176" cy="418" rx="28" ry="14"/><ellipse cx="224" cy="418" rx="28" ry="14"/>` +
+      `<path d="M164,288 Q200,296 236,288 Q300,330 292,372 Q200,394 108,372 Q100,330 164,288Z"/>` +
+      [[140, 340], [170, 320], [200, 352], [230, 320], [262, 342], [184, 372], [220, 372]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="7"/>`).join('') +
+      `<path d="M170,244 Q200,250 230,244 L236,292 Q200,300 164,292Z"/><circle cx="190" cy="266" r="5"/><circle cx="210" cy="266" r="5"/>` +
+      capsule(172, 256, 132, 300, 10) + capsule(228, 256, 266, 214, 10) +
+      `<circle cx="200" cy="178" r="64"/>` +
+      `<path d="M148,184 Q146,142 174,148 Q200,164 226,148 Q254,142 252,184 Q256,244 200,246 Q144,244 148,184Z"/>` +
+      `<ellipse class="k" cx="184" cy="182" rx="8" ry="15"/><circle class="w" cx="186" cy="175" r="3"/>` +
+      `<ellipse class="k" cx="216" cy="182" rx="8" ry="15"/><circle class="w" cx="218" cy="175" r="3"/>` +
+      `<ellipse cx="164" cy="216" rx="10" ry="6"/><ellipse cx="236" cy="216" rx="10" ry="6"/>` +
+      `<path d="M178,218 Q200,246 222,218 Q200,226 178,218Z"/>` +
+      `<ellipse class="k" cx="200" cy="206" rx="12" ry="8"/><circle class="w" cx="196" cy="203" r="2.5"/>` +
+      `<path d="M200,112 L148,84 Q134,112 148,140Z"/><path d="M200,112 L252,84 Q266,112 252,140Z"/>` +
+      `<circle cx="160" cy="100" r="6"/><circle cx="162" cy="126" r="6"/><circle cx="240" cy="100" r="6"/><circle cx="238" cy="126" r="6"/>` +
+      `<circle cx="200" cy="112" r="14"/>` +
+      `<circle cx="128" cy="304" r="15"/><circle cx="270" cy="208" r="15"/><path class="n" d="M120,300 L126,294 M264,202 L270,196"/>`
+  },
+  {
+    id: 'snowman', name: '눈사람 친구', cat: 'play',
+    svg: () => BG +
+      snowflake(40, 50, 14) + snowflake(360, 40, 16) + snowflake(300, 120, 10) + snowflake(90, 150, 10) +
+      `<circle cx="150" cy="40" r="5"/><circle cx="240" cy="90" r="5"/><circle cx="30" cy="250" r="5"/><circle cx="380" cy="230" r="5"/>` +
+      `<path d="M0,330 Q100,290 200,320 Q300,290 400,330 L400,480 L0,480Z"/>` +
+      pine(44, 350, 130) + pine(360, 356, 120) +
+      `<path d="M0,420 Q200,400 400,420 L400,480 L0,480Z"/>` +
+      `<ellipse cx="200" cy="394" rx="80" ry="62"/><ellipse cx="200" cy="292" rx="58" ry="50"/>` +
+      `<circle cx="200" cy="286" r="7"/><circle cx="200" cy="310" r="7"/><circle cx="200" cy="384" r="8"/><circle cx="200" cy="412" r="8"/>` +
+      `<path class="n" d="M146,290 L92,250 M108,262 L98,240 M92,250 L76,246 M92,250 L84,236 M254,290 L308,250 M292,262 L302,240 M308,250 L324,246 M308,250 L316,236"/>` +
+      `<circle cx="200" cy="200" r="50"/>` +
+      `<path class="n" d="M200,150 L198,120 M198,132 L188,122 M204,152 L214,124 M212,130 L222,124 M194,152 L180,130"/>` +
+      `<circle class="k" cx="182" cy="192" r="6"/><circle class="w" cx="184" cy="190" r="2"/>` +
+      `<circle class="k" cx="218" cy="192" r="6"/><circle class="w" cx="220" cy="190" r="2"/>` +
+      `<path d="M200,204 L240,212 L200,218Z"/>` +
+      `<ellipse cx="170" cy="214" rx="9" ry="5"/><ellipse cx="230" cy="220" rx="9" ry="5"/>` +
+      `<path d="M176,224 Q200,248 224,224 Q200,232 176,224Z"/><rect x="194" y="226" width="12" height="11" rx="2"/>`
+  },
+];
+
+PICTURES.unshift(...FAIRY_PICTURES);
+
 </script>
 <script>
 (() => {
@@ -755,10 +1123,25 @@ const PICTURES = [
 
   // ───── 홈 ─────
   const STAR_BADGE = `<svg class="badge" viewBox="0 0 40 40"><path d="M20,3 L25,14 L37,15 L28,23 L31,35 L20,29 L9,35 L12,23 L3,15 L15,14Z" fill="#FFC83D" stroke="#3A2447" stroke-width="3" stroke-linejoin="round"/></svg>`;
+  const CATS = [['all', '전체'], ['princess', '공주님'], ['animal', '동물 친구'], ['idol', '아이돌'], ['play', '놀이']];
+  const OLD_CAT = { 'idol-star': 'idol', 'idol-moon': 'idol', 'idol-trio': 'idol', tiger: 'animal', unicorn: 'animal', bunny: 'animal', kitty: 'animal', princess: 'princess', mermaid: 'princess', picnic: 'play', puppy: 'play', sweets: 'play' };
+  const catOf = p => p.cat || OLD_CAT[p.id] || 'play';
+  let curCat = 'all';
+  try { curCat = localStorage.getItem('banjjak-cat') || 'all'; } catch (e) {}
+  function renderChips() {
+    const c = $('#chips'); c.innerHTML = '';
+    CATS.forEach(([k, n]) => {
+      const b = document.createElement('button'); b.className = 'chip'; b.textContent = n;
+      b.setAttribute('aria-pressed', k === curCat);
+      b.onclick = () => { curCat = k; try { localStorage.setItem('banjjak-cat', k); } catch (e) {} tone(620); renderHome(); };
+      c.appendChild(b);
+    });
+  }
   function renderHome() {
     $('#starCount').textContent = S.stars;
+    renderChips();
     const grid = $('#grid'); grid.innerHTML = '';
-    PICTURES.forEach(p => {
+    PICTURES.filter(p => curCat === 'all' || catOf(p) === curCat).forEach(p => {
       const b = document.createElement('button');
       b.className = 'card'; b.setAttribute('aria-label', p.name + ' 색칠하기');
       b.innerHTML = `<svg viewBox="0 0 400 480" xmlns="http://www.w3.org/2000/svg"><g class="a">${picMarkup(p)}</g><g class="p" style="mix-blend-mode:multiply"></g></svg><span class="nm">${p.name}</span>${S.done[p.id] ? STAR_BADGE : ''}`;
