@@ -1,0 +1,1035 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#FFF0F6">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="반짝 색칠">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>반짝 색칠놀이</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --ground: #FFF0F6;
+    --dot: #FFD9E8;
+    --ink: #3A2447;
+    --ink-soft: #7A6385;
+    --card: #FFFFFF;
+    --pink: #FF5C9A;
+    --pink-d: #D63A7A;
+    --sun: #FFC83D;
+    --sun-d: #D99A0B;
+    --mint: #37C9AD;
+    --mint-d: #1E9E86;
+    --sky: #6FB8FF;
+    --sky-d: #3E8AD6;
+    --lilac: #EFE3FF;
+    --font: "Jua", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    padding-block: env(safe-area-inset-top, 0px) env(safe-area-inset-bottom, 0px);
+  }
+  [hidden] { display: none !important; }
+  html { box-sizing: border-box; height: 100%; }
+  *, *::before, *::after { box-sizing: inherit; }
+  body {
+    height: 100%; margin: 0; background: var(--ground); color: var(--ink);
+    background-image: radial-gradient(var(--dot) 2.2px, transparent 2.6px);
+    background-size: 26px 26px;
+    font-family: var(--font); font-size: 18px;
+    -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent; overscroll-behavior: none;
+  }
+  button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; touch-action: manipulation; }
+  button:focus-visible { outline: 4px solid var(--sky); outline-offset: 3px; }
+  #app { height: 100%; }
+  .screen { height: 100%; }
+
+  /* 공통 사탕 버튼 */
+  .candy {
+    --c: var(--pink); --cd: var(--pink-d);
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    min-width: 52px; height: 52px; padding-inline: 12px; border-radius: 18px;
+    background: var(--c); color: #fff; font-size: 19px;
+    box-shadow: 0 5px 0 var(--cd); transition: transform .08s, box-shadow .08s;
+  }
+  .candy:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--cd); }
+  .candy svg { width: 28px; height: 28px; flex: none; }
+  .candy.sun { --c: var(--sun); --cd: var(--sun-d); color: var(--ink); }
+  .candy.mint { --c: var(--mint); --cd: var(--mint-d); }
+  .candy.sky { --c: var(--sky); --cd: var(--sky-d); }
+  .candy.plain { --c: #fff; --cd: #E6D2E0; color: var(--ink); }
+
+  /* ───── 홈 ───── */
+  #home { overflow-y: auto; padding: 14px 16px 28px; -webkit-overflow-scrolling: touch; }
+  .home-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; max-width: 1100px; margin: 0 auto 14px; }
+  .logo { flex: 1 1 auto; margin: 0; font-weight: 400; font-size: clamp(34px, 9vw, 54px); line-height: 1.05; letter-spacing: -.02em; }
+  .logo span { display: inline-block; -webkit-text-stroke: 1.5px var(--ink); paint-order: stroke fill; text-shadow: 0 4px 0 var(--ink); }
+  .logo span:nth-child(1) { color: #FF5C9A; transform: rotate(-6deg); }
+  .logo span:nth-child(2) { color: #FFC83D; transform: rotate(4deg) translateY(-3px); }
+  .logo span:nth-child(3) { width: .3em; }
+  .logo span:nth-child(4) { color: #37C9AD; transform: rotate(-3deg); }
+  .logo span:nth-child(5) { color: #6FB8FF; transform: rotate(5deg) translateY(2px); }
+  .logo span:nth-child(6) { color: #A77BFF; transform: rotate(-4deg); }
+  .logo span:nth-child(7) { color: #FF8A4C; transform: rotate(3deg) translateY(-2px); }
+  .head-btns { display: flex; gap: 10px; align-items: center; }
+  .stars-pill { display: inline-flex; align-items: center; gap: 6px; height: 52px; padding-inline: 14px; border-radius: 18px; background: #fff; box-shadow: 0 5px 0 #E6D2E0; font-size: 24px; font-variant-numeric: tabular-nums; }
+  .stars-pill svg { width: 30px; height: 30px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; max-width: 1100px; margin: 0 auto; }
+  .card {
+    position: relative; display: flex; flex-direction: column; gap: 6px; padding: 8px 8px 10px;
+    background: var(--card); border-radius: 22px; box-shadow: 0 6px 0 #EBCFDF; text-align: center;
+    transition: transform .12s;
+  }
+  .card:active { transform: scale(.96); }
+  .card svg { width: 100%; height: auto; aspect-ratio: 400 / 480; border-radius: 14px; display: block; }
+  .card .nm { font-size: 18px; line-height: 1.2; }
+  .card .badge { position: absolute; top: -8px; right: -6px; width: 42px; height: 42px; filter: drop-shadow(0 3px 0 rgba(58,36,71,.25)); }
+
+  /* ───── 색칠 화면 ───── */
+  #color {
+    display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto; gap: 10px;
+    padding: 10px 16px 12px; overflow: hidden;
+  }
+  .bar { display: flex; align-items: center; gap: 8px; }
+  .bar .sp { flex: 1; }
+  .bar .ttl { font-size: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .stage { position: relative; min-height: 0; display: flex; align-items: center; justify-content: center; }
+  #art {
+    display: block; width: 300px; height: 360px; max-width: 100%;
+    background: #fff; border-radius: 22px;
+    box-shadow: 0 0 0 5px #fff, 0 8px 0 5px #EBCFDF; touch-action: none;
+  }
+  .tools { display: flex; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap; }
+  .tool {
+    display: inline-flex; align-items: center; gap: 6px; height: 50px; padding-inline: 14px 16px;
+    border-radius: 16px; background: #fff; box-shadow: 0 4px 0 #E6D2E0; font-size: 18px;
+  }
+  .tool svg { width: 30px; height: 30px; }
+  .tool[aria-pressed="true"] { background: var(--ink); color: #fff; box-shadow: 0 4px 0 #1f1227; }
+  .sizes { display: inline-flex; gap: 6px; padding: 4px 6px; border-radius: 16px; background: #fff; box-shadow: 0 4px 0 #E6D2E0; }
+  .sizes[hidden] { display: none !important; }
+  .size { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; }
+  .size i { display: block; border-radius: 50%; background: var(--ink); }
+  .size[aria-pressed="true"] { background: var(--lilac); outline: 3px solid var(--ink); }
+  .palette { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; max-width: 560px; width: 100%; margin: 0 auto; }
+  .sw {
+    width: 100%; max-width: 50px; height: auto; aspect-ratio: 1; justify-self: center; align-self: center; padding: 0; border-radius: 50%;
+    box-shadow: inset 0 0 0 3px rgba(58,36,71,.18), 0 3px 0 rgba(58,36,71,.18);
+    transition: transform .1s;
+  }
+  .sw svg { width: 100%; height: 100%; display: block; border-radius: 50%; }
+  .sw[aria-pressed="true"] { transform: scale(1.14); box-shadow: 0 0 0 4px #fff, 0 0 0 7px var(--ink); }
+
+  @media (orientation: landscape) and (min-width: 700px) {
+    #color { grid-template-columns: minmax(0, 1fr) 360px; grid-template-rows: auto minmax(0, 1fr) auto; }
+    #color .bar { grid-column: 1 / -1; }
+    #color .stage { grid-row: 2 / 4; }
+    #color .tools { grid-column: 2; align-self: end; }
+    #color .palette { grid-column: 2; align-self: start; grid-template-columns: repeat(6, 1fr); }
+  }
+
+  /* ───── 내 그림 ───── */
+  #gallery { overflow-y: auto; padding: 12px 16px 28px; }
+  #gallery .bar { max-width: 1100px; margin: 0 auto 14px; }
+  #gallery h2 { margin: 0; font-weight: 400; font-size: 30px; }
+  .ggrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; max-width: 1100px; margin: 0 auto; }
+  .gitem { padding: 6px; background: #fff; border-radius: 18px; box-shadow: 0 5px 0 #EBCFDF; }
+  .gitem img { display: block; width: 100%; border-radius: 12px; aspect-ratio: 400 / 480; object-fit: cover; }
+  .empty { max-width: 420px; margin: 40px auto; text-align: center; font-size: 22px; color: var(--ink-soft); line-height: 1.5; }
+
+  /* ───── 팝업 ───── */
+  .modal { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 16px; background: rgba(58,36,71,.45); }
+  .sheet {
+    width: min(440px, 100%); max-height: 100%; overflow-y: auto; padding: 20px 18px 22px; border-radius: 28px;
+    background: #fff; text-align: center; box-shadow: 0 10px 0 #EBCFDF; animation: pop .35s cubic-bezier(.3,1.6,.5,1);
+  }
+  .sheet h3 { margin: 0 0 12px; font-weight: 400; font-size: 30px; }
+  .sheet img { display: block; width: min(300px, 100%); margin: 0 auto 8px; border-radius: 18px; box-shadow: 0 0 0 4px var(--lilac); -webkit-touch-callout: default; -webkit-user-select: auto; user-select: auto; }
+  .sheet .hint { margin: 0 0 14px; font-size: 15px; color: var(--ink-soft); }
+  .sheet .row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .sheet .big-star { width: 88px; height: 88px; margin: -6px auto 4px; display: block; animation: spin 1.2s ease-out; }
+  @keyframes pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @keyframes spin { from { transform: rotate(-200deg) scale(.2); } to { transform: rotate(0) scale(1); } }
+
+  .fx { position: fixed; z-index: 15; pointer-events: none; width: 0; height: 0; }
+  .fx i { position: absolute; left: -7px; top: -7px; width: 14px; height: 14px; background: var(--c);
+    clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+    animation: burst .55s ease-out forwards; }
+  @keyframes burst { from { transform: translate(0,0) scale(.4); opacity: 1; } to { transform: translate(var(--x), var(--y)) scale(1.2) rotate(90deg); opacity: 0; } }
+  #confetti { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 30; pointer-events: none; }
+  .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); z-index: 40; transform: translateX(-50%);
+    padding: 12px 20px; border-radius: 18px; background: var(--ink); color: #fff; font-size: 17px; max-width: calc(100% - 32px); text-align: center; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="pdefs"></defs></svg>
+
+<div id="app">
+  <section id="home" class="screen">
+    <div class="home-head">
+      <h1 class="logo" aria-label="반짝 색칠놀이"><span>반</span><span>짝</span><span> </span><span>색</span><span>칠</span><span>놀</span><span>이</span></h1>
+      <div class="head-btns">
+        <div class="stars-pill" aria-label="모은 별"><svg viewBox="0 0 40 40"><path d="M20,3 L25,14 L37,15 L28,23 L31,35 L20,29 L9,35 L12,23 L3,15 L15,14Z" fill="#FFC83D" stroke="#3A2447" stroke-width="3" stroke-linejoin="round"/></svg><b id="starCount">0</b></div>
+        <button class="candy sky" id="toGallery" aria-label="내 그림 보기"><svg viewBox="0 0 32 32" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><rect x="4" y="6" width="24" height="20" rx="4"/><circle cx="12" cy="13" r="3"/><path d="M5,24 L13,18 L18,22 L22,18 L28,23"/></svg>내 그림</button>
+        <button class="candy plain" id="soundBtn" aria-label="소리 켜고 끄기"></button>
+      </div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section id="color" class="screen" hidden>
+    <div class="bar">
+      <button class="candy plain" id="backHome" aria-label="처음으로"><svg viewBox="0 0 32 32" fill="none" stroke="#3A2447" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"><path d="M5,15 L16,5 L27,15"/><path d="M8,13 L8,27 L24,27 L24,13"/><path d="M13,27 L13,19 L19,19 L19,27"/></svg></button>
+      <button class="candy plain" id="undoBtn" aria-label="되돌리기"><svg viewBox="0 0 32 32" fill="none" stroke="#3A2447" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"><path d="M10,6 L4,12 L10,18"/><path d="M4,12 L19,12 Q28,12 28,20 Q28,27 19,27 L12,27"/></svg></button>
+      <button class="candy plain" id="clearBtn" aria-label="모두 지우기"><svg viewBox="0 0 32 32" fill="none" stroke="#3A2447" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><path d="M6,9 L26,9 M12,9 L12,5 L20,5 L20,9 M8,9 L10,28 L22,28 L24,9 M13.5,14 L14,23 M18.5,14 L18,23"/></svg></button>
+      <span class="sp"></span>
+      <button class="candy sun" id="doneBtn"><svg viewBox="0 0 40 40"><path d="M20,3 L25,14 L37,15 L28,23 L31,35 L20,29 L9,35 L12,23 L3,15 L15,14Z" fill="#fff" stroke="#3A2447" stroke-width="3" stroke-linejoin="round"/></svg>다 했어요</button>
+    </div>
+    <div class="stage" id="stage">
+      <svg id="art" viewBox="0 0 400 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="색칠 그림">
+        <g id="artG"></g>
+        <g id="paintG" style="mix-blend-mode:multiply" pointer-events="none"></g>
+      </svg>
+    </div>
+    <div class="tools">
+      <button class="tool" data-tool="fill" aria-pressed="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"><path d="M14,4 L26,16 L16,26 L4,14Z"/><path d="M4,14 L26,16"/><path d="M27,21 Q30,25 27,28 Q24,25 27,21Z" fill="currentColor"/></svg>콕</button>
+      <button class="tool" data-tool="brush" aria-pressed="false"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"><path d="M27,4 L14,18"/><path d="M13,17 Q7,17 7,23 Q7,27 4,28 Q14,30 16,23 Q17,20 15,19Z" fill="currentColor"/></svg>붓</button>
+      <button class="tool" data-tool="eraser" aria-pressed="false"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"><path d="M18,5 L28,15 L16,27 L9,27 L4,22Z"/><path d="M11,12 L21,22"/><path d="M16,27 L28,27"/></svg>지우개</button>
+      <div class="sizes" id="sizes" hidden>
+        <button class="size" data-size="8" aria-label="가는 붓"><i style="width:8px;height:8px"></i></button>
+        <button class="size" data-size="18" aria-pressed="true" aria-label="보통 붓"><i style="width:15px;height:15px"></i></button>
+        <button class="size" data-size="34" aria-label="굵은 붓"><i style="width:24px;height:24px"></i></button>
+      </div>
+    </div>
+    <div class="palette" id="palette"></div>
+  </section>
+
+  <section id="gallery" class="screen" hidden>
+    <div class="bar">
+      <button class="candy plain" id="galBack" aria-label="처음으로"><svg viewBox="0 0 32 32" fill="none" stroke="#3A2447" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"><path d="M5,15 L16,5 L27,15"/><path d="M8,13 L8,27 L24,27 L24,13"/><path d="M13,27 L13,19 L19,19 L19,27"/></svg></button>
+      <h2>내 그림</h2>
+    </div>
+    <div class="ggrid" id="ggrid"></div>
+  </section>
+</div>
+
+<div class="modal" id="modal" hidden><div class="sheet" id="sheet"></div></div>
+<canvas id="confetti" hidden></canvas>
+
+<script>
+// ───────── 색칠 그림 도안 (viewBox 0 0 400 480) ─────────
+// 기본 도형 = 칠할 수 있는 칸 / class="n" 선만 / "k" 까만 눈동자 / "w" 하얀 반짝임
+const F = n => +(+n).toFixed(1);
+
+function capsule(x1, y1, x2, y2, w) {
+  const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy);
+  const a = Math.atan2(dy, dx) * 180 / Math.PI, mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+  return `<rect x="${F(mx - L / 2)}" y="${F(my - w / 2)}" width="${F(L)}" height="${w}" rx="${w / 2}" transform="rotate(${F(a)} ${F(mx)} ${F(my)})"/>`;
+}
+function star(cx, cy, R, r, rot = -90) {
+  let d = '';
+  for (let i = 0; i < 10; i++) {
+    const rr = i % 2 ? r : R, a = (rot + i * 36) * Math.PI / 180;
+    d += (i ? 'L' : 'M') + F(cx + rr * Math.cos(a)) + ',' + F(cy + rr * Math.sin(a));
+  }
+  return `<path d="${d}Z"/>`;
+}
+function heart(cx, cy, s) {
+  return `<path d="M${cx},${F(cy + .9 * s)} C${F(cx - 1.3 * s)},${F(cy + .1 * s)} ${F(cx - .9 * s)},${F(cy - .95 * s)} ${cx},${F(cy - .35 * s)} C${F(cx + .9 * s)},${F(cy - .95 * s)} ${F(cx + 1.3 * s)},${F(cy + .1 * s)} ${cx},${F(cy + .9 * s)}Z"/>`;
+}
+function cloud(cx, cy, s = 1) {
+  const q = v => F(v * s);
+  return `<path d="M${F(cx - 50 * s)},${F(cy + 15 * s)} a${q(20)},${q(20)} 0 0 1 ${q(10)},${q(-32)} a${q(26)},${q(26)} 0 0 1 ${q(44)},${q(-12)} a${q(22)},${q(22)} 0 0 1 ${q(38)},${q(10)} a${q(18)},${q(18)} 0 0 1 ${q(8)},${q(34)}Z"/>`;
+}
+function blossom(cx, cy, r) {
+  let h = '';
+  for (let i = 0; i < 5; i++) {
+    const a = (-90 + i * 72) * Math.PI / 180;
+    h += `<circle cx="${F(cx + r * Math.cos(a))}" cy="${F(cy + r * Math.sin(a))}" r="${F(r * .78)}"/>`;
+  }
+  return h + `<circle cx="${cx}" cy="${cy}" r="${F(r * .6)}"/>`;
+}
+function flower(cx, cy, r, stem) {
+  return `<path class="n" d="M${cx},${cy} L${cx},${cy + stem}"/>` +
+    `<ellipse cx="${cx + 9}" cy="${F(cy + stem * .62)}" rx="10" ry="5" transform="rotate(-30 ${cx + 9} ${F(cy + stem * .62)})"/>` +
+    blossom(cx, cy, r);
+}
+function butterfly(cx, cy, s = 1) {
+  const e = (x, y, rx, ry, rot) => `<ellipse cx="${F(cx + x * s)}" cy="${F(cy + y * s)}" rx="${F(rx * s)}" ry="${F(ry * s)}" transform="rotate(${rot} ${F(cx + x * s)} ${F(cy + y * s)})"/>`;
+  return e(-17, -10, 17, 13, -25) + e(17, -10, 17, 13, 25) + e(-12, 12, 11, 9, 25) + e(12, 12, 11, 9, -25) +
+    `<ellipse cx="${cx}" cy="${cy}" rx="${F(4.5 * s)}" ry="${F(19 * s)}"/>` +
+    `<path class="n" d="M${F(cx - 2 * s)},${F(cy - 17 * s)} Q${F(cx - 8 * s)},${F(cy - 30 * s)} ${F(cx - 14 * s)},${F(cy - 32 * s)} M${F(cx + 2 * s)},${F(cy - 17 * s)} Q${F(cx + 8 * s)},${F(cy - 30 * s)} ${F(cx + 14 * s)},${F(cy - 32 * s)}"/>`;
+}
+function note(x, y) {
+  return `<ellipse cx="${x}" cy="${y}" rx="11" ry="8" transform="rotate(-20 ${x} ${y})"/>` +
+    `<path class="n" d="M${x + 10},${y - 3} L${x + 10},${y - 38} Q${x + 20},${y - 30} ${x + 26},${y - 20}"/>`;
+}
+function bangs(cx, cy, s) {
+  const r = 66 * s, p = v => F(v);
+  return `<path d="M${p(cx - r - 4 * s)},${p(cy + 10 * s)} C${p(cx - r - 8 * s)},${p(cy - r)} ${p(cx - 20 * s)},${p(cy - r - 14 * s)} ${cx},${p(cy - r - 10 * s)} ` +
+    `C${p(cx + 30 * s)},${p(cy - r - 14 * s)} ${p(cx + r + 8 * s)},${p(cy - r + 10 * s)} ${p(cx + r + 4 * s)},${p(cy + 10 * s)} ` +
+    `Q${p(cx + r - 6 * s)},${p(cy - 14 * s)} ${p(cx + r - 18 * s)},${p(cy - 26 * s)} ` +
+    `Q${p(cx + 30 * s)},${p(cy - 12 * s)} ${p(cx + 14 * s)},${p(cy - 30 * s)} ` +
+    `Q${cx},${p(cy - 10 * s)} ${p(cx - 16 * s)},${p(cy - 30 * s)} ` +
+    `Q${p(cx - 34 * s)},${p(cy - 10 * s)} ${p(cx - r + 14 * s)},${p(cy - 28 * s)} ` +
+    `Q${p(cx - r + 2 * s)},${p(cy - 10 * s)} ${p(cx - r - 4 * s)},${p(cy + 10 * s)}Z"/>`;
+}
+function face(cx, cy, s, o = {}) {
+  const r = 66 * s, e = 24 * s, ey = cy + 14 * s;
+  let h = `<ellipse cx="${cx}" cy="${cy}" rx="${F(r)}" ry="${F(r * .93)}"/>`;
+  h += o.bangs !== undefined ? o.bangs : bangs(cx, cy, s);
+  for (const x of [cx - e, cx + e]) {
+    h += `<ellipse class="k" cx="${F(x)}" cy="${F(ey)}" rx="${F(8.5 * s)}" ry="${F(11 * s)}"/>` +
+      `<circle class="w" cx="${F(x + 3 * s)}" cy="${F(ey - 4 * s)}" r="${F(3.6 * s)}"/>` +
+      `<circle class="w" cx="${F(x - 3 * s)}" cy="${F(ey + 5 * s)}" r="${F(1.8 * s)}"/>`;
+  }
+  h += `<ellipse cx="${F(cx - 42 * s)}" cy="${F(cy + 32 * s)}" rx="${F(11 * s)}" ry="${F(6.5 * s)}"/>` +
+    `<ellipse cx="${F(cx + 42 * s)}" cy="${F(cy + 32 * s)}" rx="${F(11 * s)}" ry="${F(6.5 * s)}"/>`;
+  if (o.mouth === 'open') h += `<path d="M${F(cx - 9 * s)},${F(cy + 34 * s)} Q${cx},${F(cy + 54 * s)} ${F(cx + 9 * s)},${F(cy + 34 * s)}Z"/>`;
+  else h += `<path class="n" d="M${F(cx - 9 * s)},${F(cy + 36 * s)} Q${cx},${F(cy + 46 * s)} ${F(cx + 9 * s)},${F(cy + 36 * s)}"/>`;
+  return h;
+}
+function scallopBand(x, y, w, h, n) {
+  // 위는 둥근 사각, 아래는 물결인 크림 띠
+  const step = w / n;
+  let d = `M${x},${y + 10} Q${x},${y} ${x + 10},${y} L${x + w - 10},${y} Q${x + w},${y} ${x + w},${y + 10} L${x + w},${y + h}`;
+  for (let i = n; i > 0; i--) d += ` Q${F(x + i * step - step / 2)},${y + h + 14} ${F(x + (i - 1) * step)},${y + h}`;
+  return `<path d="${d}Z"/>`;
+}
+const BG = `<rect x="0" y="0" width="400" height="480"/>`;
+
+const PICTURES = [
+  {
+    id: 'idol-star', name: '노래하는 별이',
+    svg: () => BG +
+      `<path d="M78,0 L122,0 L160,392 L10,392Z"/><path d="M278,0 L322,0 L390,392 L240,392Z"/>` +
+      star(52, 58, 18, 8) + star(350, 52, 14, 6) + star(36, 300, 12, 5) + star(368, 300, 15, 6) +
+      `<path d="M0,392 L400,392 L400,480 L0,480Z"/><rect x="0" y="392" width="400" height="18"/>` +
+      [40, 120, 200, 280, 360].map(x => `<circle cx="${x}" cy="446" r="14"/>`).join('') +
+      note(330, 150) + note(62, 112) +
+      `<path d="M244,92 C310,70 342,150 322,215 C308,262 326,300 306,336 C290,300 272,268 280,222 C288,176 276,132 240,116Z"/>` +
+      `<rect x="180" y="318" width="16" height="50" rx="7"/><rect x="204" y="318" width="16" height="50" rx="7"/>` +
+      `<path d="M176,356 L198,356 L198,386 Q198,394 190,394 L170,394 Q164,394 166,386Z"/>` +
+      `<path d="M202,356 L224,356 L234,386 Q236,394 228,394 L210,394 Q202,394 202,386Z"/>` +
+      `<path d="M162,294 L238,294 L262,336 Q200,350 138,336Z"/>` +
+      `<path class="n" d="M185,297 L176,340 M200,297 L200,344 M215,297 L224,340"/>` +
+      `<path d="M172,222 Q200,230 228,222 L238,290 Q200,298 162,290Z"/>` +
+      `<path class="n" d="M186,226 L200,250 L214,226"/>` +
+      `<rect x="160" y="284" width="80" height="12" rx="5"/>` +
+      capsule(170, 238, 132, 200, 18) + capsule(230, 238, 256, 206, 18) +
+      `<circle cx="172" cy="238" r="14"/><circle cx="228" cy="238" r="14"/>` +
+      face(200, 160, .97, { mouth: 'open' }) +
+      star(250, 98, 15, 7) +
+      `<circle cx="128" cy="196" r="11"/>` +
+      capsule(262, 200, 272, 168, 10) + `<circle cx="274" cy="156" r="14"/><path class="n" d="M262,152 L286,160"/>` +
+      `<circle cx="258" cy="204" r="11"/>`
+  },
+  {
+    id: 'idol-moon', name: '부채춤 달이',
+    svg: () => BG +
+      `<circle cx="318" cy="86" r="52"/><circle cx="300" cy="70" r="8"/><circle cx="336" cy="104" r="6"/>` +
+      cloud(90, 86) + cloud(356, 196, .7) + star(40, 200, 10, 4) + star(210, 36, 11, 5) +
+      `<path d="M0,370 Q70,280 140,360 Q200,300 260,360 Q330,280 400,350 L400,480 L0,480Z"/>` +
+      `<path d="M0,430 Q200,405 400,430 L400,480 L0,480Z"/>` +
+      `<circle cx="146" cy="96" r="26"/><circle cx="254" cy="96" r="26"/>` +
+      `<path d="M140,150 Q124,250 148,300 L252,300 Q276,250 260,150Z"/>` +
+      `<ellipse cx="180" cy="414" rx="15" ry="7"/><ellipse cx="220" cy="414" rx="15" ry="7"/>` +
+      `<path d="M172,248 L228,248 Q282,330 292,404 Q200,424 108,404 Q118,330 172,248Z"/>` +
+      `<path class="n" d="M170,300 Q160,360 150,410 M200,300 L200,418 M230,300 Q240,360 250,410"/>` +
+      `<path d="M166,204 Q200,212 234,204 L244,258 Q200,266 156,258Z"/>` +
+      `<path class="n" d="M184,206 L200,230 L216,206"/>` +
+      `<path d="M208,238 L198,284 L208,284 L214,240Z"/><path d="M214,238 L228,280 L236,276 L218,238Z"/>` +
+      `<ellipse cx="212" cy="234" rx="10" ry="6"/>` +
+      capsule(164, 218, 124, 196, 24) + capsule(134, 202, 124, 196, 24) +
+      capsule(236, 220, 270, 256, 20) + `<circle cx="272" cy="258" r="10"/>` +
+      face(200, 150, .94) +
+      blossom(164, 84, 7) + blossom(236, 84, 7) +
+      `<path d="M118,192 L66,148 A68,68 0 0 1 141,128Z"/>` +
+      `<path class="n" d="M118,192 L81,135 M118,192 L100,126 M118,192 L120,124"/>` +
+      `<circle cx="118" cy="192" r="10"/>`
+  },
+  {
+    id: 'tiger', name: '호랑이와 까치',
+    svg: () => {
+      const clump = (cx, cy, w) => `<path d="M${cx - w},${cy} Q${cx - w},${cy - 16} ${cx - w / 2},${cy - 18} Q${cx - w / 4},${cy - 34} ${cx},${cy - 24} Q${cx + w / 4},${cy - 36} ${cx + w / 2},${cy - 18} Q${cx + w},${cy - 16} ${cx + w},${cy}Z"/>`;
+      return BG +
+        `<circle cx="66" cy="66" r="36"/>` + cloud(190, 70, .9) +
+        `<path d="M0,392 Q200,368 400,392 L400,480 L0,480Z"/>` +
+        `<path class="n" d="M40,430 l6,-12 l6,12 M330,440 l6,-12 l6,12 M250,452 l6,-12 l6,12"/>` +
+        `<path d="M318,480 Q330,330 314,196 L340,196 Q354,330 362,480Z"/>` +
+        `<path d="M320,232 Q280,212 238,200 L242,190 Q284,198 322,218Z"/>` +
+        clump(332, 198, 52) + clump(362, 142, 38) + clump(300, 124, 34) +
+        `<path d="M282,172 L326,150 L330,160 L288,184Z"/>` +
+        `<ellipse cx="264" cy="178" rx="26" ry="16" transform="rotate(-12 264 178)"/>` +
+        `<ellipse cx="266" cy="184" rx="14" ry="8" transform="rotate(-12 266 184)"/>` +
+        `<path d="M254,172 Q274,162 292,172 Q272,184 254,172Z"/>` +
+        `<circle cx="240" cy="162" r="13"/><path d="M228,160 L214,166 L229,168Z"/>` +
+        `<circle class="k" cx="238" cy="159" r="3"/>` +
+        `<path class="n" d="M258,192 L256,196 M268,192 L268,196"/>` +
+        `<path d="M178,368 C246,384 262,344 246,320 C240,308 250,296 262,302 C284,318 268,398 184,392Z"/>` +
+        `<path class="n" d="M238,366 L252,356 M250,340 L266,336"/>` +
+        `<ellipse cx="140" cy="336" rx="60" ry="56"/><ellipse cx="140" cy="350" rx="32" ry="36"/>` +
+        `<path d="M84,316 Q100,318 110,330 Q96,330 82,326Z"/><path d="M196,316 Q180,318 170,330 Q184,330 198,326Z"/>` +
+        `<ellipse cx="98" cy="388" rx="26" ry="13"/><ellipse cx="182" cy="388" rx="26" ry="13"/>` +
+        `<ellipse cx="122" cy="388" rx="16" ry="12"/><ellipse cx="158" cy="388" rx="16" ry="12"/>` +
+        `<path class="n" d="M117,392 L117,399 M127,392 L127,399 M153,392 L153,399 M163,392 L163,399"/>` +
+        `<circle cx="88" cy="194" r="22"/><circle cx="192" cy="194" r="22"/>` +
+        `<circle cx="88" cy="196" r="11"/><circle cx="192" cy="196" r="11"/>` +
+        `<ellipse cx="140" cy="240" rx="72" ry="58"/>` +
+        `<path d="M124,186 Q140,204 156,186 Q140,194 124,186Z"/><path d="M128,200 Q140,212 152,200 Q140,206 128,200Z"/>` +
+        `<path d="M70,232 Q86,232 96,240 Q84,242 70,240Z"/><path d="M72,248 Q86,248 94,254 Q84,256 72,254Z"/>` +
+        `<path d="M210,232 Q194,232 184,240 Q196,242 210,240Z"/><path d="M208,248 Q194,248 186,254 Q196,256 208,254Z"/>` +
+        `<ellipse cx="104" cy="268" rx="10" ry="6"/><ellipse cx="176" cy="268" rx="10" ry="6"/>` +
+        `<ellipse cx="140" cy="264" rx="30" ry="19"/>` +
+        `<ellipse class="k" cx="114" cy="232" rx="8" ry="10"/><circle class="w" cx="117" cy="228" r="3.2"/>` +
+        `<ellipse class="k" cx="166" cy="232" rx="8" ry="10"/><circle class="w" cx="169" cy="228" r="3.2"/>` +
+        `<path d="M130,254 Q140,248 150,254 Q146,264 140,264 Q134,264 130,254Z"/>` +
+        `<path class="n" d="M140,264 Q140,272 130,274 M140,264 Q140,272 150,274"/>`;
+    }
+  },
+  {
+    id: 'idol-trio', name: '반짝걸즈 무대',
+    svg: () => {
+      const bust = cx => `<path d="M${cx - 46},380 L${cx - 46},330 Q${cx - 44},300 ${cx},298 Q${cx + 44},300 ${cx + 46},330 L${cx + 46},380Z"/>` +
+        `<path class="n" d="M${cx - 14},300 L${cx},322 L${cx + 14},300"/>`;
+      return BG + heart(200, 146, 100) +
+        Array.from({ length: 9 }, (_, i) => `<circle cx="${30 + i * 42.5}" cy="30" r="9"/>`).join('') +
+        star(40, 120, 14, 6) + star(360, 120, 14, 6) + heart(46, 196, 12) + heart(354, 196, 12) +
+        `<path d="M0,380 L400,380 L400,480 L0,480Z"/><rect x="0" y="380" width="400" height="16"/>` +
+        star(80, 440, 14, 6) + star(200, 444, 14, 6) + star(320, 440, 14, 6) +
+        // 왼쪽: 긴 머리
+        `<path d="M40,250 Q34,330 50,372 L130,372 Q146,330 140,250Z"/>` + bust(90) + face(90, 250, .66, { mouth: 'open' }) +
+        star(124, 214, 9, 4) +
+        // 가운데: 양갈래 번
+        `<circle cx="162" cy="210" r="18"/><circle cx="238" cy="210" r="18"/>` + bust(200) + face(200, 250, .66) +
+        // 오른쪽: 단발
+        `<ellipse cx="310" cy="252" rx="54" ry="50"/>` + bust(310) + face(310, 250, .66) +
+        heart(280, 212, 8)
+    }
+  },
+  {
+    id: 'picnic', name: '방울이의 소풍',
+    svg: () => {
+      let rays = '';
+      for (let i = 0; i < 8; i++) {
+        const a = i * 45 * Math.PI / 180, b = .22;
+        const p = (r, t) => F(344 + r * Math.cos(t)) + ',' + F(66 + r * Math.sin(t));
+        rays += `<path d="M${p(40, a - b)} L${p(58, a)} L${p(40, a + b)}Z"/>`;
+      }
+      return BG + rays + `<circle cx="344" cy="66" r="32"/>` + cloud(96, 74) +
+        `<path d="M0,300 Q100,228 200,288 Q300,236 400,288 L400,480 L0,480Z"/>` +
+        `<path d="M0,360 Q200,328 400,360 L400,480 L0,480Z"/>` +
+        flower(40, 392, 11, 34) + flower(96, 440, 10, 30) + flower(360, 412, 11, 34) + flower(30, 318, 8, 24) +
+        butterfly(330, 196) +
+        `<path class="n" d="M150,300 Q124,250 88,190"/>` +
+        `<ellipse cx="84" cy="152" rx="30" ry="38"/><path d="M79,189 L89,189 L84,197Z"/>` +
+        `<path d="M152,196 C108,206 96,262 116,292 C128,262 140,242 158,232Z"/>` +
+        `<path d="M268,196 C312,206 324,262 304,292 C292,262 280,242 262,232Z"/>` +
+        `<rect x="192" y="346" width="14" height="44" rx="6"/><rect x="214" y="346" width="14" height="44" rx="6"/>` +
+        `<ellipse cx="196" cy="396" rx="15" ry="8"/><ellipse cx="224" cy="396" rx="15" ry="8"/>` +
+        `<path d="M182,256 Q210,264 238,256 L266,350 Q210,364 154,350Z"/>` +
+        `<path d="M222,318 L242,318 L242,332 Q232,340 222,332Z"/>` + heart(194, 318, 8) +
+        `<path d="M190,258 Q192,280 210,272 Q228,280 230,258 Q210,266 190,258Z"/>` +
+        capsule(184, 270, 154, 304, 17) + capsule(236, 270, 280, 302, 17) +
+        `<circle cx="268" cy="326" r="10"/>` +
+        `<path d="M254,334 Q283,280 312,334 L302,334 Q283,296 264,334Z"/>` +
+        `<path d="M246,330 L320,330 L308,378 L258,378Z"/>` +
+        `<path class="n" d="M252,346 L314,346 M255,362 L311,362"/>` +
+        face(210, 200, .94) +
+        `<circle cx="156" cy="214" r="9"/><circle cx="264" cy="214" r="9"/>` +
+        `<path d="M240,142 L212,126 Q204,142 212,158Z"/><path d="M240,142 L268,126 Q276,142 268,158Z"/><circle cx="240" cy="142" r="8"/>` +
+        `<circle cx="152" cy="306" r="10"/><circle cx="283" cy="304" r="10"/>`;
+    }
+  },
+  {
+    id: 'puppy', name: '방울이와 강아지',
+    svg: () => BG + cloud(290, 64, .8) +
+      `<rect x="330" y="236" width="22" height="110"/><circle cx="341" cy="196" r="50"/>` +
+      `<circle cx="322" cy="190" r="7"/><circle cx="358" cy="212" r="7"/><circle cx="348" cy="168" r="7"/>` +
+      `<rect x="140" y="120" width="20" height="44"/>` +
+      `<rect x="30" y="192" width="140" height="150"/><path d="M16,196 L100,118 L184,196Z"/>` +
+      `<path d="M84,342 L84,288 Q102,266 120,288 L120,342Z"/>` +
+      `<rect x="42" y="216" width="36" height="32"/><path class="n" d="M60,216 L60,248 M42,232 L78,232"/>` +
+      `<rect x="124" y="216" width="36" height="32"/><path class="n" d="M142,216 L142,248 M124,232 L160,232"/>` +
+      `<path d="M0,340 L400,340 L400,480 L0,480Z"/>` +
+      flower(30, 382, 9, 26) + flower(372, 396, 9, 26) +
+      `<path class="n" d="M60,460 l6,-12 l6,12 M230,466 l6,-12 l6,12"/>` +
+      // 소녀
+      `<path d="M92,248 Q88,180 150,178 Q212,180 208,248 L212,298 Q150,308 88,298Z"/>` +
+      `<rect x="134" y="392" width="13" height="40" rx="6"/><rect x="153" y="392" width="13" height="40" rx="6"/>` +
+      `<ellipse cx="138" cy="436" rx="14" ry="8"/><ellipse cx="164" cy="436" rx="14" ry="8"/>` +
+      `<path d="M116,354 L184,354 L198,398 Q150,410 102,398Z"/>` +
+      `<path d="M122,298 Q150,306 178,298 L186,358 L114,358Z"/>` + heart(150, 330, 9) +
+      capsule(122, 312, 104, 352, 15) + capsule(178, 312, 214, 340, 15) +
+      `<circle cx="122" cy="308" r="12"/><circle cx="178" cy="308" r="12"/>` +
+      face(150, 246, .88, { bangs: `<path d="M92,250 Q88,186 150,184 Q212,186 208,250 Q206,232 198,224 L102,224 Q94,232 92,250Z"/>` }) +
+      `<path d="M98,218 Q150,168 202,218 L196,226 Q150,182 104,226Z"/>` + heart(184, 196, 10) +
+      `<circle cx="102" cy="356" r="9"/>` +
+      // 강아지
+      `<path d="M334,392 Q362,370 358,350 Q350,352 346,368 Q340,382 326,386Z"/>` +
+      `<ellipse cx="268" cy="426" rx="11" ry="14"/><ellipse cx="288" cy="428" rx="11" ry="14"/>` +
+      `<ellipse cx="312" cy="428" rx="11" ry="14"/><ellipse cx="332" cy="424" rx="11" ry="14"/>` +
+      `<ellipse cx="298" cy="400" rx="46" ry="32"/><ellipse cx="318" cy="390" rx="16" ry="12"/>` +
+      `<circle cx="262" cy="348" r="34"/>` +
+      `<path d="M240,378 Q262,392 286,380 L288,388 Q262,402 238,386Z"/><circle cx="262" cy="398" r="6"/>` +
+      `<ellipse cx="230" cy="352" rx="12" ry="24" transform="rotate(15 230 352)"/>` +
+      `<ellipse cx="294" cy="352" rx="12" ry="24" transform="rotate(-15 294 352)"/>` +
+      `<ellipse cx="262" cy="364" rx="17" ry="12"/>` +
+      `<path d="M257,372 Q262,386 267,372Z"/>` +
+      `<ellipse class="k" cx="262" cy="358" rx="6" ry="4.5"/><path class="n" d="M262,362 L262,370 M254,369 Q262,374 270,369"/>` +
+      `<ellipse class="k" cx="250" cy="342" rx="5" ry="6"/><circle class="w" cx="252" cy="340" r="2"/>` +
+      `<ellipse class="k" cx="274" cy="342" rx="5" ry="6"/><circle class="w" cx="276" cy="340" r="2"/>` +
+      `<circle cx="216" cy="342" r="9"/>`
+  },
+  {
+    id: 'unicorn', name: '무지개 유니콘',
+    svg: () => {
+      let rb = '';
+      [186, 168, 150, 132, 114].forEach(R => {
+        const r = R - 18;
+        rb += `<path d="M${200 - R},300 A${R},${R} 0 0 1 ${200 + R},300 L${200 + r},300 A${r},${r} 0 0 0 ${200 - r},300Z"/>`;
+      });
+      return BG + star(60, 90, 12, 5) + star(344, 64, 14, 6) + star(210, 50, 9, 4) + rb +
+        cloud(44, 300, .9) + cloud(356, 300, .9) +
+        `<path d="M0,392 Q200,364 400,392 L400,480 L0,480Z"/>` +
+        flower(40, 420, 9, 28) + flower(360, 430, 9, 28) +
+        `<path d="M280,320 Q324,300 322,340 Q340,372 306,392 Q314,362 284,352Z"/>` +
+        `<rect x="236" y="350" width="18" height="58" rx="8"/><rect x="264" y="346" width="18" height="58" rx="8"/>` +
+        `<rect x="236" y="398" width="18" height="12" rx="4"/><rect x="264" y="394" width="18" height="12" rx="4"/>` +
+        `<ellipse cx="216" cy="340" rx="68" ry="40"/>` +
+        `<rect x="162" y="352" width="18" height="58" rx="8"/><rect x="190" y="356" width="18" height="56" rx="8"/>` +
+        `<rect x="162" y="400" width="18" height="12" rx="4"/><rect x="190" y="402" width="18" height="12" rx="4"/>` +
+        `<path d="M150,300 Q146,270 136,248 L180,238 Q180,280 196,312Z"/>` +
+        `<path d="M156,196 L172,170 L178,204Z"/>` +
+        `<path d="M124,196 L136,140 L150,198Z"/><path class="n" d="M128,182 L144,178 M131,167 L141,164 M134,153 L139,152"/>` +
+        `<circle cx="140" cy="230" r="40"/>` +
+        `<ellipse cx="110" cy="254" rx="28" ry="21"/>` +
+        `<path class="n" d="M98,250 q3,-3 6,0 M100,266 Q110,272 120,266"/>` +
+        `<ellipse cx="146" cy="254" rx="9" ry="6"/>` +
+        `<ellipse cx="150" cy="198" rx="14" ry="10"/>` +
+        `<circle cx="172" cy="214" r="17"/><circle cx="182" cy="242" r="17"/><circle cx="188" cy="272" r="16"/><circle cx="194" cy="300" r="14"/>` +
+        `<ellipse class="k" cx="130" cy="226" rx="6" ry="8"/><circle class="w" cx="132" cy="223" r="2.4"/>` +
+        ``;
+    }
+  },
+  {
+    id: 'princess', name: '공주님과 성',
+    svg: () => {
+      const win = (cx, y, w, h) => `<path d="M${cx - w / 2},${y + h} L${cx - w / 2},${y + w / 2} A${w / 2},${w / 2} 0 0 1 ${cx + w / 2},${y + w / 2} L${cx + w / 2},${y + h}Z"/>`;
+      return BG + cloud(60, 60, .7) + cloud(340, 50, .7) +
+        `<rect x="110" y="210" width="180" height="130"/>` +
+        [116, 148, 232, 264].map(x => `<rect x="${x}" y="196" width="20" height="16"/>`).join('') +
+        `<rect x="150" y="120" width="100" height="120"/><path d="M140,124 L200,40 L260,124Z"/>` +
+        `<path class="n" d="M200,40 L200,16"/><path d="M200,16 L224,24 L200,32Z"/>` +
+        `<rect x="48" y="160" width="68" height="180"/><path d="M40,164 L82,88 L124,164Z"/>` +
+        `<path class="n" d="M82,88 L82,62"/><path d="M82,62 L104,70 L82,78Z"/>` +
+        `<rect x="284" y="160" width="68" height="180"/><path d="M276,164 L318,88 L360,164Z"/>` +
+        `<path class="n" d="M318,88 L318,62"/><path d="M318,62 L340,70 L318,78Z"/>` +
+        win(82, 196, 22, 32) + win(318, 196, 22, 32) + win(82, 266, 22, 32) + win(318, 266, 22, 32) + win(200, 140, 26, 38) +
+        `<path d="M0,336 Q200,316 400,336 L400,480 L0,480Z"/>` +
+        cloud(36, 344, .55) + cloud(364, 344, .55) +
+        `<path d="M150,226 Q138,318 168,348 L232,348 Q262,318 250,226Z"/>` +
+        `<path d="M170,322 Q200,330 230,322 Q296,392 302,452 Q200,472 98,452 Q104,392 170,322Z"/>` +
+        `<path d="M110,418 Q200,440 290,418 Q300,436 302,452 Q200,472 98,452 Q100,436 110,418Z"/>` +
+        heart(150, 392, 10) + heart(250, 392, 10) +
+        `<path d="M178,270 Q200,276 222,270 L230,328 Q200,336 170,328Z"/>` + heart(200, 302, 9) +
+        capsule(176, 284, 156, 326, 14) + capsule(224, 284, 262, 262, 14) +
+        `<circle cx="176" cy="284" r="13"/><circle cx="224" cy="284" r="13"/>` +
+        face(200, 226, .76) +
+        `<path d="M174,186 L178,158 L190,172 L200,150 L210,172 L222,158 L226,186Z"/><circle cx="200" cy="175" r="5"/>` +
+        `<circle cx="156" cy="328" r="9"/>` +
+        capsule(266, 256, 288, 214, 7) + star(292, 204, 17, 7) + `<circle cx="264" cy="260" r="9"/>`;
+    }
+  },
+  {
+    id: 'mermaid', name: '바닷속 인어공주',
+    svg: () => BG +
+      `<circle cx="60" cy="80" r="10"/><circle cx="80" cy="50" r="6"/><circle cx="340" cy="120" r="12"/><circle cx="360" cy="80" r="7"/><circle cx="322" cy="56" r="5"/>` +
+      `<path d="M52,200 L30,184 L30,216Z"/><ellipse cx="80" cy="200" rx="30" ry="18"/><path class="n" d="M72,186 Q78,200 72,214"/>` +
+      `<circle class="k" cx="96" cy="196" r="3.5"/>` +
+      `<path d="M350,252 L370,238 L370,266Z"/><ellipse cx="330" cy="252" rx="22" ry="14"/><circle class="k" cx="318" cy="249" r="3"/>` +
+      `<path d="M0,410 Q100,392 200,410 Q300,428 400,404 L400,480 L0,480Z"/>` +
+      `<path d="M26,480 Q6,430 34,396 Q58,364 38,322 Q70,352 62,398 Q50,440 62,480Z"/>` +
+      `<path d="M362,480 Q344,440 368,404 Q388,372 370,336 Q400,366 392,404 Q382,440 394,480Z"/>` +
+      star(318, 446, 18, 8, -80) +
+      `<path d="M80,452 A18,18 0 0 1 116,452Z"/><path class="n" d="M98,452 L98,436 M98,452 L88,440 M98,452 L108,440"/>` +
+      `<path d="M142,146 Q126,226 150,262 Q140,300 160,322 L182,262 L218,262 Q220,300 240,322 Q260,300 250,262 Q274,226 258,146Z"/>` +
+      `<path d="M170,268 Q200,276 230,268 Q246,320 232,362 Q220,394 248,414 L230,422 Q198,402 198,366 Q194,330 176,302 Q168,286 170,268Z"/>` +
+      `<path d="M232,414 Q252,378 298,382 Q276,402 280,418 Q288,436 302,452 Q260,450 230,428Z"/>` +
+      `<path class="n" d="M190,298 Q198,306 206,298 M208,298 Q216,306 224,298 M198,320 Q206,328 214,320 M216,320 Q222,328 228,320 M206,342 Q214,350 222,342"/>` +
+      `<path d="M168,262 Q200,274 232,262 L234,278 Q200,290 166,278Z"/>` +
+      `<path d="M180,196 Q200,202 220,196 L230,264 Q200,270 170,264Z"/>` +
+      `<path d="M178,228 A11,11 0 0 1 200,228Z"/><path d="M200,228 A11,11 0 0 1 222,228Z"/>` +
+      capsule(178, 206, 150, 238, 14) + capsule(222, 206, 252, 180, 14) +
+      face(200, 144, .85) + star(246, 104, 13, 6) +
+      `<circle cx="148" cy="240" r="9"/><circle cx="254" cy="178" r="9"/>`
+  },
+  {
+    id: 'bunny', name: '토끼의 생일파티',
+    svg: () => {
+      let flags = '';
+      [.1, .3, .5, .7, .9].forEach(t => {
+        const x = 400 * t, y = (1 - t) ** 2 * 36 + 2 * t * (1 - t) * 96 + t * t * 36;
+        flags += `<path d="M${F(x - 16)},${F(y)} L${F(x + 16)},${F(y)} L${F(x)},${F(y + 30)}Z"/>`;
+      });
+      let cloth = 'M0,370 L400,370 L400,392';
+      for (let i = 10; i > 0; i--) cloth += ` Q${i * 40 - 20},412 ${(i - 1) * 40},392`;
+      return BG + `<path class="n" d="M0,36 Q200,96 400,36"/>` + flags +
+        `<path class="n" d="M46,162 Q40,200 50,240 M360,150 Q368,190 356,230"/>` +
+        `<ellipse cx="46" cy="130" rx="26" ry="32"/><ellipse cx="360" cy="120" rx="24" ry="30"/>` +
+        `<ellipse cx="90" cy="110" rx="17" ry="50" transform="rotate(-10 90 110)"/>` +
+        `<ellipse cx="138" cy="108" rx="17" ry="50" transform="rotate(12 138 108)"/>` +
+        `<ellipse cx="90" cy="114" rx="8" ry="34" transform="rotate(-10 90 114)"/>` +
+        `<ellipse cx="138" cy="112" rx="8" ry="34" transform="rotate(12 138 112)"/>` +
+        `<ellipse cx="112" cy="318" rx="50" ry="58"/><ellipse cx="112" cy="330" rx="30" ry="36"/>` +
+        capsule(72, 292, 62, 338, 18) + capsule(152, 292, 190, 324, 18) +
+        `<ellipse cx="112" cy="196" rx="56" ry="50"/>` +
+        `<path d="M112,250 L92,238 L92,262Z"/><path d="M112,250 L132,238 L132,262Z"/><circle cx="112" cy="250" r="6"/>` +
+        `<ellipse class="k" cx="92" cy="192" rx="7" ry="9"/><circle class="w" cx="94" cy="189" r="2.8"/>` +
+        `<ellipse class="k" cx="132" cy="192" rx="7" ry="9"/><circle class="w" cx="134" cy="189" r="2.8"/>` +
+        `<ellipse cx="76" cy="214" rx="10" ry="6"/><ellipse cx="148" cy="214" rx="10" ry="6"/>` +
+        `<rect x="106" y="224" width="12" height="9" rx="2"/>` +
+        `<path class="n" d="M112,216 Q112,224 104,226 M112,216 Q112,224 120,226"/>` +
+        `<path d="M106,211 Q112,207 118,211 Q112,219 106,211Z"/>` +
+        `<rect x="0" y="392" width="400" height="88"/><path d="${cloth}Z"/>` +
+        `<circle cx="60" cy="342" r="11"/><circle cx="194" cy="326" r="11"/>` +
+        `<ellipse cx="284" cy="384" rx="96" ry="14"/>` +
+        `<rect x="210" y="310" width="148" height="70" rx="10"/>` + scallopBand(210, 310, 148, 18, 6) +
+        heart(246, 356, 9) + heart(284, 356, 9) + heart(322, 356, 9) +
+        `<rect x="236" y="254" width="96" height="58" rx="10"/>` + scallopBand(236, 254, 96, 14, 4) +
+        [262, 284, 306].map((x, i) => `<rect x="${x - 6}" y="${i === 1 ? 206 : 214}" width="12" height="${i === 1 ? 48 : 40}" rx="4"/>` +
+          `<path d="M${x},${i === 1 ? 204 : 212} Q${x - 8},${i === 1 ? 192 : 200} ${x},${i === 1 ? 178 : 186} Q${x + 8},${i === 1 ? 192 : 200} ${x},${i === 1 ? 204 : 212}Z"/>`).join('');
+    }
+  },
+  {
+    id: 'kitty', name: '고양이와 나비',
+    svg: () => BG + `<circle cx="56" cy="60" r="30"/>` + cloud(300, 70, .8) +
+      `<path d="M0,330 Q200,300 400,330 L400,480 L0,480Z"/>` +
+      flower(56, 350, 15, 64) + flower(344, 350, 15, 64) + flower(104, 424, 10, 40) + flower(300, 432, 10, 36) +
+      butterfly(92, 176) + butterfly(318, 190, .8) +
+      `<path d="M246,410 Q306,410 300,350 Q296,318 316,310 Q326,318 314,330 Q312,420 246,424Z"/>` +
+      `<path d="M200,300 Q258,300 262,380 Q264,424 200,426 Q136,424 138,380 Q142,300 200,300Z"/>` +
+      `<ellipse cx="200" cy="378" rx="30" ry="36"/>` +
+      `<ellipse cx="180" cy="420" rx="16" ry="11"/><ellipse cx="220" cy="420" rx="16" ry="11"/>` +
+      `<path d="M130,214 L136,136 L190,180Z"/><path d="M270,214 L264,136 L210,180Z"/>` +
+      `<path d="M142,198 L146,154 L176,180Z"/><path d="M258,198 L254,154 L224,180Z"/>` +
+      `<ellipse cx="200" cy="230" rx="76" ry="60"/>` +
+      `<path d="M150,292 Q200,312 250,292 L252,302 Q200,322 148,302Z"/><circle cx="200" cy="316" r="9"/>` +
+      `<path class="n" d="M188,180 L192,196 M200,176 L200,194 M212,180 L208,196"/>` +
+      `<ellipse cx="156" cy="258" rx="10" ry="6"/><ellipse cx="244" cy="258" rx="10" ry="6"/>` +
+      `<ellipse class="k" cx="170" cy="232" rx="9" ry="11"/><circle class="w" cx="173" cy="228" r="3.5"/>` +
+      `<ellipse class="k" cx="230" cy="232" rx="9" ry="11"/><circle class="w" cx="233" cy="228" r="3.5"/>` +
+      `<path d="M193,251 L207,251 L200,259Z"/>` +
+      `<path class="n" d="M200,259 Q200,266 192,268 M200,259 Q200,266 208,268 M146,250 L112,244 M146,262 L112,266 M254,250 L288,244 M254,262 L288,266"/>`
+  },
+  {
+    id: 'sweets', name: '달콤 아이스크림',
+    svg: () => BG + heart(40, 50, 14) + heart(356, 56, 12) + heart(44, 300, 10) + heart(360, 196, 10) +
+      star(120, 40, 10, 4) + star(290, 120, 9, 4) +
+      `<rect x="0" y="448" width="400" height="32"/>` +
+      `<path d="M150,250 L250,250 L200,430Z"/>` +
+      `<path class="n" d="M153,260 L226,334 M164,300 L220,356 M175,340 L212,377 M180,250 L234,304 M210,250 L241,281 M247,260 L174,334 M236,300 L180,356 M225,340 L188,377 M220,250 L166,304 M190,250 L159,281"/>` +
+      `<path d="M160,142 Q156,92 200,88 Q244,92 240,142 Q228,150 218,142 Q208,154 200,142 Q192,154 182,142 Q172,150 160,142Z"/>` +
+      `<path d="M206,68 Q210,50 222,44" class="n"/><circle cx="206" cy="80" r="13"/>` +
+      `<path d="M152,196 Q146,144 200,140 Q254,144 248,196 Q234,206 222,196 Q210,210 200,196 Q190,210 178,196 Q166,206 152,196Z"/>` +
+      `<path class="n" d="M176,164 l8,-4 M204,158 l6,6 M224,170 l8,-2 M188,182 l4,6"/>` +
+      `<path d="M146,252 Q140,200 200,196 Q260,200 254,252 Q240,262 228,252 Q214,266 200,252 Q186,266 172,252 Q160,262 146,252Z"/>` +
+      `<path d="M40,380 L120,380 L110,440 L50,440Z"/><path class="n" d="M60,382 L64,438 M80,382 L80,438 M100,382 L96,438"/>` +
+      `<path d="M34,382 Q30,350 56,346 Q60,320 80,322 Q100,320 104,346 Q130,350 126,382Z"/>` + star(80, 314, 11, 5) +
+      `<rect x="313" y="300" width="10" height="140" rx="4"/>` +
+      `<circle cx="318" cy="262" r="44"/>` +
+      `<path class="n" d="M318,262 a6,6 0 1 1 12,0 a12,12 0 1 1 -24,0 a18,18 0 1 1 36,0 a24,24 0 1 1 -48,0 a30,30 0 1 1 60,0"/>` +
+      `<path d="M318,322 L296,310 L296,334Z"/><path d="M318,322 L340,310 L340,334Z"/><circle cx="318" cy="322" r="6"/>`
+  },
+];
+
+</script>
+<script>
+(() => {
+  const INK = '#3A2447';
+  const $ = s => document.querySelector(s);
+
+  // ───── 팔레트 ─────
+  const COLORS = [
+    ['#FF4D4D', '빨간색'], ['#FF9933', '주황색'], ['#FFE040', '노란색'], ['#A6E35A', '연두색'],
+    ['#2FBF71', '초록색'], ['#6EE0CC', '민트색'], ['#7CCBFF', '하늘색'], ['#3D7EF5', '파란색'],
+    ['#9C6BFF', '보라색'], ['#D9C2FF', '연보라색'], ['#FF7AB8', '분홍색'], ['#FFD0E5', '연분홍색'],
+    ['#FFDDC4', '살구색'], ['#A0643C', '갈색'], ['#B5B5C3', '회색'], ['#3A3440', '검은색'], ['#FFFFFF', '하얀색'],
+  ];
+  const SPECIALS = [
+    ['pt-rainbow', '무지개'], ['pt-gold', '반짝이'], ['pt-heart', '하트 무늬'], ['pt-star', '별 무늬'],
+    ['pt-dots', '물방울 무늬'], ['pt-galaxy', '우주 무늬'], ['pt-stripe', '줄무늬'],
+  ];
+  const SP = (cx, cy, R, r) => { let d = ''; for (let i = 0; i < 10; i++) { const q = i % 2 ? r : R, a = (-90 + i * 36) * Math.PI / 180; d += (i ? 'L' : 'M') + (cx + q * Math.cos(a)).toFixed(1) + ',' + (cy + q * Math.sin(a)).toFixed(1); } return d + 'Z'; };
+  const DEFS =
+    `<linearGradient id="pt-rainbow" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FF5A5A"/><stop offset=".2" stop-color="#FFA23C"/><stop offset=".4" stop-color="#FFE14D"/><stop offset=".6" stop-color="#6FD86F"/><stop offset=".8" stop-color="#58B7FF"/><stop offset="1" stop-color="#A477FF"/></linearGradient>` +
+    `<pattern id="pt-gold" width="28" height="28" patternUnits="userSpaceOnUse"><rect width="28" height="28" fill="#FFD447"/><path d="M7,2 L8.8,7.2 L14,9 L8.8,10.8 L7,16 L5.2,10.8 L0,9 L5.2,7.2Z" fill="#fff"/><circle cx="20" cy="20" r="2.2" fill="#FFF6C8"/><circle cx="23" cy="6" r="1.5" fill="#fff"/><circle cx="12" cy="24" r="1.4" fill="#F5A800"/></pattern>` +
+    `<pattern id="pt-heart" width="30" height="30" patternUnits="userSpaceOnUse"><rect width="30" height="30" fill="#FFC6DD"/><path d="M8,13 C4,10 5,5 8,7.5 C11,5 12,10 8,13Z" fill="#FF5C9A"/><path d="M23,28 C19,25 20,20 23,22.5 C26,20 27,25 23,28Z" fill="#FF5C9A"/></pattern>` +
+    `<pattern id="pt-star" width="32" height="32" patternUnits="userSpaceOnUse"><rect width="32" height="32" fill="#C4E3FF"/><path d="${SP(9, 9, 6.5, 2.8)}" fill="#FFD640"/><path d="${SP(25, 24, 5, 2.2)}" fill="#fff"/></pattern>` +
+    `<pattern id="pt-dots" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="#8FE3C9"/><circle cx="5" cy="5" r="3.4" fill="#fff"/><circle cx="15" cy="15" r="3.4" fill="#fff"/></pattern>` +
+    `<pattern id="pt-galaxy" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="#6547C2"/><circle cx="6" cy="8" r="1.4" fill="#fff"/><circle cx="30" cy="12" r="1" fill="#FFE6FA"/><circle cx="18" cy="30" r="1.6" fill="#fff"/><circle cx="36" cy="34" r="1" fill="#fff"/><path d="${SP(28, 26, 4.5, 1.8)}" fill="#FFE14D"/></pattern>` +
+    `<pattern id="pt-stripe" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="16" height="16" fill="#fff"/><rect width="8" height="16" fill="#FF8FB8"/></pattern>`;
+  $('#pdefs').innerHTML = DEFS;
+  const paintOf = v => v.startsWith('pt-') ? `url(#${v})` : v;
+
+  // ───── 저장 ─────
+  const KEY = 'banjjak-coloring-v1';
+  let S = { stars: 0, sound: true, done: {}, pics: {}, gallery: [] };
+  try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch (e) {}
+  let saveT;
+  function persist() {
+    clearTimeout(saveT);
+    saveT = setTimeout(() => {
+      for (let tries = 0; tries < 30; tries++) {
+        try { localStorage.setItem(KEY, JSON.stringify(S)); return; }
+        catch (e) { if (S.gallery.length > 1) S.gallery.pop(); else return; }
+      }
+    }, 250);
+  }
+  const picState = id => (S.pics[id] ||= { f: {}, p: [] });
+
+  // ───── 소리 ─────
+  let AC;
+  function ac() {
+    if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } }
+    if (AC.state === 'suspended') AC.resume();
+    return AC;
+  }
+  function tone(f, dur = .18, type = 'triangle', vol = .16, delay = 0) {
+    if (!S.sound) return; const a = ac(); if (!a) return;
+    const t = a.currentTime + delay, o = a.createOscillator(), g = a.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t); o.frequency.exponentialRampToValueAtTime(f * 1.5, t + dur * .6);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .015); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+    o.connect(g).connect(a.destination); o.start(t); o.stop(t + dur + .05);
+  }
+  const SCALE = [523, 587, 659, 784, 880, 1047, 1175, 1319];
+  const pop = i => tone(SCALE[i % SCALE.length], .2);
+  const tada = () => [523, 659, 784, 1047, 1319].forEach((f, k) => tone(f, .35, 'triangle', .15, k * .11));
+  let koVoice = null;
+  function pickVoice() { try { koVoice = speechSynthesis.getVoices().find(v => /^ko/i.test(v.lang)) || null; } catch (e) {} }
+  try { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } catch (e) {}
+  function say(t) {
+    if (!S.sound) return;
+    try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'ko-KR'; if (koVoice) u.voice = koVoice; u.pitch = 1.35; u.rate = 1; speechSynthesis.speak(u); } catch (e) {}
+  }
+  function drawSoundBtn() {
+    $('#soundBtn').innerHTML = S.sound
+      ? `<svg viewBox="0 0 32 32" fill="none" stroke="#3A2447" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><path d="M5,12 L10,12 L17,6 L17,26 L10,20 L5,20Z" fill="#FFC83D"/><path d="M21,11 Q25,16 21,21 M24,7 Q31,16 24,25"/></svg>`
+      : `<svg viewBox="0 0 32 32" fill="none" stroke="#3A2447" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><path d="M5,12 L10,12 L17,6 L17,26 L10,20 L5,20Z" fill="#E6D2E0"/><path d="M22,12 L29,20 M29,12 L22,20"/></svg>`;
+  }
+  $('#soundBtn').onclick = () => { S.sound = !S.sound; persist(); drawSoundBtn(); if (S.sound) { tone(784); say('소리 켰어요'); } };
+  drawSoundBtn();
+
+  // ───── 그림 그리기 ─────
+  function dress(g, st) {
+    let i = 0;
+    g.querySelectorAll('path,rect,circle,ellipse,polygon').forEach(el => {
+      const c = el.getAttribute('class');
+      if (c === 'n') { el.setAttribute('fill', 'none'); el.setAttribute('stroke', INK); el.setAttribute('stroke-width', '3.5'); el.setAttribute('stroke-linecap', 'round'); el.setAttribute('stroke-linejoin', 'round'); el.setAttribute('pointer-events', 'none'); }
+      else if (c === 'k') { el.setAttribute('fill', INK); el.setAttribute('pointer-events', 'none'); }
+      else if (c === 'w') { el.setAttribute('fill', '#fff'); el.setAttribute('pointer-events', 'none'); }
+      else {
+        el.dataset.i = i;
+        el.setAttribute('fill', paintOf(st.f[i] || '#FFFFFF'));
+        el.setAttribute('stroke', INK); el.setAttribute('stroke-width', '4.5'); el.setAttribute('stroke-linejoin', 'round');
+        i++;
+      }
+    });
+  }
+  function strokeEl(p) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    el.setAttribute('d', p.d); el.setAttribute('fill', 'none'); el.setAttribute('stroke', paintOf(p.c));
+    el.setAttribute('stroke-width', p.w); el.setAttribute('stroke-linecap', 'round'); el.setAttribute('stroke-linejoin', 'round');
+    return el;
+  }
+  const svgCache = {};
+  const picMarkup = p => (svgCache[p.id] ||= p.svg());
+
+  // ───── 홈 ─────
+  const STAR_BADGE = `<svg class="badge" viewBox="0 0 40 40"><path d="M20,3 L25,14 L37,15 L28,23 L31,35 L20,29 L9,35 L12,23 L3,15 L15,14Z" fill="#FFC83D" stroke="#3A2447" stroke-width="3" stroke-linejoin="round"/></svg>`;
+  function renderHome() {
+    $('#starCount').textContent = S.stars;
+    const grid = $('#grid'); grid.innerHTML = '';
+    PICTURES.forEach(p => {
+      const b = document.createElement('button');
+      b.className = 'card'; b.setAttribute('aria-label', p.name + ' 색칠하기');
+      b.innerHTML = `<svg viewBox="0 0 400 480" xmlns="http://www.w3.org/2000/svg"><g class="a">${picMarkup(p)}</g><g class="p" style="mix-blend-mode:multiply"></g></svg><span class="nm">${p.name}</span>${S.done[p.id] ? STAR_BADGE : ''}`;
+      const st = picState(p.id);
+      dress(b.querySelector('.a'), st);
+      const pg = b.querySelector('.p'); st.p.forEach(s => pg.appendChild(strokeEl(s)));
+      b.onclick = () => { tone(660); openPic(p); };
+      grid.appendChild(b);
+    });
+  }
+
+  // ───── 화면 전환 ─────
+  function show(id) { ['home', 'color', 'gallery'].forEach(s => $('#' + s).hidden = s !== id); }
+
+  // ───── 색칠 ─────
+  let cur = null, st = null, undo = [], tool = 'fill', size = 18, color = COLORS[10][0], changed = false;
+  const artG = $('#artG'), paintG = $('#paintG'), art = $('#art');
+
+  function openPic(p) {
+    cur = p; st = picState(p.id); undo = []; changed = false;
+    setTool('fill');
+    artG.innerHTML = picMarkup(p); dress(artG, st);
+    paintG.innerHTML = ''; st.p.forEach(s => paintG.appendChild(strokeEl(s)));
+    show('color'); fitArt();
+    say(p.name);
+  }
+
+  function fitArt() {
+    const r = $('#stage').getBoundingClientRect(); if (!r.width || !r.height) return;
+    const k = Math.min((r.width - 12) / 400, (r.height - 14) / 480);
+    art.style.width = Math.floor(400 * k) + 'px'; art.style.height = Math.floor(480 * k) + 'px';
+  }
+  try { new ResizeObserver(fitArt).observe($('#stage')); } catch (e) { addEventListener('resize', fitArt); }
+
+  function buildPalette() {
+    const pal = $('#palette'); pal.innerHTML = '';
+    COLORS.forEach(([c, n], i) => pal.appendChild(swatch(c, n, i, `<span style="display:block;width:100%;height:100%;border-radius:50%;background:${c}"></span>`)));
+    SPECIALS.forEach(([id, n], i) => pal.appendChild(swatch(id, n, COLORS.length + i, `<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="20" fill="url(#${id})"/></svg>`)));
+    markPalette();
+  }
+  function swatch(val, name, i, inner) {
+    const b = document.createElement('button');
+    b.className = 'sw'; b.dataset.v = val; b.setAttribute('aria-label', name); b.innerHTML = inner;
+    b.onclick = () => { color = val; markPalette(); pop(i); say(name); if (tool === 'eraser') setTool('fill'); };
+    return b;
+  }
+  function markPalette() { document.querySelectorAll('.sw').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === color)); }
+
+  function setTool(t) {
+    tool = t;
+    document.querySelectorAll('.tool').forEach(b => b.setAttribute('aria-pressed', b.dataset.tool === t));
+    $('#sizes').hidden = t !== 'brush';
+    paintG.setAttribute('pointer-events', t === 'eraser' ? 'visibleStroke' : 'none');
+  }
+  document.querySelectorAll('.tool').forEach(b => b.onclick = () => { setTool(b.dataset.tool); tone(t2f[b.dataset.tool]); say({ fill: '콕 칠하기', brush: '붓으로 그리기', eraser: '지우개' }[b.dataset.tool]); });
+  const t2f = { fill: 660, brush: 740, eraser: 440 };
+  document.querySelectorAll('.size').forEach(b => b.onclick = () => {
+    size = +b.dataset.size; tone(500 + size * 10);
+    document.querySelectorAll('.size').forEach(x => x.setAttribute('aria-pressed', x === b));
+  });
+
+  function sparkle(x, y, c) {
+    const d = document.createElement('div'); d.className = 'fx'; d.style.left = x + 'px'; d.style.top = y + 'px';
+    for (let k = 0; k < 8; k++) {
+      const a = k / 8 * Math.PI * 2, r = 34 + Math.random() * 18, i = document.createElement('i');
+      i.style.setProperty('--x', Math.cos(a) * r + 'px'); i.style.setProperty('--y', Math.sin(a) * r + 'px');
+      i.style.setProperty('--c', c.startsWith('pt-') ? '#FFC83D' : (c === '#FFFFFF' ? '#E6D2E0' : c));
+      d.appendChild(i);
+    }
+    document.body.appendChild(d); setTimeout(() => d.remove(), 600);
+  }
+
+  function setFill(i, v) {
+    const el = artG.querySelector(`[data-i="${i}"]`); if (!el) return;
+    if (v === '#FFFFFF') delete st.f[i]; else st.f[i] = v;
+    el.setAttribute('fill', paintOf(v));
+  }
+  function svgPoint(e) {
+    const pt = art.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+    return pt.matrixTransform(art.getScreenCTM().inverse());
+  }
+
+  let drawing = null;
+  art.addEventListener('pointerdown', e => {
+    if (drawing || !e.isPrimary) return;
+    e.preventDefault();
+    if (tool === 'eraser' && e.target.parentNode === paintG) {
+      const idx = [...paintG.children].indexOf(e.target);
+      const rec = st.p[idx]; e.target.remove(); st.p.splice(idx, 1);
+      undo.push({ t: 'rm', idx, rec }); tone(330); changed = true; persist(); return;
+    }
+    if (tool === 'fill' || tool === 'eraser') {
+      const el = e.target.closest('[data-i]'); if (!el) return;
+      const i = +el.dataset.i, v = tool === 'eraser' ? '#FFFFFF' : color, prev = st.f[i] || '#FFFFFF';
+      if (prev === v) { tone(880, .08); return; }
+      undo.push({ t: 'f', i, prev }); setFill(i, v);
+      const ci = COLORS.findIndex(c => c[0] === v);
+      tool === 'eraser' ? tone(330) : pop(ci < 0 ? 5 : ci);
+      sparkle(e.clientX, e.clientY, v); changed = true; persist();
+      return;
+    }
+    // 붓
+    const p = svgPoint(e);
+    drawing = { id: e.pointerId, pts: [[p.x, p.y]], rec: { c: color, w: size, d: '' } };
+    drawing.el = strokeEl({ d: `M${p.x.toFixed(1)},${p.y.toFixed(1)} l0.1,0`, c: color, w: size });
+    paintG.appendChild(drawing.el);
+    try { art.setPointerCapture(e.pointerId); } catch (_) {}
+  });
+  art.addEventListener('pointermove', e => {
+    if (!drawing || e.pointerId !== drawing.id) return;
+    const p = svgPoint(e), l = drawing.pts[drawing.pts.length - 1];
+    if (Math.hypot(p.x - l[0], p.y - l[1]) < 2.5) return;
+    drawing.pts.push([p.x, p.y]);
+    drawing.el.setAttribute('d', smooth(drawing.pts));
+  });
+  const endDraw = e => {
+    if (!drawing || e.pointerId !== drawing.id) return;
+    const d = drawing.pts.length > 1 ? smooth(drawing.pts) : drawing.el.getAttribute('d');
+    drawing.rec.d = d; drawing.el.setAttribute('d', d);
+    st.p.push(drawing.rec); undo.push({ t: 'p' }); drawing = null; changed = true; persist();
+    tone(700, .1, 'sine', .08);
+  };
+  art.addEventListener('pointerup', endDraw);
+  art.addEventListener('pointercancel', endDraw);
+  function smooth(pts) {
+    const f = n => n.toFixed(1);
+    let d = `M${f(pts[0][0])},${f(pts[0][1])}`;
+    for (let k = 1; k < pts.length - 1; k++) {
+      const mx = (pts[k][0] + pts[k + 1][0]) / 2, my = (pts[k][1] + pts[k + 1][1]) / 2;
+      d += ` Q${f(pts[k][0])},${f(pts[k][1])} ${f(mx)},${f(my)}`;
+    }
+    const z = pts[pts.length - 1]; return d + ` L${f(z[0])},${f(z[1])}`;
+  }
+
+  $('#undoBtn').onclick = () => {
+    const u = undo.pop();
+    if (!u) { tone(300, .1); return; }
+    if (u.t === 'f') setFill(u.i, u.prev);
+    else if (u.t === 'p') { st.p.pop(); paintG.lastChild && paintG.lastChild.remove(); }
+    else if (u.t === 'rm') { st.p.splice(u.idx, 0, u.rec); paintG.insertBefore(strokeEl(u.rec), paintG.children[u.idx] || null); }
+    else if (u.t === 'clr') {
+      st.f = u.f; st.p = u.p;
+      artG.querySelectorAll('[data-i]').forEach(el => el.setAttribute('fill', paintOf(st.f[el.dataset.i] || '#FFFFFF')));
+      paintG.innerHTML = ''; st.p.forEach(s => paintG.appendChild(strokeEl(s)));
+    }
+    tone(520, .12); persist();
+  };
+
+  $('#clearBtn').onclick = () => {
+    tone(440);
+    modal(`<h3>모두 지울까요?</h3><div class="row"><button class="candy" id="mYes">네, 지울래요</button><button class="candy mint" id="mNo">아니요</button></div>`);
+    $('#mYes').onclick = () => {
+      undo.push({ t: 'clr', f: { ...st.f }, p: [...st.p] });
+      st.f = {}; st.p = [];
+      artG.querySelectorAll('[data-i]').forEach(el => el.setAttribute('fill', '#FFFFFF'));
+      paintG.innerHTML = ''; changed = true; persist(); closeModal(); tone(330, .3);
+    };
+    $('#mNo').onclick = closeModal;
+  };
+
+  $('#backHome').onclick = () => { tone(520); goHome(); };
+  function goHome() { persist(); renderHome(); show('home'); }
+
+  // ───── 완성 ─────
+  function toImage(w = 800) {
+    const ser = new XMLSerializer(), h = w * 1.2;
+    const wrap = inner => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 480" width="${w}" height="${h}"><defs>${DEFS}</defs>${inner}</svg>`);
+    const load = src => new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = src; });
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    const ctx = cv.getContext('2d');
+    return load(wrap(ser.serializeToString(artG))).then(a => {
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h); ctx.drawImage(a, 0, 0, w, h);
+      if (!paintG.children.length) return;
+      return load(wrap(ser.serializeToString(paintG).replace(/ style="[^"]*"/, ''))).then(p => {
+        ctx.globalCompositeOperation = 'multiply'; ctx.drawImage(p, 0, 0, w, h); ctx.globalCompositeOperation = 'source-over';
+      });
+    }).then(() => cv.toDataURL('image/jpeg', .86));
+  }
+
+  const BIG_STAR = `<svg class="big-star" viewBox="0 0 40 40"><path d="M20,3 L25,14 L37,15 L28,23 L31,35 L20,29 L9,35 L12,23 L3,15 L15,14Z" fill="#FFC83D" stroke="#3A2447" stroke-width="2.4" stroke-linejoin="round"/><circle cx="16" cy="19" r="1.6" fill="#3A2447"/><circle cx="24" cy="19" r="1.6" fill="#3A2447"/><path d="M16.5,23 Q20,26 23.5,23" fill="none" stroke="#3A2447" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+  $('#doneBtn').onclick = async () => {
+    tada(); confetti(); say('와! 정말 예뻐요! 별을 받았어요!');
+    let img = '';
+    try { img = await toImage(); } catch (e) {}
+    const earned = changed || !S.done[cur.id];
+    if (earned) { S.stars++; S.done[cur.id] = true; changed = false; }
+    if (img) { S.gallery.unshift({ id: cur.id, img, t: Date.now() }); if (S.gallery.length > 30) S.gallery.length = 30; }
+    persist();
+    modal(`${BIG_STAR}<h3>${earned ? '별 하나 받았어요!' : '정말 예뻐요!'}</h3>` +
+      (img ? `<img src="${img}" alt="${cur.name} 색칠 완성 그림"><p class="hint">내 그림에 넣어 두었어요</p>` : '') +
+      `<div class="row"><button class="candy mint" id="mMore">계속 칠하기</button><button class="candy" id="mOther">다른 그림</button></div>`);
+    $('#mMore').onclick = () => { tone(660); closeModal(); };
+    $('#mOther').onclick = () => { tone(660); closeModal(); goHome(); };
+  };
+
+  // ───── 내 그림 ─────
+  function renderGallery() {
+    const g = $('#ggrid'); g.innerHTML = '';
+    if (!S.gallery.length) { g.innerHTML = `<p class="empty">아직 그림이 없어요.<br>색칠하고 <b>다 했어요</b>를 누르면 여기 모여요!</p>`; return; }
+    S.gallery.forEach((it, k) => {
+      const b = document.createElement('button'); b.className = 'gitem';
+      const p = PICTURES.find(x => x.id === it.id);
+      b.setAttribute('aria-label', (p ? p.name : '그림') + ' 크게 보기');
+      b.innerHTML = `<img src="${it.img}" alt="">`;
+      b.onclick = () => viewItem(k);
+      g.appendChild(b);
+    });
+  }
+  function viewItem(k) {
+    const it = S.gallery[k]; if (!it) return; tone(660);
+    const p = PICTURES.find(x => x.id === it.id);
+    modal(`<h3>${p ? p.name : '내 그림'}</h3><img src="${it.img}" alt="색칠한 그림"><p class="hint">그림을 꾹 누르면 사진첩에 저장할 수 있어요</p>` +
+      `<div class="row"><button class="candy sky" id="mSave">저장하기</button><button class="candy mint" id="mClose">닫기</button><button class="candy plain" id="mDel">지우기</button></div>`);
+    $('#mClose').onclick = closeModal;
+    $('#mSave').onclick = () => saveImg(it.img);
+    $('#mDel').onclick = () => {
+      $('#sheet').querySelector('.row').innerHTML = `<button class="candy" id="mDel2">정말 지우기</button><button class="candy mint" id="mKeep">그냥 둘래요</button>`;
+      $('#mKeep').onclick = closeModal;
+      $('#mDel2').onclick = () => { S.gallery.splice(k, 1); persist(); closeModal(); renderGallery(); };
+    };
+  }
+  async function saveImg(url) {
+    try {
+      const blob = await (await fetch(url)).blob();
+      const file = new File([blob], '반짝색칠.jpg', { type: 'image/jpeg' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file] }); return; }
+    } catch (e) { if (e && e.name === 'AbortError') return; }
+    try { const a = document.createElement('a'); a.href = url; a.download = '반짝색칠.jpg'; document.body.appendChild(a); a.click(); a.remove(); } catch (e) {}
+    toast('안 되면 그림을 꾹 눌러서 저장해 주세요');
+  }
+  $('#toGallery').onclick = () => { tone(660); renderGallery(); show('gallery'); };
+  $('#galBack').onclick = () => { tone(520); goHome(); };
+
+  // ───── 팝업·효과 ─────
+  function modal(html) { $('#sheet').innerHTML = html; $('#modal').hidden = false; }
+  function closeModal() { $('#modal').hidden = true; }
+  $('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+  function toast(t) { const d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 2600); }
+
+  function confetti() {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const cv = $('#confetti'), ctx = cv.getContext('2d'), dpr = Math.min(2, devicePixelRatio || 1);
+    cv.hidden = false; cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; ctx.scale(dpr, dpr);
+    const cols = ['#FF5C9A', '#FFC83D', '#37C9AD', '#6FB8FF', '#A77BFF', '#FF8A4C'];
+    const ps = Array.from({ length: 110 }, () => ({
+      x: innerWidth / 2 + (Math.random() - .5) * 60, y: innerHeight * .45,
+      vx: (Math.random() - .5) * 14, vy: -Math.random() * 15 - 5, r: Math.random() * 6 + 5,
+      a: Math.random() * 6, va: (Math.random() - .5) * .4, c: cols[Math.random() * cols.length | 0], s: Math.random() < .4,
+    }));
+    const t0 = performance.now();
+    (function frame(t) {
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+      ps.forEach(p => {
+        p.vy += .38; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.a += p.va;
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c;
+        if (p.s) { ctx.beginPath(); for (let i = 0; i < 10; i++) { const q = i % 2 ? p.r * .45 : p.r, an = i * Math.PI / 5; ctx.lineTo(Math.cos(an) * q, Math.sin(an) * q); } ctx.fill(); }
+        else ctx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2);
+        ctx.restore();
+      });
+      if (t - t0 < 2600) requestAnimationFrame(frame); else { cv.hidden = true; ctx.setTransform(1, 0, 0, 1, 0, 0); }
+    })(t0);
+  }
+
+  document.addEventListener('contextmenu', e => { if (!e.target.closest('.sheet img')) e.preventDefault(); });
+
+  buildPalette(); setTool('fill'); renderHome(); show('home');
+})();
+</script>
+<script>
+if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+</script>
+</body>
+</html>
