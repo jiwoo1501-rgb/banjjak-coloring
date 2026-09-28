@@ -491,9 +491,10 @@
   .deck:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--cd); }
   .dk-art { display: grid; place-items: center; width: 96px; height: 96px; border-radius: 22px; background: #fff; padding: 8px; }
   .dk-art.flagart .flag { width: 100%; height: auto; }
-  .mem.c5 { grid-template-columns: repeat(5, 1fr); } .mem.c6 { grid-template-columns: repeat(6, 1fr); gap: 6px; }
+  .mem.c5 { grid-template-columns: repeat(5, minmax(0, 1fr)); } .mem.c6 { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+  .mem.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } .mem.c4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .mem.flags { width: min(100%, 560px); }
-  .mem.flags .mcard { aspect-ratio: 1; }
+  .mem.flags .mcard { aspect-ratio: 1; min-width: 0; width: 100%; height: auto; align-self: start; padding: 0; }
   .mem.flags .face.back { background-color: #3D7EF5; box-shadow: inset 0 0 0 4px #fff, 0 4px 0 #2A5FC2; background-image: radial-gradient(#9CC2FF 2.5px, transparent 3px); background-size: 12px 12px; }
   .mem.flags .face.front { display: flex; flex-direction: column; gap: 3px; padding: 6px; }
   .mem.flags .face.front .flag { width: 92%; height: auto; }
