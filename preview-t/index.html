@@ -3881,7 +3881,9 @@ const PLAY = (() => {
   }
 
   // ── 장면 만들기 ──
+  let lastCtx = null;
   function mount(body, opt = {}) {
+    if (lastCtx && lastCtx.ro) lastCtx.ro.disconnect();
     body.className = 'gbody pbody';
     body.innerHTML = `<div class="pscene"><div class="pstage"><svg class="stage2" viewBox="0 0 400 480" xmlns="${NS}">
         <g class="L-bg"></g><g class="L-actor"></g><g class="L-over"></g><g class="L-fx"></g></svg>
@@ -3904,6 +3906,7 @@ const PLAY = (() => {
     fit(); const ro = new ResizeObserver(fit); ro.observe(stage); ctx.ro = ro;
     ctx.live = () => A().epoch() === ctx.my;
     if (opt.bg) ctx.add('bg', opt.bg);
+    lastCtx = ctx;
     return ctx;
   }
   function toScene(ctx, cx, cy) {
@@ -3942,6 +3945,7 @@ const PLAY = (() => {
     const moveG = (x, y) => { ghost.style.left = (x - 44) + 'px'; ghost.style.top = (y - 96) + 'px'; };
     const pt = (x, y) => toScene(ctx, x, y - 52); // 도구 가운데 = 손가락보다 조금 위
     const down = e => {
+      if (!ctx.live()) { detach(); return; } // 이미 떠난 장면이면 스스로 정리
       if (!active || pid !== null || !e.isPrimary) return;
       const fromTray = e.target.closest && e.target.closest('.ptool');
       if (fromTray && fromTray.dataset.k !== key) { wrongTool(ctx, fromTray); return; }
@@ -3957,11 +3961,12 @@ const PLAY = (() => {
     };
     ctx.body.addEventListener('pointerdown', down);
     addEventListener('pointermove', move, { passive: false }); addEventListener('pointerup', up); addEventListener('pointercancel', up);
-    return () => {
-      active = false; if (ghost) ghost.remove();
+    function detach() {
+      active = false; if (ghost) ghost.remove(); ghost = null;
       ctx.body.removeEventListener('pointerdown', down);
       removeEventListener('pointermove', move); removeEventListener('pointerup', up); removeEventListener('pointercancel', up);
-    };
+    }
+    return detach;
   }
   function wrongTool(ctx, b) {
     b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); fx().no();
