@@ -6,12 +6,12 @@
 <meta name="theme-color" content="#FFF0F6">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="반짝 색칠">
+<meta name="apple-mobile-web-app-title" content="반짝 놀이터">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<title>반짝 색칠놀이</title>
+<title>반짝 놀이터</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
@@ -169,6 +169,90 @@
   #confetti { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 30; pointer-events: none; }
   .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); z-index: 40; transform: translateX(-50%);
     padding: 12px 20px; border-radius: 18px; background: var(--ink); color: #fff; font-size: 17px; max-width: calc(100% - 32px); text-align: center; }
+
+  /* ───── 메인 ───── */
+  #hub { overflow-y: auto; padding: 16px 16px 28px; }
+  .hub-cards { display: grid; gap: 18px; max-width: 1000px; margin: 8px auto 0; }
+  @media (min-width: 760px) { .hub-cards { grid-template-columns: repeat(3, 1fr); } .hub-card { flex-direction: column; text-align: center; } }
+  .hub-card {
+    display: flex; align-items: center; gap: 16px; padding: 18px; border-radius: 30px;
+    background: var(--c); color: #fff; box-shadow: 0 8px 0 var(--cd); text-align: left; transition: transform .1s, box-shadow .1s;
+  }
+  .hub-card:active { transform: translateY(6px); box-shadow: 0 2px 0 var(--cd); }
+  .hub-card .art { flex: none; width: 104px; height: 104px; border-radius: 26px; background: #fff; display: grid; place-items: center; }
+  .hub-card .art svg { width: 84px; height: 84px; }
+  .hub-card .art.hangul { display: flex; gap: 1px; justify-content: center; font-size: 36px; -webkit-text-stroke: 1.2px var(--ink); paint-order: stroke fill; }
+  .hub-card .lbl { display: flex; flex-direction: column; gap: 4px; font-size: 36px; line-height: 1.1; text-shadow: 0 3px 0 rgba(0,0,0,.15); }
+  .hub-card small { font-size: 16px; opacity: .92; text-shadow: none; }
+  .stitle { margin: 0; flex: 1 1 auto; font-weight: 400; font-size: 32px; }
+
+  /* ───── 한글·숫자 목록 ───── */
+  #hangul, #numbers { overflow-y: auto; padding: 12px 16px 28px; }
+  .lhead { max-width: 900px; margin: 0 auto 12px; }
+  .lmodes { display: flex; gap: 12px; flex-wrap: wrap; max-width: 900px; margin: 0 auto; }
+  .mode { flex: 1 1 200px; display: flex; align-items: center; justify-content: center; gap: 10px; height: 76px; border-radius: 24px;
+    background: var(--c); color: #fff; font-size: 26px; box-shadow: 0 6px 0 var(--cd); }
+  .mode:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--cd); }
+  .mode span { font-size: 36px; }
+  .lsub { max-width: 900px; margin: 22px auto 10px; font-size: 19px; color: var(--ink-soft); }
+  .ltiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 12px; max-width: 900px; margin: 0 auto; }
+  .ltile { position: relative; aspect-ratio: 1; border-radius: 22px; background: #fff; box-shadow: 0 5px 0 #EBCFDF; font-size: 44px; -webkit-text-stroke: 1.2px var(--ink); paint-order: stroke fill; }
+  .ltile:active { transform: scale(.94); }
+  .ltile .done { position: absolute; top: -6px; right: -6px; width: 28px; height: 28px; background: #FFC83D;
+    clip-path: polygon(50% 0, 62% 35%, 100% 38%, 70% 60%, 80% 100%, 50% 76%, 20% 100%, 30% 60%, 0 38%, 38% 35%); }
+
+  /* ───── 따라쓰기 ───── */
+  #trace { display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto; gap: 10px; padding: 10px 16px 14px; overflow: hidden; }
+  .ttitle { margin: 0; font-weight: 400; font-size: 28px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .tstage { min-height: 0; display: flex; align-items: center; justify-content: center; }
+  #tSvg { display: block; width: 300px; height: 300px; touch-action: none; filter: drop-shadow(0 7px 0 #EBCFDF); }
+  .tword { display: flex; align-items: center; justify-content: center; gap: 14px; min-height: 76px; padding: 8px 16px; margin: 0 auto;
+    border-radius: 24px; background: #fff; box-shadow: 0 5px 0 #EBCFDF; opacity: .45; transition: opacity .3s, transform .3s; max-width: 100%; }
+  .tword.show { opacity: 1; animation: pop .45s cubic-bezier(.3,1.6,.5,1); }
+  .tword .emo { font-size: 46px; line-height: 1; }
+  .tword .wd { font-size: 38px; }
+  .tword .wd b { font-weight: 400; color: var(--pink); }
+  .cnt, .items { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+  .cnt i, .items i { font-style: normal; font-size: 30px; line-height: 1.1; transition: transform .2s; }
+  .cnt i.on, .items i.on { transform: scale(1.5); }
+  .tnav { display: flex; gap: 12px; justify-content: center; }
+  .tnav .candy { height: 58px; min-width: 64px; font-size: 21px; }
+  .tnav .candy:disabled { opacity: .35; }
+  .pulse { animation: pulse 1s ease-in-out infinite; }
+  @keyframes pulse { 50% { transform: scale(1.12); } }
+
+  /* ───── 퀴즈 ───── */
+  #quiz { display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 12px; padding: 10px 16px 20px; overflow: hidden; }
+  .qdots { display: flex; gap: 8px; justify-content: center; }
+  .qdots i { width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 3px #E6D2E0; }
+  .qdots i.on { background: #FFC83D; box-shadow: inset 0 0 0 3px var(--ink); }
+  .qprompt { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 0; padding: 12px;
+    border-radius: 28px; background: #fff; box-shadow: 0 6px 0 #EBCFDF; font-size: 28px; text-align: center; overflow: hidden; }
+  .qprompt .big { font-size: 86px; line-height: 1; }
+  .qprompt .items { max-width: 420px; gap: 8px; }
+  .qprompt .items i { font-size: clamp(44px, 15vw, 72px); }
+  .qchoices { display: grid; gap: 14px; max-width: 520px; width: 100%; margin: 0 auto; }
+  .qchoices.four { grid-template-columns: repeat(2, 1fr); }
+  .qchoices.three { grid-template-columns: repeat(3, 1fr); }
+  .qc { height: 104px; border-radius: 26px; background: #fff; color: var(--c); font-size: 64px; box-shadow: 0 6px 0 #EBCFDF;
+    -webkit-text-stroke: 1.6px var(--ink); paint-order: stroke fill; }
+  .qc.right { background: #DDF7EC; box-shadow: 0 6px 0 #2FBF9F; }
+  .shake { animation: shake .4s; }
+  @keyframes shake { 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
+
+  /* ───── 풍선 ───── */
+  #balloon { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 8px; padding: 10px 16px 16px; overflow: hidden;
+    background: linear-gradient(#CFEAFF, #FFF0F6); }
+  .bnext { font-size: 20px; gap: 8px; }
+  .bnext b { font-size: 28px; font-weight: 400; color: var(--pink); }
+  .bsky { position: relative; min-height: 0; }
+  .balloon { position: absolute; width: 25%; max-width: 110px; aspect-ratio: 60 / 84; animation: bob 3s ease-in-out infinite; }
+  .balloon svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .balloon b { position: absolute; left: 0; right: 0; top: 18%; text-align: center; font-weight: 400; font-size: clamp(26px, 8vw, 44px); color: #fff; -webkit-text-stroke: 1.5px var(--ink); paint-order: stroke fill; }
+  .balloon.pop { animation: burst2 .35s forwards; pointer-events: none; }
+  .balloon.wobble { animation: shake .4s; }
+  @keyframes bob { 50% { transform: translateY(-12px) rotate(3deg); } }
+  @keyframes burst2 { to { transform: scale(1.6); opacity: 0; } }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition: none !important; } }
 </style>
 </head>
@@ -176,13 +260,37 @@
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="pdefs"></defs></svg>
 
 <div id="app">
-  <section id="home" class="screen">
+  <section id="hub" class="screen">
     <div class="home-head">
-      <h1 class="logo" aria-label="반짝 색칠놀이"><span>반</span><span>짝</span><span> </span><span>색</span><span>칠</span><span>놀</span><span>이</span></h1>
+      <h1 class="logo" aria-label="반짝 놀이터"><span>반</span><span>짝</span><span> </span><span>놀</span><span>이</span><span>터</span></h1>
+      <div class="head-btns">
+        <div class="stars-pill" aria-label="모은 별"><svg viewBox="0 0 40 40"><path d="M20,3 L25,14 L37,15 L28,23 L31,35 L20,29 L9,35 L12,23 L3,15 L15,14Z" fill="#FFC83D" stroke="#3A2447" stroke-width="3" stroke-linejoin="round"/></svg><b id="hubStars">0</b></div>
+        <button class="candy plain" id="soundBtn" aria-label="소리 켜고 끄기"></button>
+      </div>
+    </div>
+    <div class="hub-cards">
+      <button class="hub-card" id="goColor" style="--c:#FF5C9A;--cd:#D63A7A">
+        <span class="art"><svg viewBox="0 0 100 100"><path d="M50,12 C24,12 8,30 8,52 C8,76 28,88 44,86 C54,85 54,76 50,70 C46,63 52,56 60,58 C74,61 92,58 92,42 C92,24 74,12 50,12Z" fill="#FFF3D6" stroke="#3A2447" stroke-width="4" stroke-linejoin="round"/><circle cx="30" cy="42" r="8" fill="#FF4D4D"/><circle cx="46" cy="28" r="8" fill="#FFC83D"/><circle cx="66" cy="30" r="8" fill="#37C9AD"/><circle cx="78" cy="46" r="7" fill="#4A9BF0"/><circle cx="28" cy="64" r="7" fill="#9C6BFF"/></svg></span>
+        <span class="lbl">색칠공부<small>그림 23장</small></span>
+      </button>
+      <button class="hub-card" id="goHangul" style="--c:#2FBF9F;--cd:#1E9681">
+        <span class="art hangul"><b style="color:#FF5C9A">가</b><b style="color:#FFB020">나</b><b style="color:#4A9BF0">다</b></span>
+        <span class="lbl">한글놀이<small>따라 쓰기 · 글자 찾기</small></span>
+      </button>
+      <button class="hub-card" id="goNumber" style="--c:#4A9BF0;--cd:#2E73C2">
+        <span class="art hangul"><b style="color:#FF5C9A">1</b><b style="color:#2FBF9F">2</b><b style="color:#9C6BFF">3</b></span>
+        <span class="lbl">숫자놀이<small>따라 쓰기 · 세기 · 풍선</small></span>
+      </button>
+    </div>
+  </section>
+
+  <section id="home" class="screen" hidden>
+    <div class="home-head">
+      <button class="candy plain" id="homeHub" aria-label="처음 화면"><svg viewBox="0 0 32 32" fill="none" stroke="#3A2447" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"><path d="M5,15 L16,5 L27,15"/><path d="M8,13 L8,27 L24,27 L24,13"/><path d="M13,27 L13,19 L19,19 L19,27"/></svg></button>
+      <h2 class="stitle">색칠공부</h2>
       <div class="head-btns">
         <div class="stars-pill" aria-label="모은 별"><svg viewBox="0 0 40 40"><path d="M20,3 L25,14 L37,15 L28,23 L31,35 L20,29 L9,35 L12,23 L3,15 L15,14Z" fill="#FFC83D" stroke="#3A2447" stroke-width="3" stroke-linejoin="round"/></svg><b id="starCount">0</b></div>
         <button class="candy sky" id="toGallery" aria-label="내 그림 보기"><svg viewBox="0 0 32 32" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><rect x="4" y="6" width="24" height="20" rx="4"/><circle cx="12" cy="13" r="3"/><path d="M5,24 L13,18 L18,22 L22,18 L28,23"/></svg>내 그림</button>
-        <button class="candy plain" id="soundBtn" aria-label="소리 켜고 끄기"></button>
       </div>
     </div>
     <div class="chips" id="chips"></div>
@@ -222,6 +330,49 @@
       <h2>내 그림</h2>
     </div>
     <div class="ggrid" id="ggrid"></div>
+  </section>
+
+  <section id="hangul" class="screen" hidden>
+    <div class="bar lhead"><button class="candy plain" id="hBack" aria-label="뒤로"><svg viewBox="0 0 32 32" fill="none" stroke="#3A2447" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"><path d="M5,15 L16,5 L27,15"/><path d="M8,13 L8,27 L24,27 L24,13"/><path d="M13,27 L13,19 L19,19 L19,27"/></svg></button><h2 class="stitle">한글놀이</h2></div>
+    <div class="lmodes"><button class="mode" id="hFind" style="--c:#FFB020;--cd:#D99A0B"><span>🔎</span>글자 찾기 놀이</button></div>
+    <p class="lsub">글자를 누르고 손가락으로 따라 써요</p>
+    <div class="ltiles" id="hTiles"></div>
+  </section>
+
+  <section id="numbers" class="screen" hidden>
+    <div class="bar lhead"><button class="candy plain" id="nBack" aria-label="뒤로"><svg viewBox="0 0 32 32" fill="none" stroke="#3A2447" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"><path d="M5,15 L16,5 L27,15"/><path d="M8,13 L8,27 L24,27 L24,13"/><path d="M13,27 L13,19 L19,19 L19,27"/></svg></button><h2 class="stitle">숫자놀이</h2></div>
+    <div class="lmodes">
+      <button class="mode" id="nCount" style="--c:#FF5C9A;--cd:#D63A7A"><span>🍎</span>몇 개일까?</button>
+      <button class="mode" id="nBalloon" style="--c:#9C6BFF;--cd:#7447D6"><span>🎈</span>풍선 터뜨리기</button>
+    </div>
+    <p class="lsub">숫자를 누르고 손가락으로 따라 써요</p>
+    <div class="ltiles" id="nTiles"></div>
+  </section>
+
+  <section id="trace" class="screen" hidden>
+    <div class="bar"><button class="candy plain" id="tBack" aria-label="뒤로"><svg viewBox="0 0 32 32" fill="none" stroke="#3A2447" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"><path d="M5,15 L16,5 L27,15"/><path d="M8,13 L8,27 L24,27 L24,13"/><path d="M13,27 L13,19 L19,19 L19,27"/></svg></button><h2 class="ttitle" id="tTitle"></h2><span class="sp"></span>
+      <button class="candy sun" id="tSay" aria-label="소리 듣기"><svg viewBox="0 0 32 32" fill="none" stroke="#3A2447" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><path d="M5,12 L10,12 L17,6 L17,26 L10,20 L5,20Z" fill="#FFC83D"/><path d="M21,11 Q25,16 21,21 M24,7 Q31,16 24,25"/></svg></button></div>
+    <div class="tstage" id="tStage"><svg id="tSvg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="따라 쓰기 칸"></svg></div>
+    <button class="tword" id="tWord" aria-label="낱말 듣기"></button>
+    <div class="tnav">
+      <button class="candy plain" id="tPrev" aria-label="앞 글자"><svg viewBox="0 0 32 32" fill="none" stroke="#3A2447" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20,6 L10,16 L20,26"/></svg></button>
+      <button class="candy mint" id="tAgain">다시 쓰기</button>
+      <button class="candy" id="tNext" aria-label="다음 글자"><svg viewBox="0 0 32 32" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12,6 L22,16 L12,26"/></svg></button>
+    </div>
+  </section>
+
+  <section id="quiz" class="screen" hidden>
+    <div class="bar"><button class="candy plain" id="qBack" aria-label="뒤로"><svg viewBox="0 0 32 32" fill="none" stroke="#3A2447" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"><path d="M5,15 L16,5 L27,15"/><path d="M8,13 L8,27 L24,27 L24,13"/><path d="M13,27 L13,19 L19,19 L19,27"/></svg></button><h2 class="ttitle" id="qTitle"></h2><span class="sp"></span>
+      <button class="candy sun" id="qSay" aria-label="다시 듣기"><svg viewBox="0 0 32 32" fill="none" stroke="#3A2447" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><path d="M5,12 L10,12 L17,6 L17,26 L10,20 L5,20Z" fill="#FFC83D"/><path d="M21,11 Q25,16 21,21 M24,7 Q31,16 24,25"/></svg></button></div>
+    <div class="qdots" id="qDots"></div>
+    <div class="qprompt" id="qPrompt"></div>
+    <div class="qchoices" id="qChoices"></div>
+  </section>
+
+  <section id="balloon" class="screen" hidden>
+    <div class="bar"><button class="candy plain" id="bBack" aria-label="뒤로"><svg viewBox="0 0 32 32" fill="none" stroke="#3A2447" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"><path d="M5,15 L16,5 L27,15"/><path d="M8,13 L8,27 L24,27 L24,13"/><path d="M13,27 L13,19 L19,19 L19,27"/></svg></button><h2 class="ttitle">풍선 터뜨리기</h2><span class="sp"></span>
+      <div class="stars-pill bnext">다음 <b id="bNext">1</b></div></div>
+    <div class="bsky" id="bSky"></div>
   </section>
 </div>
 
@@ -1154,7 +1305,7 @@ PICTURES.unshift(...FAIRY_PICTURES);
   }
 
   // ───── 화면 전환 ─────
-  function show(id) { ['home', 'color', 'gallery'].forEach(s => $('#' + s).hidden = s !== id); }
+  function show(id) { document.querySelectorAll('.screen').forEach(s => s.hidden = s.id !== id); window.scrollTo(0, 0); }
 
   // ───── 색칠 ─────
   let cur = null, st = null, undo = [], tool = 'fill', size = 18, color = COLORS[10][0], changed = false;
@@ -1408,8 +1559,385 @@ PICTURES.unshift(...FAIRY_PICTURES);
 
   document.addEventListener('contextmenu', e => { if (!e.target.closest('.sheet img')) e.preventDefault(); });
 
-  buildPalette(); setTool('fill'); renderHome(); show('home');
+  function goHub() { persist(); $('#hubStars').textContent = S.stars; show('hub'); }
+  $('#homeHub').onclick = () => { tone(520); goHub(); };
+  $('#goColor').onclick = () => { tone(660); renderHome(); show('home'); say('색칠공부'); };
+  $('#goHangul').onclick = () => { tone(660); window.APP.openHangul(); };
+  $('#goNumber').onclick = () => { tone(660); window.APP.openNumbers(); };
+  window.APP = { $, S, persist, tone, say, confetti, show, modal, closeModal, sparkle, goHub };
+  buildPalette(); setTool('fill'); renderHome(); goHub();
 })();
+</script>
+<script>
+// ───────── 한글놀이 · 숫자놀이 (따라쓰기, 글자 찾기, 몇 개일까, 풍선 터뜨리기) ─────────
+(() => {
+  const { $, S, persist, tone, say, confetti, show, modal, closeModal, sparkle } = window.APP;
+  S.traced ||= {};
+  const NS = 'http://www.w3.org/2000/svg';
+  const COLORS = ['#FF5C9A', '#FFB020', '#2FBF9F', '#4A9BF0', '#9C6BFF'];
+
+  // 동그라미 획: 위에서 시작해 시계 반대 방향
+  const circ = (cx, cy, rx, ry = rx) => {
+    const p = ['s'];
+    for (let a = -90; a >= -450; a -= 20) p.push([cx + rx * Math.cos(a * Math.PI / 180), cy + ry * Math.sin(a * Math.PI / 180)]);
+    return p;
+  };
+  const JAMO = [
+    { ch: 'ㄱ', name: '기역', word: '기린', emo: '🦒', strokes: [[[70, 70], [225, 70], [220, 160], [185, 250]]] },
+    { ch: 'ㄴ', name: '니은', word: '나비', emo: '🦋', strokes: [[[80, 60], [80, 232], [232, 232]]] },
+    { ch: 'ㄷ', name: '디귿', word: '다람쥐', emo: '🐿️', strokes: [[[80, 70], [222, 70]], [[80, 70], [80, 232], [232, 232]]] },
+    { ch: 'ㄹ', name: '리을', word: '라면', emo: '🍜', strokes: [[[75, 55], [222, 55], [222, 145]], [[80, 145], [222, 145]], [[80, 145], [80, 245], [232, 245]]] },
+    { ch: 'ㅁ', name: '미음', word: '모자', emo: '👒', strokes: [[[80, 70], [80, 232]], [[80, 70], [222, 70], [222, 232]], [[80, 232], [222, 232]]] },
+    { ch: 'ㅂ', name: '비읍', word: '바나나', emo: '🍌', strokes: [[[85, 55], [85, 245]], [[215, 55], [215, 245]], [[85, 145], [215, 145]], [[85, 245], [215, 245]]] },
+    { ch: 'ㅅ', name: '시옷', word: '사과', emo: '🍎', strokes: [['s', [150, 55], [135, 140], [65, 245]], [[148, 145], [235, 245]]] },
+    { ch: 'ㅇ', name: '이응', word: '오리', emo: '🦆', strokes: [circ(150, 150, 85)] },
+    { ch: 'ㅈ', name: '지읒', word: '자동차', emo: '🚗', strokes: [[[75, 62], [218, 62], [150, 150], [65, 245]], [[150, 150], [235, 245]]] },
+    { ch: 'ㅊ', name: '치읓', word: '치즈', emo: '🧀', strokes: [[[150, 28], [150, 68]], [[75, 92], [218, 92], [150, 172], [65, 258]], [[150, 172], [235, 258]]] },
+    { ch: 'ㅋ', name: '키읔', word: '코끼리', emo: '🐘', strokes: [[[70, 70], [225, 70], [220, 160], [185, 250]], [[78, 158], [222, 158]]] },
+    { ch: 'ㅌ', name: '티읕', word: '토끼', emo: '🐰', strokes: [[[80, 60], [222, 60]], [[80, 148], [222, 148]], [[80, 60], [80, 240], [232, 240]]] },
+    { ch: 'ㅍ', name: '피읖', word: '포도', emo: '🍇', strokes: [[[65, 65], [235, 65]], [[115, 65], [110, 232]], [[185, 65], [190, 232]], [[60, 236], [240, 236]]] },
+    { ch: 'ㅎ', name: '히읗', word: '하마', emo: '🦛', strokes: [[[150, 25], [150, 62]], [[75, 88], [225, 88]], circ(150, 185, 62)] },
+    { ch: 'ㅏ', name: '아', word: '아기', emo: '👶', strokes: [[[120, 40], [120, 260]], [[120, 150], [212, 150]]] },
+    { ch: 'ㅑ', name: '야', word: '야구', emo: '⚾', strokes: [[[115, 40], [115, 260]], [[115, 115], [207, 115]], [[115, 185], [207, 185]]] },
+    { ch: 'ㅓ', name: '어', word: '어묵', emo: '🍢', strokes: [[[88, 150], [180, 150]], [[180, 40], [180, 260]]] },
+    { ch: 'ㅕ', name: '여', word: '여우', emo: '🦊', strokes: [[[88, 115], [185, 115]], [[88, 185], [185, 185]], [[185, 40], [185, 260]]] },
+    { ch: 'ㅗ', name: '오', word: '오이', emo: '🥒', strokes: [[[150, 80], [150, 185]], [[50, 192], [250, 192]]] },
+    { ch: 'ㅛ', name: '요', word: '요요', emo: '🪀', strokes: [[[115, 80], [115, 185]], [[185, 80], [185, 185]], [[50, 192], [250, 192]]] },
+    { ch: 'ㅜ', name: '우', word: '우유', emo: '🥛', strokes: [[[50, 108], [250, 108]], [[150, 108], [150, 232]]] },
+    { ch: 'ㅠ', name: '유', word: '유령', emo: '👻', strokes: [[[50, 108], [250, 108]], [[115, 108], [115, 232]], [[185, 108], [185, 232]]] },
+    { ch: 'ㅡ', name: '으', word: '음표', emo: '🎵', strokes: [[[50, 150], [250, 150]]] },
+    { ch: 'ㅣ', name: '이', word: '이빨', emo: '🦷', strokes: [[[150, 40], [150, 260]]] },
+  ].map(j => ({ ...j, key: 'h' + j.ch, say: `${j.name}! ${j.word}의 ${j.word[0]}!` }));
+
+  const SINO = ['영', '일', '이', '삼', '사', '오', '육', '칠', '팔', '구', '십'];
+  const NATIVE = ['', '하나', '둘', '셋', '넷', '다섯', '여섯', '일곱', '여덟', '아홉', '열'];
+  const ITEMS = ['', '🍓', '🐥', '🍎', '🌷', '⭐', '🍩', '🐟', '🎈', '🦋', '🍭'];
+  const DIGITS = [
+    null,
+    [[[150, 40], [150, 262]]],
+    [['s', [92, 95], [115, 58], [152, 44], [192, 55], [210, 92], [198, 132], [165, 172], [125, 212], [86, 258]], [[86, 258], [222, 258]]],
+    [['s', [88, 72], [128, 46], [178, 50], [205, 85], [192, 125], [150, 146], [196, 166], [210, 210], [186, 250], [140, 262], [88, 240]]],
+    [[[168, 40], [72, 190], [228, 190]], [[172, 108], [172, 262]]],
+    [['s', [108, 45], [100, 138], [142, 124], [190, 138], [210, 186], [196, 236], [150, 260], [94, 246]], [[108, 45], [212, 45]]],
+    [['s', [192, 56], [150, 44], [110, 70], [88, 130], [90, 200], [114, 248], [158, 262], [200, 240], [210, 196], [190, 160], [150, 150], [110, 170], [92, 205]]],
+    [[[80, 50], [222, 50], [130, 262]]],
+    [['s', [190, 72], [150, 44], [108, 64], [108, 110], [150, 145], [196, 180], [200, 232], [158, 262], [108, 242], [102, 196], [132, 164], [150, 145], [182, 120], [194, 86], [190, 72]]],
+    [['s', [206, 96], [186, 58], [146, 45], [106, 64], [96, 104], [120, 140], [166, 142], [202, 112], [206, 96]], [[206, 96], [200, 262]]],
+    [[[82, 40], [82, 262]], circ(195, 151, 58, 110)],
+  ];
+  const NUMS = Array.from({ length: 10 }, (_, i) => {
+    const n = i + 1;
+    return { ch: String(n), n, name: SINO[n], key: 'n' + n, strokes: DIGITS[n], say: `${SINO[n]}! ${NATIVE[n]}!` };
+  });
+
+  // ───── 획 좌표를 촘촘한 점으로 ─────
+  function dense(stroke) {
+    let pts = stroke.filter(p => p !== 's');
+    let out = [];
+    if (stroke[0] === 's') {
+      const P = [pts[0], ...pts, pts[pts.length - 1]];
+      for (let i = 1; i < P.length - 2; i++) {
+        for (let t = 0; t < 1; t += 1 / 10) {
+          const t2 = t * t, t3 = t2 * t, c = (a, b, d, e) => .5 * (2 * b + (-a + d) * t + (2 * a - 5 * b + 4 * d - e) * t2 + (-a + 3 * b - 3 * d + e) * t3);
+          out.push([c(P[i - 1][0], P[i][0], P[i + 1][0], P[i + 2][0]), c(P[i - 1][1], P[i][1], P[i + 1][1], P[i + 2][1])]);
+        }
+      }
+      out.push(pts[pts.length - 1]);
+    } else out = pts;
+    // 같은 간격으로 다시 뽑기
+    const res = [out[0]];
+    let acc = 0;
+    for (let i = 1; i < out.length; i++) {
+      let [x0, y0] = out[i - 1]; const [x1, y1] = out[i];
+      let seg = Math.hypot(x1 - x0, y1 - y0);
+      while (acc + seg >= 7) {
+        const k = (7 - acc) / seg; x0 += (x1 - x0) * k; y0 += (y1 - y0) * k;
+        res.push([x0, y0]); seg = Math.hypot(x1 - x0, y1 - y0); acc = 0;
+      }
+      acc += seg;
+    }
+    const last = out[out.length - 1], r = res[res.length - 1];
+    if (Math.hypot(last[0] - r[0], last[1] - r[1]) > 2) res.push(last);
+    return res;
+  }
+  const dOf = pts => 'M' + pts.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' L');
+  const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent && parent.appendChild(e); return e; };
+  const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const pick = (a, n, not = []) => shuffle(a.filter(x => !not.includes(x))).slice(0, n);
+  const josa = w => { const c = w.charCodeAt(w.length - 1) - 0xAC00; return c >= 0 && c % 28 ? '을' : '를'; };
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  function award(key) {
+    if (key && S.traced[key]) return false;
+    if (key) S.traced[key] = true;
+    S.stars++; persist(); return true;
+  }
+
+  // ───── 목록 화면 ─────
+  function tileGrid(box, list, onPick) {
+    box.innerHTML = '';
+    list.forEach((it, i) => {
+      const b = document.createElement('button');
+      b.className = 'ltile'; b.setAttribute('aria-label', it.name + ' 따라 쓰기');
+      b.innerHTML = `<span style="color:${COLORS[i % 5]}">${it.ch}</span>${S.traced[it.key] ? '<i class="done"></i>' : ''}`;
+      b.onclick = () => { tone(660); onPick(i); };
+      box.appendChild(b);
+    });
+  }
+  function openHangul() { tileGrid($('#hTiles'), JAMO, i => openTrace(JAMO, i, 'hangul')); show('hangul'); say('한글 놀이'); }
+  function openNumbers() { tileGrid($('#nTiles'), NUMS, i => openTrace(NUMS, i, 'numbers')); show('numbers'); say('숫자 놀이'); }
+  window.APP.openHangul = openHangul; window.APP.openNumbers = openNumbers;
+  $('#hBack').onclick = $('#nBack').onclick = () => { tone(520); window.APP.goHub(); };
+
+  // ───── 따라쓰기 ─────
+  const tr = { list: null, i: 0, from: '', si: 0, pts: [], prog: 0, down: false, last: null, hintT: 0, raf: 0, done: false };
+  const tsvg = $('#tSvg');
+  function fitTrace() {
+    const r = $('#tStage').getBoundingClientRect(); if (!r.width || !r.height) return;
+    const s = Math.floor(Math.min(r.width - 8, r.height - 8, 520));
+    tsvg.style.width = tsvg.style.height = s + 'px';
+  }
+  try { new ResizeObserver(fitTrace).observe($('#tStage')); } catch (e) { addEventListener('resize', fitTrace); }
+
+  function openTrace(list, i, from) {
+    Object.assign(tr, { list, i, from, si: 0, prog: 0, done: false, down: false });
+    const it = list[i];
+    tsvg.innerHTML = '';
+    el('rect', { x: 4, y: 4, width: 292, height: 292, rx: 26, fill: '#fff' }, tsvg);
+    el('path', { d: 'M150,14 L150,286 M14,150 L286,150', stroke: '#F3D6E4', 'stroke-width': 2.5, 'stroke-dasharray': '8 8', fill: 'none' }, tsvg);
+    tr.dense = it.strokes.map(dense);
+    tr.guide = el('g', {}, tsvg);
+    tr.dense.forEach(p => el('path', { d: dOf(p), stroke: '#EEE3F1', 'stroke-width': 34, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', fill: 'none' }, tr.guide));
+    tr.doneG = el('g', {}, tsvg);
+    tr.center = el('path', { stroke: '#C9B3D3', 'stroke-width': 3, 'stroke-dasharray': '2 9', 'stroke-linecap': 'round', fill: 'none' }, tsvg);
+    tr.live = el('path', { 'stroke-width': 30, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', fill: 'none' }, tsvg);
+    tr.startDot = el('g', {}, tsvg);
+    tr.hint = el('circle', { r: 13, fill: '#FFC83D', stroke: '#3A2447', 'stroke-width': 3, opacity: 0 }, tsvg);
+    $('#tTitle').textContent = it.ch + '  ' + it.name;
+    const word = $('#tWord');
+    if (it.emo) {
+      word.innerHTML = `<span class="emo">${it.emo}</span><span class="wd"><b>${it.word[0]}</b>${it.word.slice(1)}</span>`;
+      word.onclick = () => say(it.word);
+    } else {
+      word.innerHTML = `<span class="cnt">${Array.from({ length: it.n }, () => `<i>${ITEMS[it.n]}</i>`).join('')}</span>`;
+      word.onclick = () => countAloud(it.n, word.querySelectorAll('i'));
+    }
+    word.classList.remove('show');
+    $('#tPrev').disabled = i === 0; $('#tNext').disabled = i === list.length - 1;
+    $('#tNext').classList.remove('pulse');
+    show('trace'); fitTrace(); setStroke(0);
+    say(`${it.name}${it.emo ? '' : ''}, 따라 써 볼까요?`);
+  }
+  function setStroke(si) {
+    tr.si = si; tr.prog = 0; tr.pts = tr.dense[si];
+    const c = COLORS[si % 5];
+    tr.live.setAttribute('stroke', c); tr.live.setAttribute('d', '');
+    tr.center.setAttribute('d', dOf(tr.pts));
+    tr.startDot.innerHTML = '';
+    const [x, y] = tr.pts[0];
+    el('circle', { cx: x, cy: y, r: 17, fill: c, stroke: '#fff', 'stroke-width': 4 }, tr.startDot);
+    const t = el('text', { x, y: y + 7, 'text-anchor': 'middle', 'font-size': 20, fill: '#fff', 'font-family': 'Jua, sans-serif' }, tr.startDot);
+    t.textContent = si + 1;
+    tr.hintT = performance.now() + 400; runHint();
+  }
+  function runHint() {
+    cancelAnimationFrame(tr.raf);
+    const step = now => {
+      if (tr.done || $('#trace').hidden) { tr.hint.setAttribute('opacity', 0); return; }
+      if (tr.down) tr.hint.setAttribute('opacity', 0);
+      else {
+        const span = tr.pts.length - 1 - tr.prog, dur = Math.max(600, span * 22), t = ((now - tr.hintT) % (dur + 700)) / dur;
+        if (t < 0 || t > 1) tr.hint.setAttribute('opacity', 0);
+        else {
+          const p = tr.pts[tr.prog + Math.round(t * span)];
+          tr.hint.setAttribute('cx', p[0]); tr.hint.setAttribute('cy', p[1]); tr.hint.setAttribute('opacity', .9);
+        }
+      }
+      tr.raf = requestAnimationFrame(step);
+    };
+    tr.raf = requestAnimationFrame(step);
+  }
+  function tpt(e) {
+    const p = tsvg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY;
+    const q = p.matrixTransform(tsvg.getScreenCTM().inverse()); return [q.x, q.y];
+  }
+  const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+  function advance(p) {
+    let moved = false;
+    for (;;) {
+      let best = -1;
+      for (let k = 1; k <= 6 && tr.prog + k < tr.pts.length; k++) if (dist(p, tr.pts[tr.prog + k]) < 32) best = tr.prog + k;
+      if (best < 0) break;
+      tr.prog = best; moved = true;
+    }
+    if (moved) {
+      tr.live.setAttribute('d', dOf(tr.pts.slice(0, tr.prog + 1)));
+      if (tr.prog % 4 === 0) tone(440 + tr.prog * 6, .07, 'sine', .06);
+    }
+    if (tr.prog >= tr.pts.length - 1) finishStroke();
+  }
+  tsvg.addEventListener('pointerdown', e => {
+    if (tr.done || !e.isPrimary) return;
+    e.preventDefault();
+    const p = tpt(e);
+    if (dist(p, tr.pts[tr.prog]) > 50) { tone(300, .1); tr.hintT = performance.now(); return; }
+    tr.down = true; tr.last = p;
+    try { tsvg.setPointerCapture(e.pointerId); } catch (_) {}
+    advance(p);
+  });
+  tsvg.addEventListener('pointermove', e => {
+    if (!tr.down) return;
+    const p = tpt(e), l = tr.last, n = Math.ceil(dist(p, l) / 8);
+    for (let k = 1; k <= n && tr.down; k++) advance([l[0] + (p[0] - l[0]) * k / n, l[1] + (p[1] - l[1]) * k / n]);
+    tr.last = p;
+  });
+  const up = () => { if (tr.down) { tr.down = false; tr.hintT = performance.now() + 500; } };
+  tsvg.addEventListener('pointerup', up); tsvg.addEventListener('pointercancel', up);
+
+  function finishStroke() {
+    tr.down = false;
+    el('path', { d: dOf(tr.pts), stroke: COLORS[tr.si % 5], 'stroke-width': 30, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', fill: 'none' }, tr.doneG);
+    tr.live.setAttribute('d', '');
+    const r = tsvg.getBoundingClientRect(), [x, y] = tr.pts[tr.pts.length - 1];
+    sparkle(r.left + x / 300 * r.width, r.top + y / 300 * r.height, COLORS[tr.si % 5]);
+    if (tr.si + 1 < tr.dense.length) { tone(880, .15); setStroke(tr.si + 1); return; }
+    completeTrace();
+  }
+  async function completeTrace() {
+    tr.done = true; tr.center.setAttribute('d', ''); tr.startDot.innerHTML = '';
+    const it = tr.list[tr.i];
+    const got = award(it.key);
+    [523, 659, 784, 1047].forEach((f, k) => tone(f, .3, 'triangle', .14, k * .1));
+    confetti();
+    const word = $('#tWord'); word.classList.add('show');
+    say((got ? '참 잘했어요! ' : '') + it.say);
+    if (!it.emo) { await wait(1400); countAloud(it.n, word.querySelectorAll('i')); }
+    $('#tNext').classList.add('pulse');
+  }
+  async function countAloud(n, items) {
+    for (let k = 0; k < n; k++) {
+      items.forEach((x, j) => x.classList.toggle('on', j === k));
+      say(NATIVE[k + 1]); tone(523 + k * 40, .12);
+      await wait(650);
+    }
+    items.forEach(x => x.classList.remove('on'));
+  }
+  $('#tBack').onclick = () => { tone(520); cancelAnimationFrame(tr.raf); tr.from === 'hangul' ? openHangul() : openNumbers(); };
+  $('#tPrev').onclick = () => { if (tr.i > 0) { tone(600); openTrace(tr.list, tr.i - 1, tr.from); } };
+  $('#tNext').onclick = () => { if (tr.i < tr.list.length - 1) { tone(700); openTrace(tr.list, tr.i + 1, tr.from); } };
+  $('#tAgain').onclick = () => { tone(600); openTrace(tr.list, tr.i, tr.from); };
+  $('#tSay').onclick = () => { const it = tr.list[tr.i]; say(it.say); };
+
+  // ───── 퀴즈 (글자 찾기 / 몇 개일까) ─────
+  const qz = { kind: '', round: 0, total: 8, answer: null, busy: false };
+  function startQuiz(kind) {
+    Object.assign(qz, { kind, round: 0, total: kind === 'letter' ? 8 : 6 });
+    $('#qTitle').textContent = kind === 'letter' ? '글자 찾기' : '몇 개일까?';
+    show('quiz'); nextRound();
+  }
+  function dots() {
+    $('#qDots').innerHTML = Array.from({ length: qz.total }, (_, k) => `<i class="${k < qz.round ? 'on' : ''}"></i>`).join('');
+  }
+  function nextRound() {
+    qz.busy = false; dots();
+    const box = $('#qChoices'), prompt = $('#qPrompt');
+    box.innerHTML = '';
+    let choices;
+    if (qz.kind === 'letter') {
+      const t = JAMO[Math.random() * JAMO.length | 0];
+      qz.answer = t; qz.line = `${t.name}${josa(t.name)} 찾아요!`;
+      prompt.innerHTML = `<span class="big">${t.emo}</span><span>${t.name}${josa(t.name)} 찾아요</span>`;
+      choices = shuffle([t, ...pick(JAMO, 3, [t])]);
+      box.className = 'qchoices four';
+    } else {
+      const max = Math.min(10, 3 + qz.round), n = 1 + (Math.random() * max | 0);
+      const emo = ITEMS[1 + (Math.random() * 10 | 0)];
+      qz.answer = n; qz.line = '몇 개일까요?';
+      prompt.innerHTML = `<span class="items">${Array.from({ length: n }, () => `<i>${emo}</i>`).join('')}</span>`;
+      const others = pick([1, 2, 3, 4, 5, 6, 7, 8, 9, 10].filter(x => Math.abs(x - n) <= 3), 2, [n]);
+      choices = shuffle([n, ...others]);
+      box.className = 'qchoices three';
+    }
+    choices.forEach((c, k) => {
+      const b = document.createElement('button');
+      b.className = 'qc'; b.style.setProperty('--c', COLORS[k % 5]);
+      b.textContent = qz.kind === 'letter' ? c.ch : c;
+      b.onclick = () => answer(b, c);
+      box.appendChild(b);
+    });
+    say(qz.line);
+  }
+  async function answer(b, c) {
+    if (qz.busy) return;
+    if (c !== qz.answer) {
+      b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake');
+      tone(220, .2, 'square', .05); say('다시 찾아볼까요?'); return;
+    }
+    qz.busy = true; b.classList.add('right');
+    const r = b.getBoundingClientRect(); sparkle(r.left + r.width / 2, r.top + r.height / 2, '#FFC83D');
+    [659, 880].forEach((f, k) => tone(f, .18, 'triangle', .14, k * .09));
+    if (qz.kind === 'letter') { say(`딩동댕! ${c.name}! ${c.word}`); await wait(1500); }
+    else { await wait(300); await countAloud(c, $('#qPrompt').querySelectorAll('i')); say(`${NATIVE[c]} 개!`); await wait(900); }
+    qz.round++;
+    if (qz.round < qz.total) { nextRound(); return; }
+    dots(); award(null); confetti();
+    [523, 659, 784, 1047, 1319].forEach((f, k) => tone(f, .35, 'triangle', .15, k * .11));
+    say('와! 다 맞혔어요! 별을 받았어요!');
+    endModal(() => startQuiz(qz.kind), () => qz.kind === 'letter' ? openHangul() : openNumbers());
+  }
+  function endModal(again, out) {
+    modal(`<svg class="big-star" viewBox="0 0 40 40"><path d="M20,3 L25,14 L37,15 L28,23 L31,35 L20,29 L9,35 L12,23 L3,15 L15,14Z" fill="#FFC83D" stroke="#3A2447" stroke-width="2.4" stroke-linejoin="round"/><circle cx="16" cy="19" r="1.6" fill="#3A2447"/><circle cx="24" cy="19" r="1.6" fill="#3A2447"/><path d="M16.5,23 Q20,26 23.5,23" fill="none" stroke="#3A2447" stroke-width="1.6" stroke-linecap="round"/></svg><h3>별 하나 받았어요!</h3><div class="row"><button class="candy mint" id="mAgain">한 번 더</button><button class="candy" id="mOut">그만할래요</button></div>`);
+    $('#mAgain').onclick = () => { closeModal(); again(); };
+    $('#mOut').onclick = () => { closeModal(); out(); };
+  }
+  $('#qBack').onclick = () => { tone(520); qz.kind === 'letter' ? openHangul() : openNumbers(); };
+  $('#qSay').onclick = () => say(qz.line);
+  $('#hFind').onclick = () => { tone(660); startQuiz('letter'); };
+  $('#nCount').onclick = () => { tone(660); startQuiz('count'); };
+
+  // ───── 풍선 터뜨리기 ─────
+  const bl = { next: 1 };
+  const BCOL = ['#FF5C9A', '#FFB020', '#2FBF9F', '#4A9BF0', '#9C6BFF', '#FF7A45', '#E056C8', '#3CC3E0', '#8BC34A', '#FF4D6D'];
+  function startBalloons() {
+    bl.next = 1; show('balloon');
+    const sky = $('#bSky'); sky.innerHTML = '';
+    const cells = shuffle(Array.from({ length: 12 }, (_, k) => k)).slice(0, 10);
+    cells.forEach((cell, k) => {
+      const n = k + 1, col = cell % 3, row = cell / 3 | 0;
+      const b = document.createElement('button');
+      b.className = 'balloon'; b.dataset.n = n;
+      b.style.left = `calc(${col * 33.3 + 3 + Math.random() * 8}% )`;
+      b.style.top = `calc(${row * 25 + 1 + Math.random() * 5}% )`;
+      b.style.animationDelay = (-Math.random() * 3).toFixed(2) + 's';
+      b.setAttribute('aria-label', n + '번 풍선');
+      b.innerHTML = `<svg viewBox="0 0 60 84"><path d="M30,74 Q27,80 30,84" stroke="#3A2447" stroke-width="2" fill="none"/><path d="M30,70 C8,64 2,40 4,28 C6,10 18,2 30,2 C42,2 54,10 56,28 C58,40 52,64 30,70Z" fill="${BCOL[n - 1]}" stroke="#3A2447" stroke-width="3"/><path d="M25,70 L35,70 L30,77Z" fill="${BCOL[n - 1]}" stroke="#3A2447" stroke-width="2.5" stroke-linejoin="round"/><ellipse cx="18" cy="20" rx="5" ry="9" fill="#fff" opacity=".55" transform="rotate(20 18 20)"/></svg><b>${n}</b>`;
+      b.onclick = () => popBalloon(b, n);
+      sky.appendChild(b);
+    });
+    $('#bNext').textContent = 1;
+    say('일부터 차례대로 풍선을 터뜨려요!');
+  }
+  async function popBalloon(b, n) {
+    if (b.classList.contains('pop')) return;
+    if (n !== bl.next) {
+      b.classList.remove('wobble'); void b.offsetWidth; b.classList.add('wobble');
+      tone(220, .2, 'square', .05); say(`${SINO[bl.next]}을 찾아요`); return;
+    }
+    b.classList.add('pop');
+    const r = b.getBoundingClientRect(); sparkle(r.left + r.width / 2, r.top + r.height / 2.4, BCOL[n - 1]);
+    tone(300 + n * 70, .12, 'square', .08); say(SINO[n]);
+    bl.next++;
+    $('#bNext').textContent = bl.next <= 10 ? bl.next : '★';
+    if (bl.next > 10) {
+      await wait(700); award(null); confetti();
+      [523, 659, 784, 1047, 1319].forEach((f, k) => tone(f, .35, 'triangle', .15, k * .11));
+      say('와! 풍선을 다 터뜨렸어요!');
+      endModal(startBalloons, openNumbers);
+    }
+  }
+  $('#nBalloon').onclick = () => { tone(660); startBalloons(); };
+  $('#bBack').onclick = () => { tone(520); openNumbers(); };
+})();
+
 </script>
 <script>
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));

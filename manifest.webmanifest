@@ -1,6 +1,6 @@
 {
-  "name": "반짝 색칠놀이",
-  "short_name": "반짝 색칠",
+  "name": "반짝 놀이터",
+  "short_name": "반짝 놀이터",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
