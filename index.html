@@ -819,8 +819,8 @@ const SND = (() => {
   }
   // 한가할 때 녹음 파일을 미리 받아 두기 (오프라인 대비)
   function prefetch() {
-    const ids = [...new Set(Object.values(MAP))]; let i = 0;
-    const next = () => { if (i >= ids.length) return; const id = ids[i++]; fetch(`v/${id}.m4a`).catch(() => {}).finally(() => setTimeout(next, 40)); };
+    const ids = [...new Set(Object.values(MAP))].map(id => `v/${id}.m4a`).concat(typeof ANIMAL_SOUNDS !== 'undefined' ? Object.keys(ANIMAL_SOUNDS).map(k => `a/${k}.m4a`) : []); let i = 0;
+    const next = () => { if (i >= ids.length) return; const id = ids[i++]; fetch(id).catch(() => {}).finally(() => setTimeout(next, 40)); };
     for (let k = 0; k < 3; k++) next();
   }
   if (Object.keys(MAP).length && location.protocol.startsWith('http')) setTimeout(prefetch, 4000);
