@@ -6,12 +6,12 @@
 <meta name="theme-color" content="#FFF0F6">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="반짝 놀이터">
+<meta name="apple-mobile-web-app-title" content="하엘이 놀이터">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<title>반짝 놀이터</title>
+<title>반짝 하엘이 놀이터</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
@@ -253,6 +253,104 @@
   .balloon.wobble { animation: shake .4s; }
   @keyframes bob { 50% { transform: translateY(-12px) rotate(3deg); } }
   @keyframes burst2 { to { transform: scale(1.6); opacity: 0; } }
+
+  /* ───── 메인 타일 (2열) ───── */
+  .hublogo { font-size: clamp(30px, 8.6vw, 54px); }
+  .hublogo span { -webkit-text-stroke: 1.5px var(--ink); }
+  .hublogo .gap { width: .25em; }
+  .hub-cards { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  @media (min-width: 760px) { .hub-cards { grid-template-columns: repeat(4, 1fr); } }
+  .hub-card { flex-direction: column; text-align: center; gap: 10px; padding: 14px 10px 16px; border-radius: 26px; }
+  .hub-card .art { width: 84px; height: 84px; border-radius: 22px; }
+  .hub-card .art svg { width: 68px; height: 68px; }
+  .hub-card .art.hangul { font-size: 28px; }
+  .hub-card .art.emo { font-size: 52px; line-height: 1; }
+  .hub-card .lbl { font-size: 24px; align-items: center; }
+  .hub-card small { font-size: 14px; }
+  .hub-card .lbl br { display: none; }
+
+  /* ───── 놀이 공통 ───── */
+  #game { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 10px; padding: 10px 16px 16px; overflow: hidden; }
+  .gscore { font-size: 22px; gap: 6px; } .gscore b { font-weight: 400; font-size: 28px; color: var(--pink); }
+  .gbody { min-height: 0; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; }
+  .gq { margin: 12px 0 4px; text-align: center; font-size: 28px; }
+  .levels { display: grid; gap: 14px; max-width: 420px; width: 100%; margin: 0 auto; }
+  .lvl { display: flex; justify-content: space-between; align-items: center; height: 84px; padding-inline: 24px; border-radius: 26px;
+    background: var(--c); color: #fff; box-shadow: 0 6px 0 rgba(58,36,71,.28); }
+  .lvl b { font-weight: 400; font-size: 32px; } .lvl small { font-size: 20px; }
+  .gprompt { flex: 1 1 auto; min-height: 150px; display: flex; align-items: center; justify-content: center; border-radius: 28px;
+    background: #fff; box-shadow: 0 6px 0 #EBCFDF; text-align: center; }
+  .gchoices { display: grid; gap: 12px; max-width: 520px; width: 100%; margin: 0 auto; }
+  .gchoices.n3 { grid-template-columns: repeat(3, 1fr); } .gchoices.n4 { grid-template-columns: repeat(2, 1fr); }
+  .gc { height: 104px; border-radius: 26px; background: #fff; box-shadow: 0 6px 0 #EBCFDF; display: grid; place-items: center; }
+  .gchoices.n4 .gc { height: 96px; }
+  .gc svg { width: 70px; height: 70px; }
+  .gc.right { background: #DDF7EC; box-shadow: 0 6px 0 #2FBF9F; }
+  .ge { font-size: 60px; line-height: 1; }
+  .shadow { font-size: 150px; line-height: 1; filter: brightness(0); opacity: .82; transition: filter .5s, opacity .5s; }
+  .hub-card .shadow { font-size: 52px; }
+  .shadow.lit { filter: none; opacity: 1; }
+  .bubble { position: relative; padding: 22px 30px; border-radius: 40px; background: #FFF3C4; font-size: 46px; box-shadow: inset 0 0 0 4px var(--ink); }
+  .gline { display: flex; flex-direction: column; gap: 6px; font-size: 44px; } .gline small { font-size: 24px; color: var(--ink-soft); }
+  .big-start { height: 90px; font-size: 40px; padding-inline: 40px; margin: 20px auto; --c: #2FBF9F; --cd: #1E9681; }
+
+  /* 짝 맞추기 */
+  .mem { display: grid; gap: 10px; width: min(100%, 460px); margin: auto; }
+  .mem.c3 { grid-template-columns: repeat(3, 1fr); } .mem.c4 { grid-template-columns: repeat(4, 1fr); }
+  .mcard { aspect-ratio: 3 / 4; perspective: 700px; }
+  .mcard .in { position: relative; display: block; width: 100%; height: 100%; transition: transform .4s; transform-style: preserve-3d; }
+  .mcard.up .in { transform: rotateY(180deg); }
+  .face { position: absolute; inset: 0; display: grid; place-items: center; border-radius: 18px; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+  .face.back { background: #FF8A4C; box-shadow: inset 0 0 0 5px #fff, 0 4px 0 #D9662A;
+    background-image: radial-gradient(#FFD2B8 3px, transparent 3.5px); background-size: 16px 16px; }
+  .face.front { background: #fff; transform: rotateY(180deg); font-size: clamp(34px, 11vw, 56px); box-shadow: 0 4px 0 #EBCFDF; }
+  .mcard.got .face.front { background: #FFF3C4; }
+
+  /* 두더지 */
+  .timebar { height: 16px; border-radius: 8px; background: #fff; box-shadow: inset 0 0 0 3px #E6D2E0; overflow: hidden; }
+  .timebar i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, #2FBF9F, #FFC83D); border-radius: 8px; transition: width .1s linear; }
+  .holes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: min(100%, 440px); margin: auto; }
+  .hole { position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 24px; background: #BFE7A8; box-shadow: 0 5px 0 #8CC775; }
+  .hole .dirt { position: absolute; left: 10%; right: 10%; bottom: 12%; height: 26%; border-radius: 50%; background: #6B4226; box-shadow: inset 0 6px 0 #4A2C18; }
+  .hole .mole { position: absolute; left: 0; right: 0; bottom: 18%; font-size: clamp(44px, 14vw, 72px); line-height: 1; transform: translateY(120%); transition: transform .18s ease-out; z-index: 1; }
+  .hole.up .mole { transform: translateY(0); }
+  .hole.hit .mole { transform: translateY(0) scale(.8) rotate(-20deg); filter: brightness(1.3); }
+
+  /* 실로폰 */
+  .songs { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .song { height: 48px; padding-inline: 14px; border-radius: 24px; background: #fff; box-shadow: 0 4px 0 #E6D2E0; font-size: 18px; }
+  .song.on { background: var(--ink); color: #fff; box-shadow: 0 4px 0 #1f1227; }
+  .songbar { display: flex; gap: 10px; align-items: center; }
+  .songbar .prog { flex: 1; height: 16px; border-radius: 8px; background: #fff; box-shadow: inset 0 0 0 3px #E6D2E0; overflow: hidden; }
+  .songbar .prog i { display: block; height: 100%; width: 0; background: #FFC83D; transition: width .2s; }
+  .songbar .candy { height: 48px; font-size: 18px; }
+  .xylo { flex: 1 1 auto; min-height: 220px; display: flex; gap: 6px; align-items: center; justify-content: center; padding: 14px 8px;
+    border-radius: 28px; background: #8B5A3C; box-shadow: inset 0 0 0 6px #6B4226, 0 6px 0 #4A2C18; touch-action: none; }
+  .xylo .bar { flex: 1; height: var(--h); max-width: 70px; display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+    padding: 12px 0; border-radius: 14px; background: var(--c); box-shadow: inset 0 -8px 0 rgba(0,0,0,.14), 0 4px 0 rgba(0,0,0,.25); color: #fff; }
+  .xylo .bar b { font-weight: 400; font-size: clamp(18px, 5vw, 28px); -webkit-text-stroke: 1px var(--ink); paint-order: stroke fill; }
+  .xylo .pin { width: 12px; height: 12px; border-radius: 50%; background: #E8E1D6; box-shadow: inset 0 -2px 0 #9C8E7A; }
+  .xylo .bar.ring { animation: ring .3s; }
+  .xylo .bar.next { outline: 5px solid #fff; outline-offset: 2px; animation: pulse .8s ease-in-out infinite; }
+  @keyframes ring { 30% { transform: scaleY(.94) translateY(3px); } }
+
+  /* 퍼즐 */
+  .pzpick { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; }
+  .pzthumb { padding: 4px; border-radius: 16px; background: #fff; box-shadow: 0 4px 0 #EBCFDF; }
+  .pzthumb svg { display: block; width: 100%; aspect-ratio: 400 / 480; border-radius: 12px; }
+  .pzboard { position: relative; flex: none; width: min(100%, 38vh); aspect-ratio: 400 / 480; margin: 0 auto; display: grid;
+    grid-template-columns: repeat(var(--cols), 1fr); grid-template-rows: repeat(var(--rows), 1fr); border-radius: 18px; overflow: hidden;
+    background: #fff; box-shadow: 0 0 0 4px #fff, 0 7px 0 4px #EBCFDF; }
+  .pzghost { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .2; filter: grayscale(1); pointer-events: none; }
+  .slot { position: relative; outline: 2px dashed #D9C3E0; outline-offset: -1px; }
+  .slot svg { display: block; width: 100%; height: 100%; }
+  .slot.full { outline: none; animation: pop .3s; }
+  .pzboard.done { box-shadow: 0 0 0 4px #FFC83D, 0 7px 0 4px #D99A0B; }
+  .pztray { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 10px; border-radius: 22px; background: rgba(255,255,255,.6); touch-action: none; }
+  .pc { width: calc(var(--w) - 8px); max-width: 110px; border-radius: 8px; overflow: hidden; background: #fff; box-shadow: 0 3px 0 rgba(58,36,71,.25); touch-action: none; }
+  .pc svg { display: block; width: 100%; height: 100%; pointer-events: none; }
+  .pc.sel { outline: 4px solid var(--pink); transform: scale(1.06); }
+  .pc.drag { position: fixed; z-index: 50; pointer-events: none; max-width: none; box-shadow: 0 10px 20px rgba(58,36,71,.35); }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition: none !important; } }
 </style>
 </head>
@@ -262,7 +360,7 @@
 <div id="app">
   <section id="hub" class="screen">
     <div class="home-head">
-      <h1 class="logo" aria-label="반짝 놀이터"><span>반</span><span>짝</span><span> </span><span>놀</span><span>이</span><span>터</span></h1>
+      <h1 class="logo hublogo" aria-label="반짝 하엘이 놀이터"><span style="color:#FF5C9A;transform:rotate(-6deg)">반</span><span style="color:#FFC83D;transform:rotate(4deg)">짝</span><span class="gap"> </span><span style="color:#37C9AD;transform:rotate(-3deg)">하</span><span style="color:#6FB8FF;transform:rotate(5deg)">엘</span><span style="color:#A77BFF;transform:rotate(-4deg)">이</span><span class="gap"> </span><span style="color:#FF8A4C;transform:rotate(3deg)">놀</span><span style="color:#2FBF71;transform:rotate(-5deg)">이</span><span style="color:#E056C8;transform:rotate(4deg)">터</span></h1>
       <div class="head-btns">
         <div class="stars-pill" aria-label="모은 별"><svg viewBox="0 0 40 40"><path d="M20,3 L25,14 L37,15 L28,23 L31,35 L20,29 L9,35 L12,23 L3,15 L15,14Z" fill="#FFC83D" stroke="#3A2447" stroke-width="3" stroke-linejoin="round"/></svg><b id="hubStars">0</b></div>
         <button class="candy plain" id="soundBtn" aria-label="소리 켜고 끄기"></button>
@@ -367,6 +465,13 @@
     <div class="qdots" id="qDots"></div>
     <div class="qprompt" id="qPrompt"></div>
     <div class="qchoices" id="qChoices"></div>
+  </section>
+
+  <section id="game" class="screen" hidden>
+    <div class="bar"><button class="candy plain" id="gBack" aria-label="처음 화면"><svg viewBox="0 0 32 32" fill="none" stroke="#3A2447" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"><path d="M5,15 L16,5 L27,15"/><path d="M8,13 L8,27 L24,27 L24,13"/><path d="M13,27 L13,19 L19,19 L19,27"/></svg></button><h2 class="ttitle" id="gTitle"></h2><span class="sp"></span>
+      <div class="stars-pill gscore" id="gScore" hidden></div>
+      <button class="candy sun" id="gSay" aria-label="다시 듣기" hidden><svg viewBox="0 0 32 32" fill="none" stroke="#3A2447" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><path d="M5,12 L10,12 L17,6 L17,26 L10,20 L5,20Z" fill="#FFC83D"/><path d="M21,11 Q25,16 21,21 M24,7 Q31,16 24,25"/></svg></button></div>
+    <div class="gbody" id="gBody"></div>
   </section>
 
   <section id="balloon" class="screen" hidden>
@@ -1936,6 +2041,365 @@ PICTURES.unshift(...FAIRY_PICTURES);
   }
   $('#nBalloon').onclick = () => { tone(660); startBalloons(); };
   $('#bBack').onclick = () => { tone(520); openNumbers(); };
+})();
+
+</script>
+<script>
+// ───────── 더 많은 놀이: 짝 맞추기, 그림자 찾기, 실로폰, 두더지 잡기, 퍼즐, 동물 소리, 색깔·모양 ─────────
+(() => {
+  const { $, S, persist, tone, say, confetti, show, modal, closeModal, sparkle, goHub } = window.APP;
+  const W = ms => new Promise(r => setTimeout(r, ms));
+  const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const pick = (a, n, not = []) => shuffle(a.filter(x => !not.includes(x))).slice(0, n);
+  const josa = w => { const c = w.charCodeAt(w.length - 1) - 0xAC00; return c >= 0 && c % 28 ? '을' : '를'; };
+  const PRAISE = ['참 잘했어요!', '하엘이 최고!', '우와, 대단해요!', '딩동댕!', '멋져요!'];
+  const praise = () => PRAISE[Math.random() * PRAISE.length | 0];
+  const body = $('#gBody');
+  let cleanup = null, sayLine = '';
+
+  // ───── 공통 ─────
+  function open(title, render) {
+    stop();
+    $('#gTitle').textContent = title; $('#gScore').hidden = true; $('#gSay').hidden = true;
+    body.innerHTML = ''; body.className = 'gbody';
+    show('game'); render();
+  }
+  function stop() { if (cleanup) { cleanup(); cleanup = null; } }
+  $('#gBack').onclick = () => { tone(520); stop(); closeModal(); goHub(); };
+  $('#gSay').onclick = () => say(sayLine);
+  const fanfare = () => [523, 659, 784, 1047, 1319].forEach((f, k) => tone(f, .35, 'triangle', .15, k * .11));
+  const ding = () => [659, 880].forEach((f, k) => tone(f, .18, 'triangle', .14, k * .09));
+  const buzz = () => tone(220, .2, 'square', .05);
+  function shake(el) { el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }
+  function burstAt(el, c = '#FFC83D') { const r = el.getBoundingClientRect(); sparkle(r.left + r.width / 2, r.top + r.height / 2, c); }
+  function win(msg, again) {
+    S.stars++; persist(); confetti(); fanfare();
+    say(`${msg} ${praise()} 별을 받았어요!`);
+    modal(`<svg class="big-star" viewBox="0 0 40 40"><path d="M20,3 L25,14 L37,15 L28,23 L31,35 L20,29 L9,35 L12,23 L3,15 L15,14Z" fill="#FFC83D" stroke="#3A2447" stroke-width="2.4" stroke-linejoin="round"/><circle cx="16" cy="19" r="1.6" fill="#3A2447"/><circle cx="24" cy="19" r="1.6" fill="#3A2447"/><path d="M16.5,23 Q20,26 23.5,23" fill="none" stroke="#3A2447" stroke-width="1.6" stroke-linecap="round"/></svg><h3>${msg}</h3><div class="row"><button class="candy mint" id="mAgain">한 번 더</button><button class="candy" id="mOut">다른 놀이</button></div>`);
+    $('#mAgain').onclick = () => { closeModal(); tone(660); again(); };
+    $('#mOut').onclick = () => { closeModal(); tone(520); stop(); goHub(); };
+  }
+  function levelPicker(q, levels, fn) {
+    body.innerHTML = `<p class="gq">${q}</p><div class="levels">${levels.map((l, i) => `<button class="lvl" data-i="${i}" style="--c:${['#2FBF9F', '#FFB020', '#FF5C9A'][i]}"><b>${l[0]}</b><small>${l[1]}</small></button>`).join('')}</div>`;
+    body.querySelectorAll('.lvl').forEach(b => b.onclick = () => { tone(660); fn(levels[+b.dataset.i][2]); });
+    say(q);
+  }
+  function dotsHTML(total, done) { return `<div class="qdots">${Array.from({ length: total }, (_, k) => `<i class="${k < done ? 'on' : ''}"></i>`).join('')}</div>`; }
+
+  // 문제형 놀이 공통 (그림자, 동물 소리, 색깔·모양)
+  function runQuiz(cfg) {
+    let r = 0, busy = false;
+    $('#gSay').hidden = false;
+    const next = () => {
+      busy = false;
+      const q = cfg.make(r);
+      body.innerHTML = dotsHTML(cfg.rounds, r) + `<div class="gprompt">${q.prompt}</div><div class="gchoices n${q.choices.length}"></div>`;
+      const box = body.querySelector('.gchoices');
+      q.choices.forEach(c => {
+        const b = document.createElement('button'); b.className = 'gc'; b.innerHTML = c.html;
+        b.setAttribute('aria-label', c.label || '');
+        b.onclick = async () => {
+          if (busy) return;
+          if (!c.ok) { shake(b); buzz(); say(cfg.retry || '다시 해볼까요?'); return; }
+          busy = true; b.classList.add('right'); burstAt(b); ding();
+          await cfg.right(q, c);
+          r++;
+          if (r < cfg.rounds) next();
+          else { body.querySelector('.qdots').outerHTML = dotsHTML(cfg.rounds, r); win(cfg.winMsg, () => runQuiz(cfg)); }
+        };
+        box.appendChild(b);
+      });
+      sayLine = q.say; say(q.say);
+    };
+    next();
+  }
+
+  // ───── 1. 짝 맞추기 ─────
+  const MEM = [['🐶', '강아지'], ['🐱', '고양이'], ['🐰', '토끼'], ['🦊', '여우'], ['🐼', '판다'], ['🐸', '개구리'], ['🦄', '유니콘'], ['🐥', '병아리'],
+    ['🍓', '딸기'], ['🍉', '수박'], ['🌈', '무지개'], ['🚗', '자동차'], ['🎈', '풍선'], ['🍦', '아이스크림'], ['🐧', '펭귄'], ['🦁', '사자']];
+  function memory() {
+    open('짝 맞추기', () => levelPicker('몇 장으로 할까요?', [['쉬움', '카드 6장', 3], ['보통', '카드 8장', 4], ['어려움', '카드 12장', 6]], startMemory));
+  }
+  function startMemory(n) {
+    const set = pick(MEM, n), cards = shuffle([...set, ...set]);
+    let first = null, lock = false, found = 0;
+    body.innerHTML = `<div class="mem c${n === 4 ? 4 : 3}"></div>`;
+    const grid = body.firstChild;
+    cards.forEach(([e, name]) => {
+      const b = document.createElement('button'); b.className = 'mcard'; b.setAttribute('aria-label', '카드');
+      b.innerHTML = `<span class="in"><span class="face back"></span><span class="face front">${e}</span></span>`;
+      b.onclick = async () => {
+        if (lock || b.classList.contains('up')) return;
+        b.classList.add('up'); tone(700, .08, 'sine', .08);
+        if (!first) { first = { b, e }; return; }
+        if (first.e === e) {
+          b.classList.add('got'); first.b.classList.add('got'); first = null; found++;
+          ding(); burstAt(b); say(name);
+          if (found === n) { await W(700); win('짝을 다 찾았어요!', () => startMemory(n)); }
+        } else {
+          lock = true; await W(900);
+          b.classList.remove('up'); first.b.classList.remove('up'); first = null; lock = false;
+        }
+      };
+      grid.appendChild(b);
+    });
+    say('같은 그림 두 개를 찾아요!');
+  }
+
+  // ───── 2. 그림자 찾기 ─────
+  const SH = [['🐘', '코끼리'], ['🦒', '기린'], ['🐢', '거북이'], ['🦋', '나비'], ['🐇', '토끼'], ['🐬', '돌고래'], ['🦕', '공룡'], ['🐓', '닭'],
+    ['🚲', '자전거'], ['✈️', '비행기'], ['🍌', '바나나'], ['🎸', '기타'], ['🐿️', '다람쥐'], ['🦀', '게'], ['🐌', '달팽이'], ['☂️', '우산'], ['🍐', '배'], ['🐙', '문어']];
+  function shadow() {
+    open('그림자 찾기', () => runQuiz({
+      rounds: 8, winMsg: '그림자를 다 찾았어요!',
+      make: () => {
+        const t = SH[Math.random() * SH.length | 0], ch = shuffle([t, ...pick(SH, 2, [t])]);
+        return { t, prompt: `<span class="shadow" id="shBig">${t[0]}</span>`, say: '이 그림자는 누구일까요?', choices: ch.map(c => ({ html: `<span class="ge">${c[0]}</span>`, ok: c === t, label: c[1] })) };
+      },
+      right: async q => { $('#shBig').classList.add('lit'); say(`${q.t[1]}!`); await W(1400); },
+    }));
+  }
+
+  // ───── 3. 누구 소리일까? ─────
+  const AN = [['🐶', '강아지', '멍멍'], ['🐱', '고양이', '야옹'], ['🐮', '소', '음매'], ['🐷', '돼지', '꿀꿀'], ['🦆', '오리', '꽥꽥'], ['🐔', '닭', '꼬끼오'],
+    ['🐑', '양', '메에'], ['🐸', '개구리', '개굴개굴'], ['🐥', '병아리', '삐약삐약'], ['🦁', '사자', '어흥'], ['🐴', '말', '히히힝'], ['🐭', '쥐', '찍찍']];
+  function animal() {
+    open('누구 소리일까?', () => runQuiz({
+      rounds: 8, winMsg: '동물 소리를 다 맞혔어요!',
+      make: () => {
+        const t = AN[Math.random() * AN.length | 0], ch = shuffle([t, ...pick(AN, 2, [t])]);
+        return { t, prompt: `<span class="bubble">🔊 ${t[2]}!</span>`, say: `${t[2]}! ${t[2]}! 누구 소리일까요?`, choices: ch.map(c => ({ html: `<span class="ge">${c[0]}</span>`, ok: c === t, label: c[1] })) };
+      },
+      right: async q => { say(`${q.t[1]}! ${q.t[2]}!`); await W(1500); },
+    }));
+  }
+
+  // ───── 4. 색깔·모양 찾기 ─────
+  const COLS = [['빨간색', '빨간', '#FF4D4D'], ['노란색', '노란', '#FFD23F'], ['파란색', '파란', '#3D7EF5'], ['초록색', '초록', '#2FBF71'], ['분홍색', '분홍', '#FF7AB8'], ['보라색', '보라', '#9C6BFF']];
+  const SHP = [['동그라미', '<circle cx="50" cy="50" r="40"/>'], ['세모', '<path d="M50,10 L92,86 L8,86Z"/>'], ['네모', '<rect x="14" y="14" width="72" height="72" rx="6"/>'],
+    ['별', '<path d="M50,6 L62,38 L96,39 L69,60 L79,93 L50,74 L21,93 L31,60 L4,39 L38,38Z"/>'], ['하트', '<path d="M50,90 C10,62 4,36 18,20 C30,8 46,14 50,28 C54,14 70,8 82,20 C96,36 90,62 50,90Z"/>']];
+  const shapeSVG = (c, s) => `<svg viewBox="0 0 100 100"><g fill="${c[2]}" stroke="#3A2447" stroke-width="5" stroke-linejoin="round">${s[1]}</g></svg>`;
+  function shapes() {
+    open('색깔·모양 찾기', () => runQuiz({
+      rounds: 9, winMsg: '색깔이랑 모양을 다 찾았어요!',
+      make: r => {
+        let items, t, line;
+        if (r < 3) { // 색깔
+          const cs = pick(COLS, 4); t = [cs[0], SHP[Math.random() * 5 | 0]];
+          items = cs.map(c => [c, SHP[Math.random() * 5 | 0]]); items[0] = t; line = `${t[0][0]}${josa(t[0][0])} 찾아요!`;
+          items = items.map((x, i) => [...x, i === 0]);
+        } else if (r < 6) { // 모양
+          const ss = pick(SHP, 4); t = [COLS[Math.random() * 6 | 0], ss[0]];
+          items = ss.map((s, i) => [i === 0 ? t[0] : COLS[Math.random() * 6 | 0], s, i === 0]); line = `${t[1][0]}${josa(t[1][0])} 찾아요!`;
+        } else { // 색깔 + 모양
+          const [c1, c2, c3] = pick(COLS, 3), [s1, s2, s3] = pick(SHP, 3);
+          t = [c1, s1]; items = [[c1, s1, true], [c1, s2, false], [c2, s1, false], [c3, s3, false]];
+          line = `${c1[1]} ${s1[0]}${josa(s1[0])} 찾아요!`;
+        }
+        return { prompt: `<span class="gline">${line.replace(' 찾아요!', '')}<small>찾아요!</small></span>`, say: line,
+          choices: shuffle(items).map(([c, s, ok]) => ({ html: shapeSVG(c, s), ok, label: c[1] + ' ' + s[0] })) };
+      },
+      right: async () => { say(praise()); await W(1000); },
+    }));
+  }
+
+  // ───── 5. 두더지 잡기 ─────
+  function mole() {
+    open('두더지 잡기', () => {
+      body.innerHTML = `<p class="gq">두더지가 나오면 콕 눌러요!</p><button class="candy big-start" id="mlStart">시작!</button>`;
+      $('#mlStart').onclick = startMole;
+      say('두더지가 나오면 콕 눌러요!');
+    });
+  }
+  function startMole() {
+    let score = 0, t0 = performance.now(), timers = [], alive = true;
+    const DUR = 25000;
+    $('#gScore').hidden = false; $('#gScore').innerHTML = '🐹 <b>0</b>';
+    body.innerHTML = `<div class="timebar"><i id="mlBar"></i></div><div class="holes">${Array.from({ length: 9 }, (_, i) => `<button class="hole" data-i="${i}" aria-label="구멍"><span class="mole">🐹</span><span class="dirt"></span></button>`).join('')}</div>`;
+    const holes = [...body.querySelectorAll('.hole')];
+    holes.forEach(h => h.onclick = () => {
+      if (!h.classList.contains('up') || h.classList.contains('hit')) return;
+      h.classList.add('hit'); score++; $('#gScore').innerHTML = `🐹 <b>${score}</b>`;
+      tone(880, .12, 'square', .07); burstAt(h);
+      setTimeout(() => h.classList.remove('up', 'hit'), 350);
+    });
+    const spawn = () => {
+      if (!alive) return;
+      const el = performance.now() - t0;
+      if (el > DUR) return end();
+      const free = holes.filter(h => !h.classList.contains('up'));
+      if (free.length) {
+        const h = free[Math.random() * free.length | 0]; h.classList.add('up');
+        const stay = Math.max(700, 1400 - el / 30);
+        timers.push(setTimeout(() => { if (!h.classList.contains('hit')) h.classList.remove('up'); }, stay));
+      }
+      timers.push(setTimeout(spawn, Math.max(450, 950 - el / 40)));
+    };
+    const bar = setInterval(() => { const p = Math.max(0, 1 - (performance.now() - t0) / DUR); const b = $('#mlBar'); if (b) b.style.width = p * 100 + '%'; }, 100);
+    const end = () => {
+      alive = false; clearInterval(bar); timers.forEach(clearTimeout);
+      holes.forEach(h => h.classList.remove('up'));
+      win(`두더지 ${score}마리 잡았어요!`, startMole);
+    };
+    cleanup = () => { alive = false; clearInterval(bar); timers.forEach(clearTimeout); };
+    say('시작!'); spawn();
+  }
+
+  // ───── 6. 실로폰 ─────
+  const NOTES = [['도', 523.25, '#FF4D4D'], ['레', 587.33, '#FF9933'], ['미', 659.25, '#FFD23F'], ['파', 698.46, '#7ED957'],
+    ['솔', 783.99, '#2FBF9F'], ['라', 880, '#3D9BF5'], ['시', 987.77, '#7A6BFF'], ['도', 1046.5, '#D55CFF']];
+  const SONGS = [
+    ['반짝반짝 작은별', [0, 0, 4, 4, 5, 5, 4, 3, 3, 2, 2, 1, 1, 0, 4, 4, 3, 3, 2, 2, 1, 4, 4, 3, 3, 2, 2, 1, 0, 0, 4, 4, 5, 5, 4, 3, 3, 2, 2, 1, 1, 0]],
+    ['학교종', [4, 4, 5, 5, 4, 4, 2, 4, 4, 2, 2, 1, 4, 4, 5, 5, 4, 4, 2, 4, 2, 1, 2, 0]],
+    ['나비야', [4, 2, 2, 3, 1, 1, 0, 1, 2, 3, 4, 4, 4, 4, 2, 2, 2, 3, 1, 1, 1, 0, 2, 4, 4, 2, 2, 2]],
+  ];
+  let BAC;
+  function bell(f) {
+    if (!S.sound) return;
+    try { BAC ||= new (window.AudioContext || window.webkitAudioContext)(); if (BAC.state === 'suspended') BAC.resume(); } catch (e) { return; }
+    const t = BAC.currentTime, g = BAC.createGain();
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.32, t + .01); g.gain.exponentialRampToValueAtTime(.001, t + 1.3);
+    g.connect(BAC.destination);
+    [[f, 1], [f * 2.76, .25], [f * 5.4, .08]].forEach(([fr, v]) => {
+      const o = BAC.createOscillator(), og = BAC.createGain(); o.type = 'sine'; o.frequency.value = fr; og.gain.value = v;
+      o.connect(og).connect(g); o.start(t); o.stop(t + 1.35);
+    });
+  }
+  function xylo() {
+    open('실로폰', () => {
+      body.innerHTML = `<div class="songs"><button class="song on" data-s="-1">🎵 마음대로</button>${SONGS.map((s, i) => `<button class="song" data-s="${i}">${s[0]}</button>`).join('')}</div>
+        <div class="songbar" id="sgBar" hidden><div class="prog"><i id="sgProg"></i></div><button class="candy sun" id="sgListen">🎧 들어보기</button></div>
+        <div class="xylo">${NOTES.map((n, i) => `<button class="bar" data-i="${i}" style="--c:${n[2]};--h:${100 - i * 6}%"><span class="pin"></span><b>${n[0]}</b><span class="pin"></span></button>`).join('')}</div>`;
+      const bars = [...body.querySelectorAll('.bar')];
+      let song = null, pos = 0, demo = false;
+      const mark = () => {
+        bars.forEach(b => b.classList.remove('next'));
+        if (song && pos < song[1].length) bars[song[1][pos]].classList.add('next');
+        $('#sgProg').style.width = song ? pos / song[1].length * 100 + '%' : '0';
+      };
+      const hit = i => { const b = bars[i]; bell(NOTES[i][1]); b.classList.remove('ring'); void b.offsetWidth; b.classList.add('ring'); };
+      bars.forEach((b, i) => b.addEventListener('pointerdown', e => {
+        e.preventDefault(); if (demo) return; hit(i);
+        if (!song) return;
+        if (i === song[1][pos]) { pos++; mark(); if (pos === song[1].length) { song = null; setTimeout(() => win('노래를 다 쳤어요!', xylo), 600); } }
+      }));
+      body.querySelectorAll('.song').forEach(b => b.onclick = () => {
+        body.querySelectorAll('.song').forEach(x => x.classList.toggle('on', x === b));
+        const s = +b.dataset.s; song = s < 0 ? null : SONGS[s]; pos = 0; $('#sgBar').hidden = !song; mark();
+        say(song ? `${song[0]}! 반짝이는 건반을 따라 눌러요` : '마음대로 쳐 봐요!');
+      });
+      $('#sgListen').onclick = async () => {
+        if (!song || demo) return; demo = true; const sg = song;
+        for (const i of sg[1]) { if (song !== sg || $('#game').hidden) break; bars[i].classList.add('next'); hit(i); await W(420); bars[i].classList.remove('next'); }
+        demo = false; mark();
+      };
+      cleanup = () => { song = null; };
+      say('실로폰을 쳐 봐요!');
+    });
+  }
+
+  // ───── 7. 퍼즐 맞추기 ─────
+  const AUTO = ['#FFB3C7', '#FFD86B', '#9FE3C9', '#A9D4FF', '#D4B8FF', '#FFC49B', '#C8F08F', '#FF8FB8', '#7CCBFF', '#FFE58A'];
+  function coloredMarkup(p) {
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.innerHTML = p.svg();
+    const saved = (S.pics[p.id] || {}).f || {}, own = Object.keys(saved).length > 2;
+    let i = 0;
+    g.querySelectorAll('path,rect,circle,ellipse,polygon').forEach(el => {
+      const c = el.getAttribute('class');
+      if (c === 'n') { el.setAttribute('fill', 'none'); el.setAttribute('stroke', '#3A2447'); el.setAttribute('stroke-width', '3.5'); el.setAttribute('stroke-linecap', 'round'); }
+      else if (c === 'k') el.setAttribute('fill', '#3A2447');
+      else if (c === 'w') el.setAttribute('fill', '#fff');
+      else {
+        const v = own ? (saved[i] || '#FFFFFF') : (i === 0 ? '#EAF6FF' : AUTO[(i * 7) % AUTO.length]);
+        el.setAttribute('fill', v.startsWith('pt-') ? `url(#${v})` : v);
+        el.setAttribute('stroke', '#3A2447'); el.setAttribute('stroke-width', '4.5'); el.setAttribute('stroke-linejoin', 'round'); i++;
+      }
+    });
+    return g.innerHTML;
+  }
+  function puzzle() {
+    open('퍼즐 맞추기', () => {
+      body.innerHTML = `<p class="gq">어떤 그림으로 할까요?</p><div class="pzpick"></div>`;
+      const box = body.querySelector('.pzpick');
+      PICTURES.forEach(p => {
+        const b = document.createElement('button'); b.className = 'pzthumb'; b.setAttribute('aria-label', p.name);
+        b.innerHTML = `<svg viewBox="0 0 400 480">${coloredMarkup(p)}</svg>`;
+        b.onclick = () => { tone(660); levelPicker('몇 조각으로 할까요?', [['쉬움', '4조각', [2, 2]], ['보통', '6조각', [2, 3]], ['어려움', '9조각', [3, 3]]], lv => startPuzzle(p, lv)); };
+        box.appendChild(b);
+      });
+      say('어떤 그림으로 할까요?');
+    });
+  }
+  function startPuzzle(p, [cols, rows]) {
+    const pw = 400 / cols, ph = 480 / rows, n = cols * rows;
+    let placed = 0, sel = null;
+    body.innerHTML = `<svg width="0" height="0" style="position:absolute"><g id="pzSrc">${coloredMarkup(p)}</g></svg>
+      <div class="pzboard" style="--cols:${cols};--rows:${rows}"><svg class="pzghost" viewBox="0 0 400 480"><use href="#pzSrc"/></svg>
+      ${Array.from({ length: n }, (_, i) => `<div class="slot" data-i="${i}"></div>`).join('')}</div><div class="pztray"></div>`;
+    const board = body.querySelector('.pzboard'), tray = body.querySelector('.pztray');
+    const slots = [...board.querySelectorAll('.slot')];
+    const piece = i => { const x = (i % cols) * pw, y = (i / cols | 0) * ph; return `<svg viewBox="${x} ${y} ${pw} ${ph}" preserveAspectRatio="none"><use href="#pzSrc"/></svg>`; };
+    shuffle(Array.from({ length: n }, (_, i) => i)).forEach(i => {
+      const d = document.createElement('div'); d.className = 'pc'; d.dataset.i = i; d.innerHTML = piece(i);
+      d.style.setProperty('--w', 100 / Math.max(cols, 3) + '%');
+      d.style.aspectRatio = `${pw} / ${ph}`;
+      tray.appendChild(d);
+    });
+    const tryPlace = (pc, slot) => {
+      if (!slot || slot.classList.contains('full')) return false;
+      if (+slot.dataset.i !== +pc.dataset.i) { shake(pc); buzz(); say('다른 자리일까요?'); return false; }
+      slot.classList.add('full'); slot.innerHTML = piece(+pc.dataset.i); pc.remove(); placed++;
+      ding(); burstAt(slot); sel = null;
+      if (placed === n) setTimeout(() => { board.classList.add('done'); win('퍼즐을 다 맞췄어요!', () => startPuzzle(p, [cols, rows])); }, 500);
+      return true;
+    };
+    slots.forEach(s => s.onclick = () => { if (sel) { const ok = tryPlace(sel, s); if (!ok && sel) sel.classList.remove('sel'); sel = null; } });
+    tray.addEventListener('pointerdown', e => {
+      const pc = e.target.closest('.pc'); if (!pc) return;
+      e.preventDefault();
+      const r = pc.getBoundingClientRect(), sx = e.clientX, sy = e.clientY;
+      const ghost = pc.cloneNode(true); ghost.classList.add('drag');
+      Object.assign(ghost.style, { width: r.width + 'px', height: r.height + 'px', left: r.left + 'px', top: r.top + 'px' });
+      let moved = false;
+      const mv = ev => {
+        const dx = ev.clientX - sx, dy = ev.clientY - sy;
+        if (!moved && Math.hypot(dx, dy) > 8) { moved = true; document.body.appendChild(ghost); pc.style.opacity = .3; tone(600, .06, 'sine', .06); }
+        if (moved) ghost.style.transform = `translate(${dx}px, ${dy}px) scale(1.08)`;
+      };
+      const upH = ev => {
+        removeEventListener('pointermove', mv); removeEventListener('pointerup', upH); removeEventListener('pointercancel', upH);
+        if (!moved) { // 톡 누르면 고르기
+          tray.querySelectorAll('.pc').forEach(x => x.classList.toggle('sel', x === pc && !pc.classList.contains('sel')));
+          sel = pc.classList.contains('sel') ? pc : null; tone(700, .08); return;
+        }
+        ghost.remove(); pc.style.opacity = '';
+        const under = document.elementFromPoint(ev.clientX, ev.clientY);
+        tryPlace(pc, under && under.closest('.slot'));
+      };
+      addEventListener('pointermove', mv); addEventListener('pointerup', upH); addEventListener('pointercancel', upH);
+    });
+    say('조각을 끌어서 알맞은 자리에 놓아요!');
+  }
+
+  // ───── 메인 화면 카드 ─────
+  const GAMES = [
+    ['짝 맞추기', '같은 그림 찾기', '🃏', '#FF8A4C', '#D9662A', memory],
+    ['그림자 찾기', '누구 그림자일까?', '<span class="shadow">🦒</span>', '#6C7BE0', '#4B58B8', shadow],
+    ['실로폰', '노래 따라 치기', '🎹', '#E056C8', '#B53BA0', xylo],
+    ['두더지 잡기', '콕콕 잡아요', '🐹', '#A0643C', '#7A4726', mole],
+    ['퍼즐 맞추기', '색칠 그림 퍼즐', '🧩', '#2FA7D9', '#1E82AD', puzzle],
+    ['누구 소리일까?', '동물 소리 맞히기', '🐮', '#7DBE3C', '#5B9624', animal],
+    ['색깔·모양 찾기', '빨간 세모는 어디?', '🔺', '#FF5C7A', '#D63A57', shapes],
+  ];
+  const cards = $('.hub-cards');
+  GAMES.forEach(([name, sub, emo, c, cd, fn]) => {
+    const b = document.createElement('button'); b.className = 'hub-card';
+    b.style.setProperty('--c', c); b.style.setProperty('--cd', cd);
+    b.innerHTML = `<span class="art emo">${emo}</span><span class="lbl">${name}<small>${sub}</small></span>`;
+    b.onclick = () => { tone(660); fn(); };
+    cards.appendChild(b);
+  });
 })();
 
 </script>

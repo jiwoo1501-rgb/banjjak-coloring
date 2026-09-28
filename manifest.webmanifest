@@ -1,6 +1,6 @@
 {
-  "name": "반짝 놀이터",
-  "short_name": "반짝 놀이터",
+  "name": "반짝 하엘이 놀이터",
+  "short_name": "하엘이 놀이터",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
