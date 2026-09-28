@@ -3067,7 +3067,7 @@ const art = k => ART[k] ? ART[k].replace('class="ai"', `class="ai" style="--bd:-
 if ('serviceWorker' in navigator) addEventListener('load', () => {
   const had = !!navigator.serviceWorker.controller; let done = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => { if (had && !done) { done = true; location.reload(); } });
-  navigator.serviceWorker.register('./sw.js').then(r => r.update()).catch(() => {});
+  Promise.reject().then(r => r.update()).catch(() => {});
 });
 </script>
 </body>
