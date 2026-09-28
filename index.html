@@ -351,6 +351,49 @@
   .pc svg { display: block; width: 100%; height: 100%; pointer-events: none; }
   .pc.sel { outline: 4px solid var(--pink); transform: scale(1.06); }
   .pc.drag { position: fixed; z-index: 50; pointer-events: none; max-width: none; box-shadow: 0 10px 20px rgba(58,36,71,.35); }
+
+  /* ───── 그림 아이콘 (이모지 대신) ───── */
+  .ai { display: block; width: 100%; height: 100%; }
+  .greet { display: flex; align-items: center; gap: 12px; max-width: 1000px; width: 100%; margin: 0 auto 14px; padding: 10px 16px 10px 10px;
+    border-radius: 26px; background: #fff; box-shadow: 0 5px 0 #EBCFDF; text-align: left; }
+  .greet .gm { flex: none; width: 64px; height: 64px; animation: bob 2.6s ease-in-out infinite; }
+  .greet .gt { display: flex; flex-direction: column; font-size: 24px; line-height: 1.2; }
+  .greet small { font-size: 17px; color: var(--ink-soft); }
+  .greet.hi .gm { animation: hop .5s; }
+  @keyframes hop { 40% { transform: translateY(-14px) rotate(-8deg) scale(1.1); } }
+  .hub-card .art.emo { padding: 8px; }
+  .hub-card .art .shadow { display: block; width: 100%; height: 100%; }
+  .hub-cards .hub-card { animation: rise .45s cubic-bezier(.3,1.4,.5,1) backwards; }
+  .hub-cards .hub-card:nth-child(2) { animation-delay: .04s; } .hub-cards .hub-card:nth-child(3) { animation-delay: .08s; }
+  .hub-cards .hub-card:nth-child(4) { animation-delay: .12s; } .hub-cards .hub-card:nth-child(5) { animation-delay: .16s; }
+  .hub-cards .hub-card:nth-child(6) { animation-delay: .2s; } .hub-cards .hub-card:nth-child(7) { animation-delay: .24s; }
+  .hub-cards .hub-card:nth-child(8) { animation-delay: .28s; } .hub-cards .hub-card:nth-child(9) { animation-delay: .32s; }
+  .hub-cards .hub-card:nth-child(10) { animation-delay: .36s; }
+  @keyframes rise { from { opacity: 0; transform: translateY(24px) scale(.92); } }
+  .screen:not([hidden]) { animation: screenIn .28s ease-out; }
+  @keyframes screenIn { from { opacity: 0; transform: translateY(10px); } }
+  .mode span { width: 48px; height: 48px; display: block; }
+  .tword .emo { width: 66px; height: 66px; display: block; }
+  .cnt i { width: 34px; height: 34px; display: block; }
+  .qprompt .big { width: 130px; height: 130px; display: block; }
+  .qprompt .items i { width: clamp(46px, 15vw, 74px); height: clamp(46px, 15vw, 74px); display: block; font-size: 0; }
+  .ge { width: 76px; height: 76px; display: block; }
+  .gchoices.n3 .ge { width: min(76px, 22vw); height: min(76px, 22vw); }
+  .gprompt .shadow { width: 170px; height: 170px; display: block; }
+  .shadow .ai { filter: brightness(0); opacity: .85; transition: filter .5s, opacity .5s; }
+  .shadow { filter: none !important; opacity: 1 !important; }
+  .shadow.lit .ai { filter: none; opacity: 1; }
+  .face.front .ai { width: 78%; height: 78%; }
+  .hole .mole { left: 14%; right: 14%; width: 72%; bottom: 14%; aspect-ratio: 1; }
+  .gscore .ai { width: 30px; height: 30px; }
+  .song { display: inline-flex; align-items: center; gap: 6px; } .song .ai { width: 24px; height: 24px; }
+  .songbar .candy .ai { width: 26px; height: 26px; }
+  .bubble { display: flex; align-items: center; gap: 12px; } .bubble .ai { width: 54px; height: 54px; } .bubble b { font-weight: 400; }
+  .qprompt .items.few i { width: min(96px, 24vw); height: min(96px, 24vw); }
+  .gc { height: 124px; } .gchoices.n4 .gc { height: 112px; }
+  .ge { width: 92px; height: 92px; } .gchoices.n3 .ge { width: min(92px, 24vw); height: min(92px, 24vw); }
+  .gc svg:not(.ai) { width: 84px; height: 84px; }
+  .qc { height: 120px; }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition: none !important; } }
 </style>
 </head>
@@ -366,6 +409,7 @@
         <button class="candy plain" id="soundBtn" aria-label="소리 켜고 끄기"></button>
       </div>
     </div>
+    <button class="greet" id="greet" aria-label="인사 듣기"><span class="gm" data-art="mascot"></span><span class="gt">하엘아, 안녕!<small>오늘은 뭐 하고 놀까?</small></span></button>
     <div class="hub-cards">
       <button class="hub-card" id="goColor" style="--c:#FF5C9A;--cd:#D63A7A">
         <span class="art"><svg viewBox="0 0 100 100"><path d="M50,12 C24,12 8,30 8,52 C8,76 28,88 44,86 C54,85 54,76 50,70 C46,63 52,56 60,58 C74,61 92,58 92,42 C92,24 74,12 50,12Z" fill="#FFF3D6" stroke="#3A2447" stroke-width="4" stroke-linejoin="round"/><circle cx="30" cy="42" r="8" fill="#FF4D4D"/><circle cx="46" cy="28" r="8" fill="#FFC83D"/><circle cx="66" cy="30" r="8" fill="#37C9AD"/><circle cx="78" cy="46" r="7" fill="#4A9BF0"/><circle cx="28" cy="64" r="7" fill="#9C6BFF"/></svg></span>
@@ -432,7 +476,7 @@
 
   <section id="hangul" class="screen" hidden>
     <div class="bar lhead"><button class="candy plain" id="hBack" aria-label="뒤로"><svg viewBox="0 0 32 32" fill="none" stroke="#3A2447" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"><path d="M5,15 L16,5 L27,15"/><path d="M8,13 L8,27 L24,27 L24,13"/><path d="M13,27 L13,19 L19,19 L19,27"/></svg></button><h2 class="stitle">한글놀이</h2></div>
-    <div class="lmodes"><button class="mode" id="hFind" style="--c:#FFB020;--cd:#D99A0B"><span>🔎</span>글자 찾기 놀이</button></div>
+    <div class="lmodes"><button class="mode" id="hFind" style="--c:#FFB020;--cd:#D99A0B"><span data-art="magnifier"></span>글자 찾기 놀이</button></div>
     <p class="lsub">글자를 누르고 손가락으로 따라 써요</p>
     <div class="ltiles" id="hTiles"></div>
   </section>
@@ -440,8 +484,8 @@
   <section id="numbers" class="screen" hidden>
     <div class="bar lhead"><button class="candy plain" id="nBack" aria-label="뒤로"><svg viewBox="0 0 32 32" fill="none" stroke="#3A2447" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"><path d="M5,15 L16,5 L27,15"/><path d="M8,13 L8,27 L24,27 L24,13"/><path d="M13,27 L13,19 L19,19 L19,27"/></svg></button><h2 class="stitle">숫자놀이</h2></div>
     <div class="lmodes">
-      <button class="mode" id="nCount" style="--c:#FF5C9A;--cd:#D63A7A"><span>🍎</span>몇 개일까?</button>
-      <button class="mode" id="nBalloon" style="--c:#9C6BFF;--cd:#7447D6"><span>🎈</span>풍선 터뜨리기</button>
+      <button class="mode" id="nCount" style="--c:#FF5C9A;--cd:#D63A7A"><span data-art="apple"></span>몇 개일까?</button>
+      <button class="mode" id="nBalloon" style="--c:#9C6BFF;--cd:#7447D6"><span data-art="balloons"></span>풍선 터뜨리기</button>
     </div>
     <p class="lsub">숫자를 누르고 손가락으로 따라 써요</p>
     <div class="ltiles" id="nTiles"></div>
@@ -1670,10 +1714,238 @@ PICTURES.unshift(...FAIRY_PICTURES);
   $('#goHangul').onclick = () => { tone(660); window.APP.openHangul(); };
   $('#goNumber').onclick = () => { tone(660); window.APP.openNumbers(); };
   window.APP = { $, S, persist, tone, say, confetti, show, modal, closeModal, sparkle, goHub };
+  $('#greet').onclick = () => { const g = $('#greet'); g.classList.remove('hi'); void g.offsetWidth; g.classList.add('hi'); tone(784); say('하엘아, 안녕! 오늘은 뭐 하고 놀까?'); };
   buildPalette(); setTool('fill'); renderHome(); goHub();
 })();
 </script>
 <script>
+// ───────── 하엘이 놀이터 그림 모음 (100×100 스티커 스타일, 이모지 대신 사용) ─────────
+const ART = (() => {
+  const K = '#3A2447';
+  const st = `stroke="${K}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"`;
+  const E = (cx, cy, rx, ry, c, rot) => `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${c}" ${st}${rot !== undefined ? ` transform="rotate(${rot} ${cx} ${cy})"` : ''}/>`;
+  const Ef = (cx, cy, rx, ry, c, rot, op = 1) => `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${c}" opacity="${op}"${rot !== undefined ? ` transform="rotate(${rot} ${cx} ${cy})"` : ''}/>`;
+  const C = (cx, cy, r, c) => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${c}" ${st}/>`;
+  const Cf = (cx, cy, r, c, op = 1) => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${c}" opacity="${op}"/>`;
+  const P = (d, c) => `<path d="${d}" fill="${c}" ${st}/>`;
+  const Pf = (d, c, op = 1) => `<path d="${d}" fill="${c}" opacity="${op}"/>`;
+  const L = (d, w = 3, c = K) => `<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+  const R = (x, y, w, h, rx, c, rot) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" fill="${c}" ${st}${rot !== undefined ? ` transform="rotate(${rot} ${x + w / 2} ${y + h / 2})"` : ''}/>`;
+  const shine = (cx, cy, rx, ry, rot = -30) => Ef(cx, cy, rx, ry, '#fff', rot, .6);
+  const eye = (x, y, s = 1) => `<ellipse cx="${x}" cy="${y}" rx="${3.4 * s}" ry="${4.2 * s}" fill="${K}"/><circle cx="${x + 1.2 * s}" cy="${y - 1.6 * s}" r="${1.4 * s}" fill="#fff"/>`;
+  const eyes = (a, b, y, s) => eye(a, y, s) + eye(b, y, s);
+  const blush = (a, b, y, c = '#FF8FB0') => Ef(a, y, 4.6, 2.8, c, 0, .75) + Ef(b, y, 4.6, 2.8, c, 0, .75);
+  const smile = (x, y, w = 5) => L(`M${x - w},${y} Q${x},${y + w * .9} ${x + w},${y}`, 2.6);
+  const bumps = (cx, cy, R0, n, b, c) => {
+    let d = '';
+    for (let i = 0; i <= n; i++) {
+      const a = (-90 + i * 360 / n) * Math.PI / 180, x = (cx + R0 * Math.cos(a)).toFixed(1), y = (cy + R0 * Math.sin(a)).toFixed(1);
+      d += i ? ` A${b},${b} 0 0 1 ${x},${y}` : `M${x},${y}`;
+    }
+    return P(d + 'Z', c);
+  };
+  const starD = (cx, cy, R0, r) => {
+    let d = '';
+    for (let i = 0; i < 10; i++) { const q = i % 2 ? r : R0, a = (-90 + i * 36) * Math.PI / 180; d += (i ? 'L' : 'M') + (cx + q * Math.cos(a)).toFixed(1) + ',' + (cy + q * Math.sin(a)).toFixed(1); }
+    return d + 'Z';
+  };
+
+  const A = {
+    // ── 동물 ──
+    dog: () => C(50, 55, 30, '#F4C98E') + Ef(62, 45, 8, 7, '#E3A969') +
+      E(21, 52, 9, 18, '#A86B3C', 20) + E(79, 52, 9, 18, '#A86B3C', -20) +
+      E(50, 67, 14, 10, '#FFF4E6') + E(50, 61, 5, 3.6, K) + L('M50,64 L50,68 M44,68 Q50,73 56,68', 2.6) +
+      eyes(40, 60, 50) + blush(32, 68, 61) + shine(40, 36, 6, 3),
+    cat: () => P('M22,44 L26,13 L46,30Z', '#FFB45C') + P('M78,44 L74,13 L54,30Z', '#FFB45C') +
+      Pf('M28,35 L29,22 L38,30Z', '#FFB3C7') + Pf('M72,35 L71,22 L62,30Z', '#FFB3C7') +
+      E(50, 57, 32, 27, '#FFB45C') + L('M44,33 L45,39 M50,31 L50,38 M56,33 L55,39', 2.6, '#D98A2E') +
+      eyes(39, 61, 55) + P('M47,62 L53,62 L50,65.5Z', '#FF7A9A') + L('M45,67 Q47.5,70 50,67 Q52.5,70 55,67', 2.4) +
+      L('M30,63 L17,61 M30,67 L17,70 M70,63 L83,61 M70,67 L83,70', 2.2) + blush(32, 68, 63) + shine(38, 40, 6, 3),
+    rabbit: () => E(38, 24, 8, 20, '#FFFFFF', -8) + E(62, 24, 8, 20, '#FFFFFF', 8) +
+      Ef(38, 26, 3.6, 13, '#FFB3C7', -8) + Ef(62, 26, 3.6, 13, '#FFB3C7', 8) +
+      C(50, 61, 27, '#FFFFFF') + eyes(40, 60, 57) + P('M47,65 Q50,63 53,65 Q50,68.5 47,65Z', '#FF8FB0') +
+      L('M50,67 L50,70 M46,71 Q50,73 54,71', 2.4) + R(47, 71, 6, 5, 1.5, '#FFFFFF') + blush(33, 67, 66),
+    fox: () => P('M18,42 L20,11 L42,28Z', '#FF8A3D') + P('M82,42 L80,11 L58,28Z', '#FF8A3D') +
+      Pf('M24,34 L25,19 L35,28Z', '#5A3A2E') + Pf('M76,34 L75,19 L65,28Z', '#5A3A2E') +
+      P('M16,42 Q18,26 50,26 Q82,26 84,42 Q86,62 50,84 Q14,62 16,42Z', '#FF8A3D') +
+      Pf('M20,50 Q34,58 50,60 Q66,58 80,50 Q76,66 50,82 Q24,66 20,50Z', '#FFF4E6') +
+      E(50, 71, 4.6, 3.3, K) + eyes(38, 62, 48) + blush(28, 72, 56) + shine(34, 36, 6, 3),
+    panda: () => C(25, 31, 10, K) + C(75, 31, 10, K) + E(50, 56, 32, 28, '#FFFFFF') +
+      Ef(37, 54, 7.5, 9.5, K, 25) + Ef(63, 54, 7.5, 9.5, K, -25) +
+      Cf(38.5, 52, 2.6, '#fff') + Cf(61.5, 52, 2.6, '#fff') + E(50, 65, 4.4, 3.2, K) + smile(50, 69, 4) + blush(27, 73, 64),
+    lion: () => bumps(50, 55, 34, 12, 10, '#E0892E') + C(33, 35, 7, '#FFC857') + C(67, 35, 7, '#FFC857') +
+      C(50, 56, 25, '#FFC857') + E(50, 66, 12, 8.5, '#FFE7A8') +
+      P('M45.5,61 Q50,59 54.5,61 Q52,65 50,65 Q48,65 45.5,61Z', K) + L('M50,65 L50,68 M45,69 Q50,72 55,69', 2.4) +
+      eyes(41, 59, 53) + blush(34, 66, 62),
+    cow: () => P('M32,32 Q26,20 32,14 Q35,24 40,29Z', '#FFF1C9') + P('M68,32 Q74,20 68,14 Q65,24 60,29Z', '#FFF1C9') +
+      E(19, 45, 11, 6, '#FFFFFF', -20) + E(81, 45, 11, 6, '#FFFFFF', 20) +
+      E(50, 50, 27, 27, '#FFFFFF') + Pf('M28,40 Q34,28 44,34 Q46,44 36,48 Q28,48 28,40Z', K) + Pf('M66,30 Q76,32 74,42 Q68,44 64,38Z', K) +
+      E(50, 69, 21, 13, '#FFB3C7') + Ef(43, 69, 2.6, 3.4, K) + Ef(57, 69, 2.6, 3.4, K) + eyes(40, 60, 50),
+    pig: () => P('M22,36 L26,17 L40,30Z', '#FFB3C7') + P('M78,36 L74,17 L60,30Z', '#FFB3C7') +
+      C(50, 55, 30, '#FFC4D6') + E(50, 63, 12, 9, '#FF9DBA') + Ef(46, 63, 2.2, 3, K) + Ef(54, 63, 2.2, 3, K) +
+      eyes(37, 63, 49) + blush(29, 71, 60) + smile(50, 76, 4) + shine(38, 36, 6, 3),
+    sheep: () => E(19, 55, 10, 5.5, '#F5DEC4', -15) + E(81, 55, 10, 5.5, '#F5DEC4', 15) +
+      bumps(50, 48, 30, 11, 9, '#FFFFFF') + E(50, 60, 17, 20, '#F5DEC4') + bumps(50, 38, 13, 7, 5, '#FFFFFF') +
+      eyes(43, 57, 58) + E(50, 67, 3.4, 2.4, K) + smile(50, 71, 3.4) + blush(38, 62, 66),
+    mouse: () => C(25, 32, 15, '#B9B6C9') + C(75, 32, 15, '#B9B6C9') + Cf(25, 32, 8.5, '#FFB3C7') + Cf(75, 32, 8.5, '#FFB3C7') +
+      E(50, 59, 26, 24, '#C9C6D8') + eyes(41, 59, 55) + C(50, 65, 3.8, '#FF8FB0') +
+      L('M36,66 L22,64 M36,70 L22,72 M64,66 L78,64 M64,70 L78,72', 2.2) + smile(50, 71, 3.5) + blush(35, 65, 65),
+    frog: () => C(32, 33, 12, '#7ED957') + C(68, 33, 12, '#7ED957') + E(50, 60, 35, 25, '#7ED957') +
+      Cf(32, 33, 7, '#fff') + Cf(68, 33, 7, '#fff') + eye(32, 34, .95) + eye(68, 34, .95) +
+      L('M33,66 Q50,78 67,66', 3) + Cf(46, 56, 1.4, K) + Cf(54, 56, 1.4, K) + blush(26, 74, 64, '#FF9BB8') + shine(26, 48, 6, 3),
+    chick: () => E(24, 64, 7, 11, '#FFC21A', 25) + E(76, 64, 7, 11, '#FFC21A', -25) + C(50, 57, 30, '#FFD93D') +
+      L('M48,28 Q45,19 51,17 M50,28 Q55,20 59,22', 3) + P('M43,62 L50,56 L57,62 L50,68Z', '#FF9A3C') +
+      eyes(40, 60, 51) + blush(31, 69, 61) + L('M40,86 L37,93 M60,86 L63,93', 3, '#FF9A3C') + shine(38, 40, 6, 3),
+    penguin: () => E(21, 60, 6, 16, '#34405E', 18) + E(79, 60, 6, 16, '#34405E', -18) + E(40, 91, 8, 4, '#FFA53C') + E(60, 91, 8, 4, '#FFA53C') +
+      E(50, 56, 28, 34, '#34405E') + Pf('M50,32 Q64,30 68,44 Q74,70 50,86 Q26,70 32,44 Q36,30 50,32Z', '#FFFFFF') +
+      eyes(42, 58, 46) + P('M44,53 L56,53 L50,60Z', '#FFA53C') + blush(35, 65, 56),
+    duck: () => E(50, 68, 32, 20, '#FFD93D') + P('M20,62 L10,50 L24,55Z', '#FFD93D') + C(62, 40, 17, '#FFD93D') +
+      P('M76,40 Q92,40 91,47 Q85,52 76,50Z', '#FF9A3C') + eye(66, 37) + P('M34,64 Q48,56 62,66 Q48,76 34,64Z', '#FFC21A') +
+      Ef(66, 47, 4, 2.6, '#FF8FB0', 0, .75) + shine(52, 30, 5, 3),
+    chicken: () => P('M20,56 Q8,42 18,36 Q24,46 28,50Z', '#FFFFFF') + E(46, 66, 28, 22, '#FFFFFF') + C(66, 38, 15, '#FFFFFF') +
+      P('M57,27 Q57,16 63,20 Q65,11 71,18 Q77,15 75,27Z', '#FF4D4D') + P('M80,37 L91,42 L80,46Z', '#FFA53C') + E(77, 50, 3.4, 5.4, '#FF4D4D') +
+      eye(69, 36) + P('M32,64 Q44,56 56,66 Q44,76 32,64Z', '#F2EDF6') + L('M40,87 L38,95 M54,87 L56,95', 3, '#FFA53C'),
+    horse: () => P('M34,26 L37,8 L46,22Z', '#B06B3C') + P('M66,26 L63,8 L54,22Z', '#B06B3C') +
+      P('M32,30 Q50,18 68,30 Q72,56 64,78 Q50,90 36,78 Q28,56 32,30Z', '#C9834F') + Pf('M46,30 L54,30 L52,58 L48,58Z', '#FFFFFF') +
+      P('M40,20 Q50,10 60,20 Q56,32 50,29 Q44,32 40,20Z', '#5A3A2E') + E(50, 76, 14, 10, '#E8B08A') +
+      Ef(45, 76, 2, 3, K) + Ef(55, 76, 2, 3, K) + eyes(39, 61, 46) + blush(34, 66, 58),
+    unicorn: () => P('M34,26 L37,10 L46,22Z', '#FFFFFF') + P('M66,26 L63,10 L54,22Z', '#FFFFFF') +
+      P('M32,30 Q50,18 68,30 Q72,56 64,78 Q50,90 36,78 Q28,56 32,30Z', '#FFFFFF') + P('M45,22 L50,1 L55,22Z', '#FFD447') +
+      L('M46.5,16 L53.5,14 M47.5,10 L52.5,9', 2.2) + C(62, 24, 7, '#FF8FB8') + C(69, 33, 7, '#A9D4FF') + C(72, 44, 6, '#D4B8FF') + C(40, 22, 6, '#FFD86B') +
+      E(50, 76, 14, 10, '#FFE0EC') + Ef(45, 76, 2, 3, K) + Ef(55, 76, 2, 3, K) + eyes(40, 60, 47) + blush(34, 66, 58),
+    elephant: () => E(21, 50, 18, 22, '#A7B4C9') + E(79, 50, 18, 22, '#A7B4C9') + Ef(23, 51, 10.5, 14, '#FFC4D6') + Ef(77, 51, 10.5, 14, '#FFC4D6') +
+      C(50, 47, 25, '#B7C3D6') + P('M43,60 Q43,80 35,86 Q33,93 40,93 Q55,89 57,61Z', '#B7C3D6') +
+      L('M44,72 L51,73 M42,80 L48,82', 2.2) + eyes(41, 59, 45) + blush(33, 67, 55) + shine(40, 30, 6, 3),
+    giraffe: () => P('M42,98 L45,48 L59,48 L62,98Z', '#FFC857') + Ef(52, 62, 4, 5, '#C9834F') + Ef(51, 80, 4.5, 4, '#C9834F') + Ef(58, 72, 2.6, 3.4, '#C9834F') +
+      L('M43,20 L45,28 M57,20 L55,28', 3) + C(43, 17, 4, '#C9834F') + C(57, 17, 4, '#C9834F') +
+      E(30, 31, 8, 4, '#FFC857', -25) + E(70, 31, 8, 4, '#FFC857', 25) + E(50, 36, 17, 14, '#FFC857') +
+      E(50, 44, 11, 7.5, '#F7DDA0') + Ef(46, 44, 1.6, 2.2, K) + Ef(54, 44, 1.6, 2.2, K) + eyes(43, 57, 32, .85) + Ef(38, 30, 3, 2, '#C9834F'),
+    hippo: () => C(30, 26, 6, '#B6A3D9') + C(70, 26, 6, '#B6A3D9') + E(50, 44, 26, 22, '#B6A3D9') +
+      E(50, 67, 31, 20, '#C9BAE6') + Ef(40, 61, 3, 4, K) + Ef(60, 61, 3, 4, K) + L('M34,73 Q50,81 66,73', 2.6) +
+      R(41, 74, 6, 6, 1.5, '#FFFFFF') + R(53, 74, 6, 6, 1.5, '#FFFFFF') + eyes(40, 60, 39) + blush(24, 76, 66),
+    squirrel: () => P('M58,82 Q94,78 88,44 Q84,18 64,22 Q54,27 64,35 Q76,43 71,57 Q66,69 55,71Z', '#C9834F') +
+      L('M72,34 Q80,44 76,58', 2.4, '#A86B3C') + E(44, 69, 16, 18, '#D99A62') + Ef(40, 73, 8, 11, '#FFE7C9') +
+      P('M35,29 L37,17 L46,29Z', '#D99A62') + C(40, 43, 15, '#D99A62') + eye(35, 41) + C(26, 46, 2.4, K) + Ef(33, 49, 3.6, 2.2, '#FF8FB0', 0, .75) +
+      E(30, 66, 6, 7, '#B06B3C') + P('M24,62 Q30,56 36,62Z', '#7A4A2A'),
+    turtle: () => E(30, 77, 6, 8, '#8BD46A') + E(64, 77, 6, 8, '#8BD46A') + P('M84,72 L92,74 L84,76Z', '#8BD46A') + C(84, 62, 11, '#8BD46A') +
+      P('M16,72 Q18,34 50,32 Q80,34 82,72Z', '#3FAE6A') + L('M38,40 L44,52 L56,52 L62,40 M44,52 L38,70 M56,52 L62,70 M28,56 L38,56 M62,56 L72,56', 2.4, '#2E8C54') +
+      R(12, 69, 74, 8, 4, '#2E8C54') + eye(87, 59, .8) + L('M82,66 Q86,69 90,66', 2.2) + shine(34, 42, 7, 3.5),
+    snail: () => L('M20,70 L14,52 M27,70 L29,50', 3) + C(14, 50, 3.5, K) + C(29, 48, 3.5, K) +
+      P('M8,82 Q10,70 24,70 L82,70 Q92,70 90,82Z', '#FFD6A5') + C(58, 50, 24, '#FF8FB0') +
+      L('M58,50 a4,4 0 1 1 8,0 a8,8 0 1 1 -16,0 a12,12 0 1 1 24,0 a16,16 0 1 1 -32,0', 2.6) + smile(20, 76, 3) + shine(48, 34, 6, 3),
+    fish: () => P('M68,50 L90,33 L88,67Z', '#4A9BF0') + P('M10,50 Q28,24 56,27 Q76,31 78,50 Q76,69 56,73 Q28,76 10,50Z', '#7CCBFF') +
+      P('M40,28 Q48,18 58,28Z', '#4A9BF0') + L('M50,32 Q56,50 50,68 M60,34 Q65,50 60,66', 2.4, '#4A9BF0') +
+      eye(28, 46) + L('M14,54 Q18,57 22,54', 2.4) + shine(36, 36, 7, 3),
+    octopus: () => P('M22,50 Q14,80 26,86 Q34,80 32,66 Q36,86 46,86 Q50,76 50,66 Q52,86 58,86 Q66,80 68,66 Q66,82 76,86 Q88,80 78,50Z', '#B98CFF') +
+      P('M20,52 Q18,14 50,14 Q82,14 80,52 Q50,62 20,52Z', '#B98CFF') + eyes(40, 60, 38) + smile(50, 45, 5) + blush(31, 69, 45) +
+      Cf(34, 24, 3, '#D9C2FF') + Cf(64, 22, 4, '#D9C2FF') + Cf(72, 34, 2.4, '#D9C2FF'),
+    crab: () => L('M26,56 L18,42 M74,56 L82,42 M22,66 L10,70 M22,74 L12,82 M78,66 L90,70 M78,74 L88,82', 3.2) +
+      P('M8,34 Q8,20 20,20 Q28,22 26,30 L18,32 L24,38 Q16,44 8,34Z', '#FF5C5C') + P('M92,34 Q92,20 80,20 Q72,22 74,30 L82,32 L76,38 Q84,44 92,34Z', '#FF5C5C') +
+      L('M40,48 L37,34 M60,48 L63,34', 3) + C(37, 31, 5.5, '#fff') + C(63, 31, 5.5, '#fff') + Cf(37.5, 31.5, 2.6, K) + Cf(63.5, 31.5, 2.6, K) +
+      E(50, 64, 30, 19, '#FF5C5C') + smile(50, 66, 6) + blush(33, 67, 64, '#FFB3C7') + shine(38, 54, 7, 3),
+    butterfly: () => E(30, 36, 19, 16, '#FF8FB8', -20) + E(70, 36, 19, 16, '#FF8FB8', 20) + E(33, 66, 14, 12, '#FFC857', 20) + E(67, 66, 14, 12, '#FFC857', -20) +
+      Cf(27, 34, 5, '#FFD0E5') + Cf(73, 34, 5, '#FFD0E5') + Cf(32, 67, 4, '#FFE7A8') + Cf(68, 67, 4, '#FFE7A8') +
+      E(50, 54, 5.5, 25, '#6B4A8C') + C(50, 27, 7, '#6B4A8C') + L('M47,21 Q42,10 36,9 M53,21 Q58,10 64,9', 2.6) + Cf(48, 26, 1.3, '#fff') + Cf(52.5, 26, 1.3, '#fff'),
+    dino: () => P('M10,76 Q20,70 30,60 Q38,50 50,50 L60,50 Q62,26 76,22 Q92,20 91,34 Q90,46 76,46 L72,50 Q80,66 76,86 L66,86 L64,76 L44,76 L42,86 L32,86 L30,77 Q20,80 10,76Z', '#8BD46A') +
+      P('M38,52 L42,42 L48,50Z', '#FFC857') + P('M50,50 L55,40 L60,49Z', '#FFC857') + P('M61,40 L64,30 L68,38Z', '#FFC857') +
+      Pf('M44,58 Q54,54 64,60 Q62,72 50,72 Q44,70 44,58Z', '#C8F08F') + eye(80, 30) + L('M80,40 Q85,43 89,39', 2.4) + Ef(74, 38, 3.4, 2.2, '#FF8FB0', 0, .75),
+    mole: () => E(50, 58, 31, 29, '#8B6A55') + E(50, 69, 18, 13, '#C9A48A') + E(50, 61, 7.5, 5.5, '#FF8FB0') +
+      L('M36,49 Q40,45 44,49 M56,49 Q60,45 64,49', 2.8) + L('M34,64 L22,62 M34,69 L22,71 M66,64 L78,62 M66,69 L78,71', 2.2) +
+      smile(50, 71, 4) + blush(33, 67, 60) + P('M28,82 L26,90 M32,84 L31,91', '#FFE0C7') +
+      E(30, 85, 7, 5, '#FFD6C4') + E(70, 85, 7, 5, '#FFD6C4') + shine(38, 40, 7, 3.5),
+    baby: () => C(22, 56, 6, '#FFE0C7') + C(78, 56, 6, '#FFE0C7') + C(50, 56, 28, '#FFE0C7') + L('M48,29 Q56,22 51,17', 3) +
+      eyes(40, 60, 54) + blush(32, 68, 63) + C(50, 71, 6, '#7CCBFF') + L('M44,71 L56,71', 2.4) + shine(38, 40, 6, 3),
+    // ── 먹거리 ──
+    apple: () => P('M50,30 Q36,20 24,30 Q12,42 18,62 Q26,88 42,88 Q46,86 50,84 Q54,86 58,88 Q74,88 82,62 Q88,42 76,30 Q64,20 50,30Z', '#FF4D4D') +
+      L('M50,30 Q50,20 54,13', 3.6) + P('M54,20 Q64,9 75,15 Q66,26 54,20Z', '#6CCB5F') + shine(32, 44, 7, 4),
+    banana: () => P('M22,24 Q14,62 42,80 Q66,94 88,78 Q90,72 84,72 Q64,82 46,70 Q30,56 32,26 Q30,18 22,24Z', '#FFD93D') +
+      L('M34,34 Q36,58 54,70', 2.2, '#E8B51F') + P('M22,24 L20,16 L28,18Z', '#8B6A55') + shine(28, 50, 3, 8, 10),
+    strawberry: () => P('M50,90 Q22,74 20,46 Q20,30 36,30 Q44,30 50,34 Q56,30 64,30 Q80,30 80,46 Q78,74 50,90Z', '#FF4D6D') +
+      [[34, 46], [50, 48], [66, 46], [42, 60], [58, 60], [50, 72], [34, 62], [66, 62]].map(([x, y]) => Ef(x, y, 1.8, 2.8, '#FFE9A8')).join('') +
+      P('M30,32 L40,26 L44,16 L50,25 L56,16 L60,26 L70,32 L57,35 L50,42 L43,35Z', '#6CCB5F') + shine(30, 50, 3.5, 7, 15),
+    grapes: () => L('M52,16 Q54,8 60,6', 3.4) + P('M52,18 Q66,8 76,16 Q66,26 52,18Z', '#6CCB5F') +
+      [[38, 34], [52, 32], [66, 34], [45, 47], [59, 47], [38, 60], [52, 60], [66, 58], [45, 73], [59, 73], [52, 86]].map(([x, y]) => C(x, y, 8.5, '#9C6BFF') + Cf(x - 2.5, y - 3, 2, '#fff', .6)).join(''),
+    watermelon: () => P('M8,38 L92,38 Q90,86 50,88 Q10,86 8,38Z', '#3FAE6A') + Pf('M14,38 L86,38 Q84,80 50,82 Q16,80 14,38Z', '#FFFFFF') +
+      P('M17,38 L83,38 Q81,76 50,78 Q19,76 17,38Z', '#FF5C6C') + [[34, 50], [50, 56], [66, 50], [42, 66], [58, 66]].map(([x, y]) => Ef(x, y, 1.8, 3, K)).join(''),
+    pear: () => P('M50,22 Q60,22 60,36 Q60,44 68,53 Q80,67 70,83 Q60,92 50,92 Q40,92 30,83 Q20,67 32,53 Q40,44 40,36 Q40,22 50,22Z', '#C8E26A') +
+      L('M50,22 Q50,14 55,10', 3.4) + P('M54,16 Q64,6 72,12 Q64,22 54,16Z', '#6CCB5F') + shine(36, 64, 4, 8, 10),
+    cucumber: () => R(12, 36, 76, 30, 15, '#6CCB5F', -24) + Cf(34, 58, 2, '#B8EB9A') + Cf(48, 50, 2, '#B8EB9A') + Cf(62, 43, 2, '#B8EB9A') + Cf(42, 62, 1.6, '#B8EB9A') +
+      eyes(44, 58, 47, .8) + smile(52, 55, 3.5) + blush(38, 64, 55),
+    cheese: () => P('M10,74 L10,46 L78,24 L90,46 L90,74Z', '#FFD447') + P('M10,46 L78,24 L90,46Z', '#FFE58A') +
+      Ef(30, 60, 6, 5, '#F2B61F') + Ef(56, 64, 5, 4.5, '#F2B61F') + Ef(76, 56, 4, 5, '#F2B61F') + Ef(44, 50, 3, 2.4, '#F2B61F'),
+    ramen: () => P('M58,8 L63,6 L46,50 L41,50Z', '#C9834F') + P('M66,10 L71,9 L52,50 L47,50Z', '#C9834F') +
+      P('M10,50 L90,50 Q88,84 50,88 Q12,84 10,50Z', '#FF7A45') + E(50, 50, 40, 9, '#FFE7A8') +
+      L('M22,50 Q26,40 30,50 Q34,40 38,50 M54,50 Q58,40 62,50', 2.6, '#E8A33C') + E(70, 48, 9, 5.5, '#FFFFFF') + Cf(70, 48, 3, '#FFC21A') +
+      L('M24,66 L32,66 M44,72 L56,72 M68,66 L76,66', 2.6, '#FFFFFF'),
+    fishcake: () => R(47, 4, 6, 92, 3, '#E8C28B') + [16, 38, 60].map(y => P(`M24,${y + 4} Q50,${y - 4} 76,${y + 6} L76,${y + 20} Q50,${y + 10} 24,${y + 16}Z`, '#F5C77E')).join('') +
+      L('M34,24 L40,22 M60,46 L66,48 M34,68 L40,66', 2.2, '#D99A4A'),
+    milk: () => P('M28,36 L72,36 L72,90 L28,90Z', '#FFFFFF') + P('M28,36 L38,16 L62,16 L72,36Z', '#7CCBFF') + R(36, 8, 28, 8, 2, '#FFFFFF') +
+      R(28, 54, 44, 20, 0, '#7CCBFF') + Pf('M50,57 Q57,65 50,70 Q43,65 50,57Z', '#FFFFFF') + shine(34, 80, 2.5, 7, 0),
+    donut: () => `<path d="M14,52 a36,36 0 1 0 72,0 a36,36 0 1 0 -72,0Z M40,52 a10,10 0 1 1 20,0 a10,10 0 1 1 -20,0Z" fill="#E8B06A" fill-rule="evenodd" ${st}/>` +
+      `<path d="M19,48 Q20,20 50,18 Q80,20 81,48 Q80,58 72,56 Q66,66 58,58 Q50,66 42,60 Q34,66 28,58 Q20,60 19,48Z M40,50 a10,10 0 1 0 20,0 a10,10 0 1 0 -20,0Z" fill="#FF8FB8" fill-rule="evenodd" ${st}/>` +
+      [[30, 34, '#FFE14D', 30], [44, 26, '#7CCBFF', -20], [62, 28, '#FFFFFF', 40], [72, 40, '#7ED957', -30], [28, 48, '#9C6BFF', 10]].map(([x, y, c, r]) => `<rect x="${x - 4}" y="${y - 1.6}" width="8" height="3.2" rx="1.6" fill="${c}" transform="rotate(${r} ${x} ${y})"/>`).join(''),
+    lollipop: () => R(47, 50, 6, 46, 3, '#FFFFFF') + C(50, 38, 29, '#FF7AB8') +
+      L('M50,38 a5,5 0 1 1 10,0 a10,10 0 1 1 -20,0 a15,15 0 1 1 30,0 a20,20 0 1 1 -40,0', 4.5, '#FFD0E5') + shine(38, 24, 6, 3),
+    icecream: () => P('M30,52 L70,52 L50,95Z', '#E8B06A') + L('M36,58 L58,80 M46,56 L64,72 M64,58 L42,80 M54,56 L36,72', 2, '#C9873F') +
+      P('M25,54 Q19,22 50,20 Q81,22 75,54 Q67,60 59,54 Q50,62 41,54 Q33,60 25,54Z', '#FF9EC4') + C(53, 16, 6.5, '#FF4D4D') + L('M53,10 Q56,4 62,4', 2.4) + shine(36, 32, 6, 3),
+    // ── 물건·자연 ──
+    hat: () => E(50, 68, 42, 13, '#FFE7A8') + P('M27,66 Q27,34 50,34 Q73,34 73,66Z', '#FFE7A8') +
+      P('M27,56 Q50,63 73,56 L73,65 Q50,72 27,65Z', '#FF5C9A') + C(66, 58, 5, '#FFFFFF') + Cf(66, 58, 2, '#FFC21A'),
+    car: () => P('M8,68 L8,54 Q10,47 18,45 L30,43 L40,28 Q44,24 52,24 L66,24 Q72,24 76,30 L84,43 Q92,45 92,53 L92,68Z', '#FF5C5C') +
+      P('M43,30 L50,30 L50,43 L35,43Z', '#BFE6FF') + P('M56,30 L66,30 Q70,30 72,34 L76,43 L56,43Z', '#BFE6FF') +
+      C(28, 70, 10, '#3A3440') + Cf(28, 70, 4, '#FFFFFF') + C(72, 70, 10, '#3A3440') + Cf(72, 70, 4, '#FFFFFF') + Ef(89, 53, 2, 3, '#FFE14D') + shine(22, 52, 6, 2.6, 0),
+    plane: () => P('M42,50 L52,50 L40,22 L32,22Z', '#7CCBFF') + P('M10,54 Q10,45 21,45 L78,45 Q93,46 93,52 Q93,59 78,59 L21,59 Q10,59 10,54Z', '#FFFFFF') +
+      P('M16,46 L9,28 L20,28 L29,46Z', '#FF5C5C') + P('M42,54 L56,54 L44,82 L34,82Z', '#7CCBFF') +
+      Cf(56, 51, 2.6, '#7CCBFF') + Cf(64, 51, 2.6, '#7CCBFF') + Cf(72, 51, 2.6, '#7CCBFF') + P('M82,47 Q90,48 91,52 L82,52Z', '#BFE6FF'),
+    bike: () => `<circle cx="24" cy="66" r="16" fill="none" stroke="${K}" stroke-width="4.5"/><circle cx="76" cy="66" r="16" fill="none" stroke="${K}" stroke-width="4.5"/>` +
+      L('M24,66 L42,40 L68,40 L76,66 M42,40 L52,66 L68,40 M24,66 L52,66', 5, '#FF5C9A') + L('M40,32 L48,32 M68,40 L64,28 L72,26', 4) + Cf(24, 66, 3, K) + Cf(76, 66, 3, K) + C(52, 66, 4, '#FFD447'),
+    umbrella: () => L('M50,50 L50,82 Q50,91 42,91 Q35,91 35,84', 4.5) +
+      P('M8,52 Q10,15 50,13 Q90,15 92,52 Q81,44 71,52 Q60,44 50,52 Q40,44 29,52 Q19,44 8,52Z', '#FF5C9A') +
+      L('M50,13 Q38,30 29,52 M50,13 Q62,30 71,52 M50,13 L50,52', 2.4) + L('M50,13 L50,7', 3.4) + shine(26, 32, 6, 3, -40),
+    guitar: () => R(45, 4, 10, 36, 2, '#8B5A3C') + R(42, 2, 16, 10, 3, '#5A3A2E') +
+      P('M50,30 Q36,30 36,44 Q36,50 40,54 Q26,58 26,72 Q26,93 50,93 Q74,93 74,72 Q74,58 60,54 Q64,50 64,44 Q64,30 50,30Z', '#FF9A3C') +
+      Cf(50, 62, 6.5, K) + R(40, 76, 20, 5, 2, '#8B5A3C') + L('M47,8 L47,78 M53,8 L53,78', 1.2, '#FFF1C9'),
+    balloon: () => L('M50,78 Q43,86 50,95', 2.4) + P('M50,72 Q24,64 22,40 Q22,13 50,11 Q78,13 78,40 Q76,64 50,72Z', '#FF5C9A') +
+      P('M45,72 L55,72 L50,78Z', '#FF5C9A') + shine(36, 28, 5, 9, 20),
+    star: () => P(starD(50, 54, 42, 19), '#FFD447') + eyes(42, 58, 52, .85) + smile(50, 60, 4) + blush(36, 64, 60),
+    tulip: () => R(47, 52, 6, 44, 3, '#6CCB5F') + P('M50,92 Q26,80 24,62 Q40,66 50,84Z', '#6CCB5F') +
+      P('M28,24 Q26,54 50,60 Q74,54 72,24 L61,34 L50,18 L39,34Z', '#FF5C9A') + shine(36, 38, 3, 7, 10),
+    rainbow: () => [['#FF5C5C', 42], ['#FFB020', 35], ['#FFE14D', 28], ['#6CCB5F', 21], ['#7CCBFF', 14]].map(([c, r]) =>
+      `<path d="M${50 - r},66 A${r},${r} 0 0 1 ${50 + r},66" fill="none" stroke="${c}" stroke-width="8"/>`).join('') +
+      bumps(18, 70, 11, 7, 5, '#FFFFFF') + bumps(82, 70, 11, 7, 5, '#FFFFFF'),
+    note: () => R(36, 26, 6, 48, 2, '#9C6BFF') + R(72, 18, 6, 48, 2, '#9C6BFF') + P('M36,26 L78,16 L78,28 L36,38Z', '#9C6BFF') +
+      E(30, 76, 11, 8.5, '#9C6BFF', -20) + E(66, 68, 11, 8.5, '#9C6BFF', -20) + Cf(27, 73, 2.6, '#fff', .7) + Cf(63, 65, 2.6, '#fff', .7),
+    tooth: () => P('M24,28 Q24,12 40,15 Q50,19 60,15 Q76,12 76,28 Q76,45 69,57 L65,86 Q62,93 58,86 L54,67 Q50,61 46,67 L42,86 Q38,93 35,86 L31,57 Q24,45 24,28Z', '#FFFFFF') +
+      eyes(42, 58, 36) + smile(50, 44, 4) + blush(34, 66, 44) + shine(34, 24, 5, 2.6),
+    ghost: () => P('M20,88 L20,44 Q20,12 50,12 Q80,12 80,44 L80,88 Q73,80 66,88 Q58,80 50,88 Q42,80 34,88 Q27,80 20,88Z', '#FFFFFF') +
+      eyes(40, 60, 44) + E(50, 58, 4, 5, K) + blush(32, 68, 52) + shine(32, 26, 5, 2.6),
+    baseball: () => C(50, 50, 38, '#FFFFFF') + L('M26,20 Q40,50 26,80 M74,20 Q60,50 74,80', 2.6, '#FF4D4D') +
+      L('M29,30 L35,28 M32,40 L38,39 M33,50 L39,50 M32,60 L38,61 M29,70 L35,72 M71,30 L65,28 M68,40 L62,39 M67,50 L61,50 M68,60 L62,61 M71,70 L65,72', 2, '#FF4D4D'),
+    yoyo: () => L('M50,54 L50,6', 2.4) + C(50, 5, 3.5, '#FFD447') + C(50, 56, 32, '#FF5C9A') + C(50, 56, 18, '#FFC4D6') + C(50, 56, 5, '#FFFFFF') + shine(36, 40, 6, 3),
+    // ── 아이콘 ──
+    speaker: () => P('M14,38 L30,38 L50,20 L50,80 L30,62 L14,62Z', '#FFC83D') + L('M62,36 Q70,50 62,64 M72,26 Q86,50 72,74', 5),
+    headphones: () => L('M20,58 Q20,18 50,18 Q80,18 80,58', 6) + R(12, 52, 18, 30, 8, '#FF5C9A') + R(70, 52, 18, 30, 8, '#FF5C9A'),
+    magnifier: () => L('M64,64 L86,86', 10) + L('M64,64 L86,86', 4.5, '#C9834F') + C(42, 42, 26, '#BFE6FF') + shine(32, 32, 7, 4),
+    cards: () => R(14, 20, 40, 56, 8, '#FF8A4C', -12) + R(46, 22, 40, 56, 8, '#FFFFFF', 10) + P(starD(66, 50, 12, 5.5), '#FFD447'),
+    puzzle: () => P('M16,30 L40,30 Q38,16 50,16 Q62,16 60,30 L84,30 L84,54 Q98,52 98,64 Q98,76 84,74 L84,92 L16,92 L16,72 Q30,74 30,62 Q30,50 16,52Z', '#2FBF9F') + shine(28, 42, 6, 3),
+    xylo: () => R(6, 70, 88, 10, 4, '#8B5A3C') + [['#FF4D4D', 8, 64], ['#FFB020', 26, 56], ['#FFE14D', 44, 50], ['#6CCB5F', 62, 44], ['#7CCBFF', 80, 38]].map(([c, x, h]) =>
+      R(x, 66 - h, 14, h, 4, c)).join('') + L('M70,10 L56,40', 4, '#8B5A3C') + C(74, 8, 7, '#FFFFFF'),
+    shapes: () => C(30, 34, 20, '#FF5C5C') + P('M70,12 L92,50 L48,50Z', '#FFD447') + R(12, 58, 34, 34, 5, '#3D7EF5') + P(starD(72, 74, 20, 9), '#9C6BFF'),
+    balloons: () => L('M40,70 Q36,84 44,96 M62,64 Q66,82 58,96', 2.4) + P('M40,70 Q18,64 18,42 Q18,18 40,16 Q62,18 62,42 Q60,64 40,70Z', '#FF5C9A') +
+      P('M62,64 Q44,58 44,38 Q44,16 64,14 Q84,16 84,38 Q82,58 62,64Z', '#7CCBFF') + shine(30, 30, 4, 7, 20) + shine(56, 26, 4, 7, 20),
+    count: () => C(28, 36, 16, '#FF4D4D') + C(72, 36, 16, '#FFD447') + C(50, 72, 16, '#6CCB5F') +
+      `<text x="28" y="43" text-anchor="middle" font-size="20" font-family="Jua,sans-serif" fill="#fff">1</text><text x="72" y="43" text-anchor="middle" font-size="20" font-family="Jua,sans-serif" fill="${K}">2</text><text x="50" y="79" text-anchor="middle" font-size="20" font-family="Jua,sans-serif" fill="#fff">3</text>`,
+    giraffeShadow: () => `<g style="filter:brightness(0)">${''}</g>`,
+    mascot: () => P(starD(50, 54, 44, 21), '#FFD447') + eyes(41, 59, 52) + L('M43,61 Q50,68 57,61', 3) + blush(33, 67, 60) +
+      P('M50,10 L53,3 L56,10Z', '#FFD447') + shine(40, 34, 5, 2.6),
+  };
+  const out = {};
+  for (const k in A) out[k] = `<svg viewBox="0 0 100 100" class="ai" aria-hidden="true">${A[k]()}</svg>`;
+  delete out.giraffeShadow;
+  return out;
+})();
+const art = k => ART[k] || '';
+
 // ───────── 한글놀이 · 숫자놀이 (따라쓰기, 글자 찾기, 몇 개일까, 풍선 터뜨리기) ─────────
 (() => {
   const { $, S, persist, tone, say, confetti, show, modal, closeModal, sparkle } = window.APP;
@@ -1688,35 +1960,36 @@ PICTURES.unshift(...FAIRY_PICTURES);
     return p;
   };
   const JAMO = [
-    { ch: 'ㄱ', name: '기역', word: '기린', emo: '🦒', strokes: [[[70, 70], [225, 70], [220, 160], [185, 250]]] },
-    { ch: 'ㄴ', name: '니은', word: '나비', emo: '🦋', strokes: [[[80, 60], [80, 232], [232, 232]]] },
-    { ch: 'ㄷ', name: '디귿', word: '다람쥐', emo: '🐿️', strokes: [[[80, 70], [222, 70]], [[80, 70], [80, 232], [232, 232]]] },
-    { ch: 'ㄹ', name: '리을', word: '라면', emo: '🍜', strokes: [[[75, 55], [222, 55], [222, 145]], [[80, 145], [222, 145]], [[80, 145], [80, 245], [232, 245]]] },
-    { ch: 'ㅁ', name: '미음', word: '모자', emo: '👒', strokes: [[[80, 70], [80, 232]], [[80, 70], [222, 70], [222, 232]], [[80, 232], [222, 232]]] },
-    { ch: 'ㅂ', name: '비읍', word: '바나나', emo: '🍌', strokes: [[[85, 55], [85, 245]], [[215, 55], [215, 245]], [[85, 145], [215, 145]], [[85, 245], [215, 245]]] },
-    { ch: 'ㅅ', name: '시옷', word: '사과', emo: '🍎', strokes: [['s', [150, 55], [135, 140], [65, 245]], [[148, 145], [235, 245]]] },
-    { ch: 'ㅇ', name: '이응', word: '오리', emo: '🦆', strokes: [circ(150, 150, 85)] },
-    { ch: 'ㅈ', name: '지읒', word: '자동차', emo: '🚗', strokes: [[[75, 62], [218, 62], [150, 150], [65, 245]], [[150, 150], [235, 245]]] },
-    { ch: 'ㅊ', name: '치읓', word: '치즈', emo: '🧀', strokes: [[[150, 28], [150, 68]], [[75, 92], [218, 92], [150, 172], [65, 258]], [[150, 172], [235, 258]]] },
-    { ch: 'ㅋ', name: '키읔', word: '코끼리', emo: '🐘', strokes: [[[70, 70], [225, 70], [220, 160], [185, 250]], [[78, 158], [222, 158]]] },
-    { ch: 'ㅌ', name: '티읕', word: '토끼', emo: '🐰', strokes: [[[80, 60], [222, 60]], [[80, 148], [222, 148]], [[80, 60], [80, 240], [232, 240]]] },
-    { ch: 'ㅍ', name: '피읖', word: '포도', emo: '🍇', strokes: [[[65, 65], [235, 65]], [[115, 65], [110, 232]], [[185, 65], [190, 232]], [[60, 236], [240, 236]]] },
-    { ch: 'ㅎ', name: '히읗', word: '하마', emo: '🦛', strokes: [[[150, 25], [150, 62]], [[75, 88], [225, 88]], circ(150, 185, 62)] },
-    { ch: 'ㅏ', name: '아', word: '아기', emo: '👶', strokes: [[[120, 40], [120, 260]], [[120, 150], [212, 150]]] },
-    { ch: 'ㅑ', name: '야', word: '야구', emo: '⚾', strokes: [[[115, 40], [115, 260]], [[115, 115], [207, 115]], [[115, 185], [207, 185]]] },
-    { ch: 'ㅓ', name: '어', word: '어묵', emo: '🍢', strokes: [[[88, 150], [180, 150]], [[180, 40], [180, 260]]] },
-    { ch: 'ㅕ', name: '여', word: '여우', emo: '🦊', strokes: [[[88, 115], [185, 115]], [[88, 185], [185, 185]], [[185, 40], [185, 260]]] },
-    { ch: 'ㅗ', name: '오', word: '오이', emo: '🥒', strokes: [[[150, 80], [150, 185]], [[50, 192], [250, 192]]] },
-    { ch: 'ㅛ', name: '요', word: '요요', emo: '🪀', strokes: [[[115, 80], [115, 185]], [[185, 80], [185, 185]], [[50, 192], [250, 192]]] },
-    { ch: 'ㅜ', name: '우', word: '우유', emo: '🥛', strokes: [[[50, 108], [250, 108]], [[150, 108], [150, 232]]] },
-    { ch: 'ㅠ', name: '유', word: '유령', emo: '👻', strokes: [[[50, 108], [250, 108]], [[115, 108], [115, 232]], [[185, 108], [185, 232]]] },
-    { ch: 'ㅡ', name: '으', word: '음표', emo: '🎵', strokes: [[[50, 150], [250, 150]]] },
-    { ch: 'ㅣ', name: '이', word: '이빨', emo: '🦷', strokes: [[[150, 40], [150, 260]]] },
+    { ch: 'ㄱ', name: '기역', word: '기린', emo: 'giraffe', strokes: [[[70, 70], [225, 70], [220, 160], [185, 250]]] },
+    { ch: 'ㄴ', name: '니은', word: '나비', emo: 'butterfly', strokes: [[[80, 60], [80, 232], [232, 232]]] },
+    { ch: 'ㄷ', name: '디귿', word: '다람쥐', emo: 'squirrel', strokes: [[[80, 70], [222, 70]], [[80, 70], [80, 232], [232, 232]]] },
+    { ch: 'ㄹ', name: '리을', word: '라면', emo: 'ramen', strokes: [[[75, 55], [222, 55], [222, 145]], [[80, 145], [222, 145]], [[80, 145], [80, 245], [232, 245]]] },
+    { ch: 'ㅁ', name: '미음', word: '모자', emo: 'hat', strokes: [[[80, 70], [80, 232]], [[80, 70], [222, 70], [222, 232]], [[80, 232], [222, 232]]] },
+    { ch: 'ㅂ', name: '비읍', word: '바나나', emo: 'banana', strokes: [[[85, 55], [85, 245]], [[215, 55], [215, 245]], [[85, 145], [215, 145]], [[85, 245], [215, 245]]] },
+    { ch: 'ㅅ', name: '시옷', word: '사과', emo: 'apple', strokes: [['s', [150, 55], [135, 140], [65, 245]], [[148, 145], [235, 245]]] },
+    { ch: 'ㅇ', name: '이응', word: '오리', emo: 'duck', strokes: [circ(150, 150, 85)] },
+    { ch: 'ㅈ', name: '지읒', word: '자동차', emo: 'car', strokes: [[[75, 62], [218, 62], [150, 150], [65, 245]], [[150, 150], [235, 245]]] },
+    { ch: 'ㅊ', name: '치읓', word: '치즈', emo: 'cheese', strokes: [[[150, 28], [150, 68]], [[75, 92], [218, 92], [150, 172], [65, 258]], [[150, 172], [235, 258]]] },
+    { ch: 'ㅋ', name: '키읔', word: '코끼리', emo: 'elephant', strokes: [[[70, 70], [225, 70], [220, 160], [185, 250]], [[78, 158], [222, 158]]] },
+    { ch: 'ㅌ', name: '티읕', word: '토끼', emo: 'rabbit', strokes: [[[80, 60], [222, 60]], [[80, 148], [222, 148]], [[80, 60], [80, 240], [232, 240]]] },
+    { ch: 'ㅍ', name: '피읖', word: '포도', emo: 'grapes', strokes: [[[65, 65], [235, 65]], [[115, 65], [110, 232]], [[185, 65], [190, 232]], [[60, 236], [240, 236]]] },
+    { ch: 'ㅎ', name: '히읗', word: '하마', emo: 'hippo', strokes: [[[150, 25], [150, 62]], [[75, 88], [225, 88]], circ(150, 185, 62)] },
+    { ch: 'ㅏ', name: '아', word: '아기', emo: 'baby', strokes: [[[120, 40], [120, 260]], [[120, 150], [212, 150]]] },
+    { ch: 'ㅑ', name: '야', word: '야구', emo: 'baseball', strokes: [[[115, 40], [115, 260]], [[115, 115], [207, 115]], [[115, 185], [207, 185]]] },
+    { ch: 'ㅓ', name: '어', word: '어묵', emo: 'fishcake', strokes: [[[88, 150], [180, 150]], [[180, 40], [180, 260]]] },
+    { ch: 'ㅕ', name: '여', word: '여우', emo: 'fox', strokes: [[[88, 115], [185, 115]], [[88, 185], [185, 185]], [[185, 40], [185, 260]]] },
+    { ch: 'ㅗ', name: '오', word: '오이', emo: 'cucumber', strokes: [[[150, 80], [150, 185]], [[50, 192], [250, 192]]] },
+    { ch: 'ㅛ', name: '요', word: '요요', emo: 'yoyo', strokes: [[[115, 80], [115, 185]], [[185, 80], [185, 185]], [[50, 192], [250, 192]]] },
+    { ch: 'ㅜ', name: '우', word: '우유', emo: 'milk', strokes: [[[50, 108], [250, 108]], [[150, 108], [150, 232]]] },
+    { ch: 'ㅠ', name: '유', word: '유령', emo: 'ghost', strokes: [[[50, 108], [250, 108]], [[115, 108], [115, 232]], [[185, 108], [185, 232]]] },
+    { ch: 'ㅡ', name: '으', word: '음표', emo: 'note', strokes: [[[50, 150], [250, 150]]] },
+    { ch: 'ㅣ', name: '이', word: '이빨', emo: 'tooth', strokes: [[[150, 40], [150, 260]]] },
   ].map(j => ({ ...j, key: 'h' + j.ch, say: `${j.name}! ${j.word}의 ${j.word[0]}!` }));
 
   const SINO = ['영', '일', '이', '삼', '사', '오', '육', '칠', '팔', '구', '십'];
   const NATIVE = ['', '하나', '둘', '셋', '넷', '다섯', '여섯', '일곱', '여덟', '아홉', '열'];
-  const ITEMS = ['', '🍓', '🐥', '🍎', '🌷', '⭐', '🍩', '🐟', '🎈', '🦋', '🍭'];
+  const ITEMS = ['', 'strawberry', 'chick', 'apple', 'tulip', 'star', 'donut', 'fish', 'balloon', 'butterfly', 'lollipop'];
+  document.querySelectorAll('[data-art]').forEach(e => e.innerHTML = art(e.dataset.art));
   const DIGITS = [
     null,
     [[[150, 40], [150, 262]]],
@@ -1820,10 +2093,10 @@ PICTURES.unshift(...FAIRY_PICTURES);
     $('#tTitle').textContent = it.ch + '  ' + it.name;
     const word = $('#tWord');
     if (it.emo) {
-      word.innerHTML = `<span class="emo">${it.emo}</span><span class="wd"><b>${it.word[0]}</b>${it.word.slice(1)}</span>`;
+      word.innerHTML = `<span class="emo">${art(it.emo)}</span><span class="wd"><b>${it.word[0]}</b>${it.word.slice(1)}</span>`;
       word.onclick = () => say(it.word);
     } else {
-      word.innerHTML = `<span class="cnt">${Array.from({ length: it.n }, () => `<i>${ITEMS[it.n]}</i>`).join('')}</span>`;
+      word.innerHTML = `<span class="cnt">${Array.from({ length: it.n }, () => `<i>${art(ITEMS[it.n])}</i>`).join('')}</span>`;
       word.onclick = () => countAloud(it.n, word.querySelectorAll('i'));
     }
     word.classList.remove('show');
@@ -1950,14 +2223,14 @@ PICTURES.unshift(...FAIRY_PICTURES);
     if (qz.kind === 'letter') {
       const t = JAMO[Math.random() * JAMO.length | 0];
       qz.answer = t; qz.line = `${t.name}${josa(t.name)} 찾아요!`;
-      prompt.innerHTML = `<span class="big">${t.emo}</span><span>${t.name}${josa(t.name)} 찾아요</span>`;
+      prompt.innerHTML = `<span class="big">${art(t.emo)}</span><span>${t.name}${josa(t.name)} 찾아요</span>`;
       choices = shuffle([t, ...pick(JAMO, 3, [t])]);
       box.className = 'qchoices four';
     } else {
       const max = Math.min(10, 3 + qz.round), n = 1 + (Math.random() * max | 0);
       const emo = ITEMS[1 + (Math.random() * 10 | 0)];
       qz.answer = n; qz.line = '몇 개일까요?';
-      prompt.innerHTML = `<span class="items">${Array.from({ length: n }, () => `<i>${emo}</i>`).join('')}</span>`;
+      prompt.innerHTML = `<span class="items${n <= 4 ? ' few' : ''}">${Array.from({ length: n }, () => `<i>${art(emo)}</i>`).join('')}</span>`;
       const others = pick([1, 2, 3, 4, 5, 6, 7, 8, 9, 10].filter(x => Math.abs(x - n) <= 3), 2, [n]);
       choices = shuffle([n, ...others]);
       box.className = 'qchoices three';
@@ -2031,7 +2304,7 @@ PICTURES.unshift(...FAIRY_PICTURES);
     const r = b.getBoundingClientRect(); sparkle(r.left + r.width / 2, r.top + r.height / 2.4, BCOL[n - 1]);
     tone(300 + n * 70, .12, 'square', .08); say(SINO[n]);
     bl.next++;
-    $('#bNext').textContent = bl.next <= 10 ? bl.next : '★';
+    $('#bNext').textContent = bl.next <= 10 ? bl.next : '끝';
     if (bl.next > 10) {
       await wait(700); award(null); confetti();
       [523, 659, 784, 1047, 1319].forEach((f, k) => tone(f, .35, 'triangle', .15, k * .11));
@@ -2115,8 +2388,8 @@ PICTURES.unshift(...FAIRY_PICTURES);
   }
 
   // ───── 1. 짝 맞추기 ─────
-  const MEM = [['🐶', '강아지'], ['🐱', '고양이'], ['🐰', '토끼'], ['🦊', '여우'], ['🐼', '판다'], ['🐸', '개구리'], ['🦄', '유니콘'], ['🐥', '병아리'],
-    ['🍓', '딸기'], ['🍉', '수박'], ['🌈', '무지개'], ['🚗', '자동차'], ['🎈', '풍선'], ['🍦', '아이스크림'], ['🐧', '펭귄'], ['🦁', '사자']];
+  const MEM = [['dog', '강아지'], ['cat', '고양이'], ['rabbit', '토끼'], ['fox', '여우'], ['panda', '판다'], ['frog', '개구리'], ['unicorn', '유니콘'], ['chick', '병아리'],
+    ['strawberry', '딸기'], ['watermelon', '수박'], ['rainbow', '무지개'], ['car', '자동차'], ['balloon', '풍선'], ['icecream', '아이스크림'], ['penguin', '펭귄'], ['lion', '사자']];
   function memory() {
     open('짝 맞추기', () => levelPicker('몇 장으로 할까요?', [['쉬움', '카드 6장', 3], ['보통', '카드 8장', 4], ['어려움', '카드 12장', 6]], startMemory));
   }
@@ -2127,7 +2400,7 @@ PICTURES.unshift(...FAIRY_PICTURES);
     const grid = body.firstChild;
     cards.forEach(([e, name]) => {
       const b = document.createElement('button'); b.className = 'mcard'; b.setAttribute('aria-label', '카드');
-      b.innerHTML = `<span class="in"><span class="face back"></span><span class="face front">${e}</span></span>`;
+      b.innerHTML = `<span class="in"><span class="face back"></span><span class="face front">${art(e)}</span></span>`;
       b.onclick = async () => {
         if (lock || b.classList.contains('up')) return;
         b.classList.add('up'); tone(700, .08, 'sine', .08);
@@ -2147,28 +2420,28 @@ PICTURES.unshift(...FAIRY_PICTURES);
   }
 
   // ───── 2. 그림자 찾기 ─────
-  const SH = [['🐘', '코끼리'], ['🦒', '기린'], ['🐢', '거북이'], ['🦋', '나비'], ['🐇', '토끼'], ['🐬', '돌고래'], ['🦕', '공룡'], ['🐓', '닭'],
-    ['🚲', '자전거'], ['✈️', '비행기'], ['🍌', '바나나'], ['🎸', '기타'], ['🐿️', '다람쥐'], ['🦀', '게'], ['🐌', '달팽이'], ['☂️', '우산'], ['🍐', '배'], ['🐙', '문어']];
+  const SH = [['elephant', '코끼리'], ['giraffe', '기린'], ['turtle', '거북이'], ['butterfly', '나비'], ['rabbit', '토끼'], ['fish', '물고기'], ['dino', '공룡'], ['chicken', '닭'],
+    ['bike', '자전거'], ['plane', '비행기'], ['banana', '바나나'], ['guitar', '기타'], ['squirrel', '다람쥐'], ['crab', '게'], ['snail', '달팽이'], ['umbrella', '우산'], ['pear', '배'], ['octopus', '문어']];
   function shadow() {
     open('그림자 찾기', () => runQuiz({
       rounds: 8, winMsg: '그림자를 다 찾았어요!',
       make: () => {
         const t = SH[Math.random() * SH.length | 0], ch = shuffle([t, ...pick(SH, 2, [t])]);
-        return { t, prompt: `<span class="shadow" id="shBig">${t[0]}</span>`, say: '이 그림자는 누구일까요?', choices: ch.map(c => ({ html: `<span class="ge">${c[0]}</span>`, ok: c === t, label: c[1] })) };
+        return { t, prompt: `<span class="shadow" id="shBig">${art(t[0])}</span>`, say: '이 그림자는 누구일까요?', choices: ch.map(c => ({ html: `<span class="ge">${art(c[0])}</span>`, ok: c === t, label: c[1] })) };
       },
       right: async q => { $('#shBig').classList.add('lit'); say(`${q.t[1]}!`); await W(1400); },
     }));
   }
 
   // ───── 3. 누구 소리일까? ─────
-  const AN = [['🐶', '강아지', '멍멍'], ['🐱', '고양이', '야옹'], ['🐮', '소', '음매'], ['🐷', '돼지', '꿀꿀'], ['🦆', '오리', '꽥꽥'], ['🐔', '닭', '꼬끼오'],
-    ['🐑', '양', '메에'], ['🐸', '개구리', '개굴개굴'], ['🐥', '병아리', '삐약삐약'], ['🦁', '사자', '어흥'], ['🐴', '말', '히히힝'], ['🐭', '쥐', '찍찍']];
+  const AN = [['dog', '강아지', '멍멍'], ['cat', '고양이', '야옹'], ['cow', '소', '음매'], ['pig', '돼지', '꿀꿀'], ['duck', '오리', '꽥꽥'], ['chicken', '닭', '꼬끼오'],
+    ['sheep', '양', '메에'], ['frog', '개구리', '개굴개굴'], ['chick', '병아리', '삐약삐약'], ['lion', '사자', '어흥'], ['horse', '말', '히히힝'], ['mouse', '쥐', '찍찍']];
   function animal() {
     open('누구 소리일까?', () => runQuiz({
       rounds: 8, winMsg: '동물 소리를 다 맞혔어요!',
       make: () => {
         const t = AN[Math.random() * AN.length | 0], ch = shuffle([t, ...pick(AN, 2, [t])]);
-        return { t, prompt: `<span class="bubble">🔊 ${t[2]}!</span>`, say: `${t[2]}! ${t[2]}! 누구 소리일까요?`, choices: ch.map(c => ({ html: `<span class="ge">${c[0]}</span>`, ok: c === t, label: c[1] })) };
+        return { t, prompt: `<span class="bubble">${art('speaker')}<b>${t[2]}!</b></span>`, say: `${t[2]}! ${t[2]}! 누구 소리일까요?`, choices: ch.map(c => ({ html: `<span class="ge">${art(c[0])}</span>`, ok: c === t, label: c[1] })) };
       },
       right: async q => { say(`${q.t[1]}! ${q.t[2]}!`); await W(1500); },
     }));
@@ -2214,12 +2487,12 @@ PICTURES.unshift(...FAIRY_PICTURES);
   function startMole() {
     let score = 0, t0 = performance.now(), timers = [], alive = true;
     const DUR = 25000;
-    $('#gScore').hidden = false; $('#gScore').innerHTML = '🐹 <b>0</b>';
-    body.innerHTML = `<div class="timebar"><i id="mlBar"></i></div><div class="holes">${Array.from({ length: 9 }, (_, i) => `<button class="hole" data-i="${i}" aria-label="구멍"><span class="mole">🐹</span><span class="dirt"></span></button>`).join('')}</div>`;
+    $('#gScore').hidden = false; $('#gScore').innerHTML = art('mole') + '<b>0</b>';
+    body.innerHTML = `<div class="timebar"><i id="mlBar"></i></div><div class="holes">${Array.from({ length: 9 }, (_, i) => `<button class="hole" data-i="${i}" aria-label="구멍"><span class="mole">${art('mole')}</span><span class="dirt"></span></button>`).join('')}</div>`;
     const holes = [...body.querySelectorAll('.hole')];
     holes.forEach(h => h.onclick = () => {
       if (!h.classList.contains('up') || h.classList.contains('hit')) return;
-      h.classList.add('hit'); score++; $('#gScore').innerHTML = `🐹 <b>${score}</b>`;
+      h.classList.add('hit'); score++; $('#gScore').innerHTML = art('mole') + `<b>${score}</b>`;
       tone(880, .12, 'square', .07); burstAt(h);
       setTimeout(() => h.classList.remove('up', 'hit'), 350);
     });
@@ -2267,8 +2540,8 @@ PICTURES.unshift(...FAIRY_PICTURES);
   }
   function xylo() {
     open('실로폰', () => {
-      body.innerHTML = `<div class="songs"><button class="song on" data-s="-1">🎵 마음대로</button>${SONGS.map((s, i) => `<button class="song" data-s="${i}">${s[0]}</button>`).join('')}</div>
-        <div class="songbar" id="sgBar" hidden><div class="prog"><i id="sgProg"></i></div><button class="candy sun" id="sgListen">🎧 들어보기</button></div>
+      body.innerHTML = `<div class="songs"><button class="song on" data-s="-1">${art('note')}마음대로</button>${SONGS.map((s, i) => `<button class="song" data-s="${i}">${s[0]}</button>`).join('')}</div>
+        <div class="songbar" id="sgBar" hidden><div class="prog"><i id="sgProg"></i></div><button class="candy sun" id="sgListen">${art('headphones')}들어보기</button></div>
         <div class="xylo">${NOTES.map((n, i) => `<button class="bar" data-i="${i}" style="--c:${n[2]};--h:${100 - i * 6}%"><span class="pin"></span><b>${n[0]}</b><span class="pin"></span></button>`).join('')}</div>`;
       const bars = [...body.querySelectorAll('.bar')];
       let song = null, pos = 0, demo = false;
@@ -2384,13 +2657,13 @@ PICTURES.unshift(...FAIRY_PICTURES);
 
   // ───── 메인 화면 카드 ─────
   const GAMES = [
-    ['짝 맞추기', '같은 그림 찾기', '🃏', '#FF8A4C', '#D9662A', memory],
-    ['그림자 찾기', '누구 그림자일까?', '<span class="shadow">🦒</span>', '#6C7BE0', '#4B58B8', shadow],
-    ['실로폰', '노래 따라 치기', '🎹', '#E056C8', '#B53BA0', xylo],
-    ['두더지 잡기', '콕콕 잡아요', '🐹', '#A0643C', '#7A4726', mole],
-    ['퍼즐 맞추기', '색칠 그림 퍼즐', '🧩', '#2FA7D9', '#1E82AD', puzzle],
-    ['누구 소리일까?', '동물 소리 맞히기', '🐮', '#7DBE3C', '#5B9624', animal],
-    ['색깔·모양 찾기', '빨간 세모는 어디?', '🔺', '#FF5C7A', '#D63A57', shapes],
+    ['짝 맞추기', '같은 그림 찾기', art('cards'), '#FF8A4C', '#D9662A', memory],
+    ['그림자 찾기', '누구 그림자일까?', `<span class="shadow">${art('giraffe')}</span>`, '#6C7BE0', '#4B58B8', shadow],
+    ['실로폰', '노래 따라 치기', art('xylo'), '#E056C8', '#B53BA0', xylo],
+    ['두더지 잡기', '콕콕 잡아요', art('mole'), '#A0643C', '#7A4726', mole],
+    ['퍼즐 맞추기', '색칠 그림 퍼즐', art('puzzle'), '#2FA7D9', '#1E82AD', puzzle],
+    ['누구 소리일까?', '동물 소리 맞히기', art('cow'), '#7DBE3C', '#5B9624', animal],
+    ['색깔·모양 찾기', '빨간 세모는 어디?', art('shapes'), '#FF5C7A', '#D63A57', shapes],
   ];
   const cards = $('.hub-cards');
   GAMES.forEach(([name, sub, emo, c, cd, fn]) => {

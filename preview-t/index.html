@@ -389,6 +389,11 @@
   .song { display: inline-flex; align-items: center; gap: 6px; } .song .ai { width: 24px; height: 24px; }
   .songbar .candy .ai { width: 26px; height: 26px; }
   .bubble { display: flex; align-items: center; gap: 12px; } .bubble .ai { width: 54px; height: 54px; } .bubble b { font-weight: 400; }
+  .qprompt .items.few i { width: min(96px, 24vw); height: min(96px, 24vw); }
+  .gc { height: 124px; } .gchoices.n4 .gc { height: 112px; }
+  .ge { width: 92px; height: 92px; } .gchoices.n3 .ge { width: min(92px, 24vw); height: min(92px, 24vw); }
+  .gc svg:not(.ai) { width: 84px; height: 84px; }
+  .qc { height: 120px; }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition: none !important; } }
 </style>
 </head>
@@ -2225,7 +2230,7 @@ const art = k => ART[k] || '';
       const max = Math.min(10, 3 + qz.round), n = 1 + (Math.random() * max | 0);
       const emo = ITEMS[1 + (Math.random() * 10 | 0)];
       qz.answer = n; qz.line = '몇 개일까요?';
-      prompt.innerHTML = `<span class="items">${Array.from({ length: n }, () => `<i>${art(emo)}</i>`).join('')}</span>`;
+      prompt.innerHTML = `<span class="items${n <= 4 ? ' few' : ''}">${Array.from({ length: n }, () => `<i>${art(emo)}</i>`).join('')}</span>`;
       const others = pick([1, 2, 3, 4, 5, 6, 7, 8, 9, 10].filter(x => Math.abs(x - n) <= 3), 2, [n]);
       choices = shuffle([n, ...others]);
       box.className = 'qchoices three';
