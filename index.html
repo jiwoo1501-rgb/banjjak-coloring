@@ -350,7 +350,7 @@
   .xb { position: relative; flex: 1; max-width: 64px; height: var(--h); border-radius: 12px; color: #fff;
     background: linear-gradient(90deg, rgba(255,255,255,.45) 0 14%, rgba(255,255,255,0) 30% 64%, rgba(0,0,0,.14) 100%), var(--c);
     box-shadow: inset 0 0 0 2.5px rgba(58,36,71,.85), inset 0 -10px 0 rgba(0,0,0,.12), 0 6px 8px rgba(58,36,71,.25); transform-origin: 50% 50%; }
-  .xb b { position: absolute; left: 50%; bottom: 12%; transform: translateX(-50%); display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
+  .xb b { position: absolute; left: 50%; top: 50%; margin-top: -17px; transform: translateX(-50%); display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
     background: rgba(255,255,255,.92); color: var(--ink); font-weight: 400; font-size: 18px; box-shadow: 0 2px 0 rgba(0,0,0,.15); }
   .xb .pin { position: absolute; left: 50%; width: 11px; height: 11px; margin-left: -5.5px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #FFFFFF, #C9C2B8 60%, #8E8474); box-shadow: 0 0 0 1.5px rgba(58,36,71,.6); }
   .xb .pin.t { top: 11%; } .xb .pin.b { bottom: 30%; }
@@ -2874,6 +2874,18 @@ const art = k => ART[k] ? ART[k].replace('class="ai"', `class="ai" style="--bd:-
           <div class="bars">${NOTES.map((n, i) => `<button class="xb" data-i="${i}" style="--c:${n[2]};--h:${96 - i * 6.4}%" aria-label="${n[0]}"><i class="pin t"></i><b>${n[0]}</b><i class="pin b"></i></button>`).join('')}</div>
           <div class="xfx"></div></div>`;
       const bars = [...body.querySelectorAll('.xb')], fxl = body.querySelector('.xfx');
+      // 나사못이 나무 받침 위에 딱 오도록 맞추기
+      const rails = body.querySelector('.rails');
+      const alignPins = () => {
+        const sr = rails.getBoundingClientRect(); if (!sr.width) return;
+        bars.forEach(b => {
+          const r = b.getBoundingClientRect(), f = (r.left + r.width / 2 - sr.left) / sr.width;
+          const yT = sr.top + sr.height * (46 + 44 * f) / 300, yB = sr.top + sr.height * (250 - 44 * f) / 300;
+          b.querySelector('.pin.t').style.top = (yT - r.top - 5.5) + 'px';
+          const pb = b.querySelector('.pin.b'); pb.style.top = (yB - r.top - 5.5) + 'px'; pb.style.bottom = 'auto';
+        });
+      };
+      alignPins(); const ro2 = new ResizeObserver(alignPins); ro2.observe(body.querySelector('.xylo2'));
       let song = null, pos = 0, demo = false;
       const mark = () => {
         bars.forEach(b => b.classList.remove('next'));
@@ -2904,7 +2916,7 @@ const art = k => ART[k] ? ART[k].replace('class="ai"', `class="ai" style="--bd:-
         for (const i of sg[1]) { if (song !== sg || $('#game').hidden) break; bars[i].classList.add('next'); hit(i); await W(420); bars[i].classList.remove('next'); }
         demo = false; mark();
       };
-      cleanup = () => { song = null; };
+      cleanup = () => { song = null; ro2.disconnect(); };
       say('실로폰을 쳐 봐요!');
     });
   }
