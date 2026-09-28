@@ -3387,12 +3387,14 @@ const FLAGS = (() => {
   // ───── 공통 ─────
   function open(title, render) {
     stop();
+    $('#gBack').onclick = defaultBack;
     $('#gTitle').textContent = title; $('#gScore').hidden = true; $('#gSay').hidden = true;
     body.innerHTML = ''; body.className = 'gbody';
     show('game'); render();
   }
   function stop() { if (cleanup) { cleanup(); cleanup = null; } }
-  $('#gBack').onclick = () => { tone(520); stop(); closeModal(); goHub(); };
+  const defaultBack = () => { tone(520); stop(); closeModal(); goHub(); };
+  $('#gBack').onclick = defaultBack;
   $('#gSay').onclick = () => say(sayLine);
   const fanfare = () => window.APP.fx.win();
   const ding = () => window.APP.fx.ok();
@@ -4873,6 +4875,7 @@ const PLAY = (() => {
 
   function openBook() {
     show('game');
+    $('#gBack').onclick = () => { fx.tap(); goHub(); };
     $('#gTitle').textContent = '스티커북'; $('#gScore').hidden = true; $('#gSay').hidden = true;
     const body = $('#gBody'); body.className = 'gbody';
     const n = got();
@@ -4901,6 +4904,7 @@ const PLAY = (() => {
   const NAMES = { dog: '강아지', cat: '고양이', cow: '소', pig: '돼지', duck: '오리', chicken: '닭', sheep: '양', frog: '개구리', chick: '병아리', lion: '사자', horse: '말' };
   $('#creditsBtn').onclick = () => {
     fx.tap(); show('game');
+    $('#gBack').onclick = () => { fx.tap(); goHub(); };
     $('#gTitle').textContent = '만든 사람들'; $('#gScore').hidden = true; $('#gSay').hidden = true;
     const A = typeof ANIMAL_SOUNDS !== 'undefined' ? ANIMAL_SOUNDS : {};
     $('#gBody').className = 'gbody';
