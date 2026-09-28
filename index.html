@@ -394,6 +394,40 @@
   .ge { width: 92px; height: 92px; } .gchoices.n3 .ge { width: min(92px, 24vw); height: min(92px, 24vw); }
   .gc svg:not(.ai) { width: 84px; height: 84px; }
   .qc { height: 120px; }
+
+  /* ───── 살아있는 느낌: 눈 깜빡임 · 젤리 ───── */
+  .ai .bl { transform-box: fill-box; transform-origin: center; animation: blink 5s var(--bd, 0s) infinite; }
+  @keyframes blink { 0%, 93%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+  .gc.right .ai, .qc.right, .mcard.got .face.front .ai, .stk.boing .stk-art, .greet.hi .gm { animation: jelly .7s; }
+  @keyframes jelly { 30% { transform: scale(1.22, .8); } 50% { transform: scale(.86, 1.14); } 70% { transform: scale(1.08, .95); } 100% { transform: scale(1); } }
+  button.stars-pill { cursor: pointer; }
+  button.stars-pill:active { transform: translateY(3px); box-shadow: 0 2px 0 #E6D2E0; }
+
+  /* ───── 스티커 ───── */
+  .newstk { display: flex; align-items: center; gap: 12px; margin: 0 auto 14px; padding: 8px 18px 8px 8px; border-radius: 22px;
+    background: #FFF6D8; box-shadow: inset 0 0 0 3px #FFC83D; animation: stkin .7s .5s cubic-bezier(.3,1.6,.5,1) backwards; }
+  .newstk .stk-art { width: 72px; height: 72px; display: block; }
+  .newstk > span:last-child, .stkpop > span:last-child { display: flex; flex-direction: column; font-size: 16px; color: var(--ink-soft); text-align: left; }
+  .newstk b, .stkpop b { font-weight: 400; font-size: 26px; color: var(--ink); }
+  @keyframes stkin { from { transform: scale(0) rotate(-25deg); opacity: 0; } }
+  .stkpop { position: fixed; left: 50%; top: calc(18px + env(safe-area-inset-top, 0px)); z-index: 40; display: flex; align-items: center; gap: 10px;
+    padding: 8px 20px 8px 8px; border-radius: 24px; background: #fff; box-shadow: 0 8px 0 #EBCFDF, 0 0 0 4px #FFC83D;
+    transform: translateX(-50%); animation: stkdrop .6s cubic-bezier(.3,1.5,.5,1); transition: transform .35s, opacity .35s; }
+  .stkpop .stk-art { width: 60px; height: 60px; display: block; }
+  .stkpop.out { transform: translate(-50%, -140%); opacity: 0; }
+  @keyframes stkdrop { from { transform: translate(-50%, -160%); } }
+  .stkhead { display: flex; align-items: center; gap: 12px; }
+  .stkbar { flex: 1; height: 20px; border-radius: 10px; background: #fff; box-shadow: inset 0 0 0 3px #E6D2E0; overflow: hidden; }
+  .stkbar i { display: block; height: 100%; background: linear-gradient(90deg, #FFC83D, #FF5C9A); border-radius: 10px; }
+  .stkhead b { font-weight: 400; font-size: 24px; font-variant-numeric: tabular-nums; }
+  .stkhint { margin: 0; text-align: center; font-size: 18px; color: var(--ink-soft); }
+  .stkgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 10px; }
+  .stk { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px 6px; border-radius: 20px; background: #fff; box-shadow: 0 4px 0 #EBCFDF; }
+  .stk .stk-art { width: 64px; height: 64px; display: block; }
+  .stk small { font-size: 15px; }
+  .stk.locked { background: rgba(255,255,255,.55); box-shadow: inset 0 0 0 3px #EEDCE8; }
+  .stk.locked .ai { filter: brightness(0); opacity: .12; }
+  .stk.locked small { color: #CDB6C8; }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition: none !important; } }
 </style>
 </head>
@@ -405,7 +439,8 @@
     <div class="home-head">
       <h1 class="logo hublogo" aria-label="반짝 하엘이 놀이터"><span style="color:#FF5C9A;transform:rotate(-6deg)">반</span><span style="color:#FFC83D;transform:rotate(4deg)">짝</span><span class="gap"> </span><span style="color:#37C9AD;transform:rotate(-3deg)">하</span><span style="color:#6FB8FF;transform:rotate(5deg)">엘</span><span style="color:#A77BFF;transform:rotate(-4deg)">이</span><span class="gap"> </span><span style="color:#FF8A4C;transform:rotate(3deg)">놀</span><span style="color:#2FBF71;transform:rotate(-5deg)">이</span><span style="color:#E056C8;transform:rotate(4deg)">터</span></h1>
       <div class="head-btns">
-        <div class="stars-pill" aria-label="모은 별"><svg viewBox="0 0 40 40"><path d="M20,3 L25,14 L37,15 L28,23 L31,35 L20,29 L9,35 L12,23 L3,15 L15,14Z" fill="#FFC83D" stroke="#3A2447" stroke-width="3" stroke-linejoin="round"/></svg><b id="hubStars">0</b></div>
+        <button class="stars-pill" id="starBtn" aria-label="모은 별과 스티커북"><svg viewBox="0 0 40 40"><path d="M20,3 L25,14 L37,15 L28,23 L31,35 L20,29 L9,35 L12,23 L3,15 L15,14Z" fill="#FFC83D" stroke="#3A2447" stroke-width="3" stroke-linejoin="round"/></svg><b id="hubStars">0</b></button>
+        <button class="candy plain" id="musicBtn" aria-label="배경음악 켜고 끄기"></button>
         <button class="candy plain" id="soundBtn" aria-label="소리 켜고 끄기"></button>
       </div>
     </div>
@@ -431,7 +466,7 @@
       <button class="candy plain" id="homeHub" aria-label="처음 화면"><svg viewBox="0 0 32 32" fill="none" stroke="#3A2447" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"><path d="M5,15 L16,5 L27,15"/><path d="M8,13 L8,27 L24,27 L24,13"/><path d="M13,27 L13,19 L19,19 L19,27"/></svg></button>
       <h2 class="stitle">색칠공부</h2>
       <div class="head-btns">
-        <div class="stars-pill" aria-label="모은 별"><svg viewBox="0 0 40 40"><path d="M20,3 L25,14 L37,15 L28,23 L31,35 L20,29 L9,35 L12,23 L3,15 L15,14Z" fill="#FFC83D" stroke="#3A2447" stroke-width="3" stroke-linejoin="round"/></svg><b id="starCount">0</b></div>
+        <button class="stars-pill" id="starBtn" aria-label="모은 별과 스티커북"><svg viewBox="0 0 40 40"><path d="M20,3 L25,14 L37,15 L28,23 L31,35 L20,29 L9,35 L12,23 L3,15 L15,14Z" fill="#FFC83D" stroke="#3A2447" stroke-width="3" stroke-linejoin="round"/></svg><b id="starCount">0</b></div>
         <button class="candy sky" id="toGallery" aria-label="내 그림 보기"><svg viewBox="0 0 32 32" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><rect x="4" y="6" width="24" height="20" rx="4"/><circle cx="12" cy="13" r="3"/><path d="M5,24 L13,18 L18,22 L22,18 L28,23"/></svg>내 그림</button>
       </div>
     </div>
@@ -528,6 +563,169 @@
 <div class="modal" id="modal" hidden><div class="sheet" id="sheet"></div></div>
 <canvas id="confetti" hidden></canvas>
 
+<script>
+const VOICE_MAP = {"소리 켰어요":"408266b799","색칠공부":"466cd1caf7","하엘아, 안녕":"c739e02949","오늘은 뭐 하고 놀까":"4a6686ba43","콕 칠하기":"d1d80fe6ad","붓으로 그리기":"ca9befda53","지우개":"116bd28b09","와":"20bdcf5c8f","정말 예뻐요":"492b750ff2","별을 받았어요":"757fcc80b6","한글 놀이":"87e1c9d55c","숫자 놀이":"1179297aff","참 잘했어요":"a0bd34b4f2","몇 개일까요":"bad5888262","다시 찾아볼까요":"8a430b2ebe","딩동댕":"39c9512d2a","다 맞혔어요":"6e399ec127","일부터 차례대로 풍선을 터뜨려요":"b7f322af48","풍선을 다 터뜨렸어요":"7c69528f3e","다시 해볼까요":"90dafc0d92","몇 장으로 할까요":"bc99d93842","몇 조각으로 할까요":"01e80527d8","어떤 그림으로 할까요":"cd2d20bd47","같은 그림 두 개를 찾아요":"91d29471bc","이 그림자는 누구일까요":"0350bee9c5","누구 소리일까요":"ac3cb65373","두더지가 나오면 콕 눌러요":"f31515a6c1","시작":"e89cc866ba","반짝이는 건반을 따라 눌러요":"f92437314e","마음대로 쳐 봐요":"fca9ca051d","실로폰을 쳐 봐요":"263827abdd","노래를 다 쳤어요":"0766f0f54f","다른 자리일까요":"2406569ffa","조각을 끌어서 알맞은 자리에 놓아요":"10059766ae","퍼즐을 다 맞췄어요":"cf5480e33c","짝을 다 찾았어요":"6126de5d99","그림자를 다 찾았어요":"68a6fde164","동물 소리를 다 맞혔어요":"fd19bc0f7c","색깔이랑 모양을 다 찾았어요":"42d3b6bbf3","하엘이의 스티커북":"142ec346c3","별을 모으면 스티커가 생겨요":"ff6190baa8","눈꽃 공주":"38c69198e0","숲속 공주":"2988630030","유리구두 공주":"f7cf8e36fd","긴 머리 탑 공주":"586f854f37","마법 호박마차":"f8b40bd131","꽃요정":"fbc522c138","아기 사자":"de09540113","아기 코끼리 서커스":"455f29cdf4","꿀단지 곰돌이":"d90bae3752","리본 생쥐":"2f21e08f5d","눈사람 친구":"05fc5c30a4","노래하는 별이":"5db3bed259","부채춤 달이":"0d3f963234","호랑이와 까치":"e9d3a7cc75","반짝걸즈 무대":"890fac28bf","방울이의 소풍":"9b89929f24","방울이와 강아지":"9d62ddfa62","무지개 유니콘":"5bfaacbda2","공주님과 성":"8bd81bad06","바닷속 인어공주":"144392b976","토끼의 생일파티":"7204770862","고양이와 나비":"81edeaea57","달콤 아이스크림":"e2ed59bb64","빨간색":"92cc3d611c","주황색":"a6d6efea31","노란색":"b21adc2418","연두색":"df3d27f818","초록색":"15b44aa9ca","민트색":"39986655ed","하늘색":"4049d66912","파란색":"62223f2fe1","보라색":"d7a3b2e9cc","연보라색":"b231b9cb0f","분홍색":"190002a77d","연분홍색":"e34a796d52","살구색":"75001c9b16","갈색":"548b4493a5","회색":"5b59ce58f5","검은색":"83bd76e42e","하얀색":"3ae32ccf7f","무지개":"e70debe270","반짝이":"a8182a9b29","하트 무늬":"0c1777d137","별 무늬":"a59cd0f13c","물방울 무늬":"4c6f8d9eee","우주 무늬":"06415d1965","줄무늬":"09f376eb5a","기역, 따라 써 볼까요":"06d3da3573","기역":"67c714efd0","기린의 기":"bae12e2c5c","기린":"0795b44240","기역을 찾아요":"aaf2915945","니은, 따라 써 볼까요":"581cb45e97","니은":"4a944dc438","나비의 나":"3d4d28157d","나비":"fee57e1fd6","니은을 찾아요":"124c3ccb04","디귿, 따라 써 볼까요":"9179acb342","디귿":"7b2f60ff10","다람쥐의 다":"38eb1553dd","다람쥐":"dba6d4f49a","디귿을 찾아요":"00f5b86fb5","리을, 따라 써 볼까요":"3b7558693d","리을":"4e3de77253","라면의 라":"356a32dcdf","라면":"4b917d2ec4","리을을 찾아요":"74a6c9f558","미음, 따라 써 볼까요":"02a688854b","미음":"21cff49381","모자의 모":"a078c3c68d","모자":"a35e68beb3","미음을 찾아요":"d6ccbd93f2","비읍, 따라 써 볼까요":"713760b78e","비읍":"38c9576ce5","바나나의 바":"acb068b7cc","바나나":"11c41eebd9","비읍을 찾아요":"c5d1800b32","시옷, 따라 써 볼까요":"b66cfa9752","시옷":"1ebd30068e","사과의 사":"70c5f5a3ab","사과":"1380d9145e","시옷을 찾아요":"5a54048926","이응, 따라 써 볼까요":"a110ba0925","이응":"f655984129","오리의 오":"80a6cfbbdf","오리":"d96fc2124c","이응을 찾아요":"bd02341194","지읒, 따라 써 볼까요":"50b120d61a","지읒":"067272e3dd","자동차의 자":"74d6f155c1","자동차":"8fb02f3dcc","지읒을 찾아요":"d4e5efa75a","치읓, 따라 써 볼까요":"e660a79dad","치읓":"f7a58944ac","치즈의 치":"c770a0245e","치즈":"7d880b361b","치읓을 찾아요":"37da543a0b","키읔, 따라 써 볼까요":"b89fc256a4","키읔":"c52e73c3c7","코끼리의 코":"e4157aedf6","코끼리":"cbca3e4a95","키읔을 찾아요":"8f11c7bb72","티읕, 따라 써 볼까요":"2c03eb2c49","티읕":"518b43090d","토끼의 토":"f35ee13bd8","토끼":"7830e5d546","티읕을 찾아요":"f1965d1d6d","피읖, 따라 써 볼까요":"95110ab5e7","피읖":"6c18e08383","포도의 포":"7b173a88ee","포도":"4dcf6be28b","피읖을 찾아요":"51419ac51f","히읗, 따라 써 볼까요":"b88b2f66e6","히읗":"17e5b0e1e3","하마의 하":"47e3197eb5","하마":"a35116d52b","히읗을 찾아요":"4aa529df7d","아, 따라 써 볼까요":"b3d164643d","아":"be6b235a02","아기의 아":"6156762c65","아기":"2c96b0a089","아를 찾아요":"0274488885","야, 따라 써 볼까요":"98631a1914","야":"77f4df2c9b","야구의 야":"3a09902ba4","야구":"97283b0795","야를 찾아요":"c87ef02442","어, 따라 써 볼까요":"59bdb40724","어":"196c53c8f9","어묵의 어":"182abfbe50","어묵":"e65ef4ca02","어를 찾아요":"c97aee3ee4","여, 따라 써 볼까요":"cb00a79c09","여":"445287d4d3","여우의 여":"d7fa9edb88","여우":"cfc2df5c1d","여를 찾아요":"34e8e38491","오, 따라 써 볼까요":"c7694aff5b","오":"4a3ea882ac","오이의 오":"784081ebbc","오이":"4672972ea1","오를 찾아요":"adeb1d8364","요, 따라 써 볼까요":"265b098d0f","요":"e8762a2591","요요의 요":"5a6e9e4250","요요":"ff82f2f635","요를 찾아요":"2928bf5e3b","우, 따라 써 볼까요":"131b483015","우":"4118d67c96","우유의 우":"9a715c4e10","우유":"153ff43ea0","우를 찾아요":"77e1655049","유, 따라 써 볼까요":"d7e254c9d1","유":"71c706d652","유령의 유":"070a7669d1","유령":"f71cd6660d","유를 찾아요":"2961144ac2","으, 따라 써 볼까요":"1dc990869f","으":"08906e2255","음표의 음":"651467cf77","음표":"ee8efc4399","으를 찾아요":"48d587ad9a","이, 따라 써 볼까요":"3abb9c6d2a","이":"6c0cd2af1e","이빨의 이":"16e4ccbaa8","이빨":"f65ec1457c","이를 찾아요":"45d7b2309f","일, 따라 써 볼까요":"0f14f5955f","일":"06cf3e90de","하나":"e78498f904","둘":"f8bf7a9390","삼, 따라 써 볼까요":"59b89820b6","삼":"59463e84fb","셋":"0b4af546d3","사, 따라 써 볼까요":"7160f8f270","사":"ec488add9d","넷":"ca5eea5b52","다섯":"fbbd1d1816","육, 따라 써 볼까요":"5822da8fe6","육":"959f80bb16","여섯":"23bcb56d59","칠, 따라 써 볼까요":"9107e1c661","칠":"4259dd769c","일곱":"c0ee2d76b9","팔, 따라 써 볼까요":"ce31be6eda","팔":"c6d6e215b1","여덟":"796c92dfb2","구, 따라 써 볼까요":"b1647438b1","구":"e8b701a283","아홉":"c52d6e38a4","십, 따라 써 볼까요":"e1abf49f8a","십":"bda0208a5c","열":"cfc1e124a6","한 개":"dce9f107e6","두 개":"85ef317c6f","세 개":"76e33ea712","네 개":"116d49799c","다섯 개":"f6c920febf","여섯 개":"7384d7d2ab","일곱 개":"bf0f6332cc","여덟 개":"dd8afc6030","아홉 개":"a65e77ea18","열 개":"0da98a27a7","영":"2bc634a4dd","영번 풍선을 찾아요":"bdb57aa9d1","일번 풍선을 찾아요":"659f417727","이번 풍선을 찾아요":"f08b2acabf","삼번 풍선을 찾아요":"2d332bcc00","사번 풍선을 찾아요":"c98d33787c","오번 풍선을 찾아요":"43a72259cf","육번 풍선을 찾아요":"9fed987c3f","칠번 풍선을 찾아요":"16e33a0e38","팔번 풍선을 찾아요":"29a2a93aac","구번 풍선을 찾아요":"b4ec895794","십번 풍선을 찾아요":"a1637c5cef","하엘이 최고":"845aa4520b","우와, 대단해요":"f0bc82a322","멋져요":"b4edcafb6f","강아지":"160b19e801","고양이":"a132a94fad","판다":"6eae968c3b","개구리":"e5263143de","유니콘":"e4eca19f73","병아리":"198eb74047","딸기":"ebf008d37b","수박":"a0a0c5ec57","풍선":"6763e190b0","아이스크림":"a103cde8be","펭귄":"c5853e488d","사자":"97a7500406","거북이":"1e306986a1","물고기":"f8a9cd6da7","공룡":"6c2d25b390","닭":"aa024a0bdd","자전거":"bd886f5450","비행기":"ae35168837","기타":"44650a9694","게":"40375799c4","달팽이":"1962d9a59d","우산":"c3c6d557d9","배":"61569786db","문어":"d1badc1ef8","멍멍":"3bb515a776","야옹":"cc1ba56b63","소":"95471f6b0a","음매":"dc4b441d26","돼지":"72ed1e10fc","꿀꿀":"359a303c02","꽥꽥":"dbf0940c3c","꼬끼오":"1d8fb30f10","양":"3c982b52bd","메에":"5abcf298a9","개굴개굴":"4e7e7f15e1","삐약삐약":"04817e4e8f","어흥":"c3fcb5eff3","말":"4d65d9d943","히히힝":"92513c4631","쥐":"54d7b238f1","찍찍":"cfc601a4a2","빨간색을 찾아요":"554eb019ca","노란색을 찾아요":"ba926e02d7","파란색을 찾아요":"1f5a5b641f","초록색을 찾아요":"6be7fd75dc","분홍색을 찾아요":"d33dba3618","보라색을 찾아요":"880a0697a9","동그라미를 찾아요":"0bb68b11f4","세모를 찾아요":"eef45e4a87","네모를 찾아요":"17ea6466d8","별을 찾아요":"f22d7205c2","하트를 찾아요":"425e995a14","빨간 동그라미를 찾아요":"22b43de7c2","빨간 세모를 찾아요":"967f133eec","빨간 네모를 찾아요":"fdb6d9f4b3","빨간 별을 찾아요":"a4d14a34a6","빨간 하트를 찾아요":"0b8eb252b8","노란 동그라미를 찾아요":"dc643adee1","노란 세모를 찾아요":"503c537635","노란 네모를 찾아요":"9cbf54f49d","노란 별을 찾아요":"765c4ab8d7","노란 하트를 찾아요":"8d370130f6","파란 동그라미를 찾아요":"4a6a0e2a02","파란 세모를 찾아요":"d095b5d8a6","파란 네모를 찾아요":"e2115b6e7d","파란 별을 찾아요":"d2268b0580","파란 하트를 찾아요":"ced724465f","초록 동그라미를 찾아요":"ce840f7059","초록 세모를 찾아요":"f9902ba1f0","초록 네모를 찾아요":"df8b6c1322","초록 별을 찾아요":"9964273665","초록 하트를 찾아요":"b8ea35b3a2","분홍 동그라미를 찾아요":"e336dcdcfc","분홍 세모를 찾아요":"a63f0d837e","분홍 네모를 찾아요":"e40e4afef0","분홍 별을 찾아요":"dcb97ef2ab","분홍 하트를 찾아요":"2e23afedf2","보라 동그라미를 찾아요":"b48ccebdb8","보라 세모를 찾아요":"e956635243","보라 네모를 찾아요":"42900990c6","보라 별을 찾아요":"2f34f1f413","보라 하트를 찾아요":"89cd7a5ab0","두더지 0마리 잡았어요":"944a640ba1","두더지 1마리 잡았어요":"63be2661ec","두더지 2마리 잡았어요":"e3be5bccd6","두더지 3마리 잡았어요":"93cbbf5f60","두더지 4마리 잡았어요":"7dd0d01596","두더지 5마리 잡았어요":"c073b276a3","두더지 6마리 잡았어요":"eff689366c","두더지 7마리 잡았어요":"c97af1ab3e","두더지 8마리 잡았어요":"a2e6f675cd","두더지 9마리 잡았어요":"33c555a5f9","두더지 10마리 잡았어요":"f533d46897","두더지 11마리 잡았어요":"78451c0904","두더지 12마리 잡았어요":"e03887e583","두더지 13마리 잡았어요":"c44d3b8c5a","두더지 14마리 잡았어요":"dfea146905","두더지 15마리 잡았어요":"530b3efb50","두더지 16마리 잡았어요":"ed9b8f270f","두더지 17마리 잡았어요":"315967369a","두더지 18마리 잡았어요":"f879186527","두더지 19마리 잡았어요":"8386e1bad1","두더지 20마리 잡았어요":"ba615c9d72","두더지 21마리 잡았어요":"61a4282885","두더지 22마리 잡았어요":"0900a7daf3","두더지 23마리 잡았어요":"f3977d53b8","두더지 24마리 잡았어요":"55d116debf","두더지 25마리 잡았어요":"52f620d525","두더지 26마리 잡았어요":"4e03723fbc","두더지 27마리 잡았어요":"8073a7e5e4","두더지 28마리 잡았어요":"0e5c6e488a","두더지 29마리 잡았어요":"9abd5071af","두더지 30마리 잡았어요":"733cf550eb","두더지 31마리 잡았어요":"cdf3b4aa4e","두더지 32마리 잡았어요":"be04f6aef7","두더지 33마리 잡았어요":"bcc44e3d3d","두더지 34마리 잡았어요":"97e0348c41","두더지 35마리 잡았어요":"c11681b7e3","두더지 36마리 잡았어요":"91554b483a","두더지 37마리 잡았어요":"e1ad792839","두더지 38마리 잡았어요":"cb34d491e8","두더지 39마리 잡았어요":"ce6fe56c20","두더지 40마리 잡았어요":"c37a39a809","두더지 41마리 잡았어요":"66d4de195e","두더지 42마리 잡았어요":"aafc4be8da","두더지 43마리 잡았어요":"0486f75501","두더지 44마리 잡았어요":"aaf5588aae","두더지 45마리 잡았어요":"760386ffa4","두더지 46마리 잡았어요":"0201304df7","두더지 47마리 잡았어요":"89b4f2cfa5","두더지 48마리 잡았어요":"5b399d0521","두더지 49마리 잡았어요":"93c31fd64a","두더지 50마리 잡았어요":"ae3c999250","두더지 51마리 잡았어요":"ebbe31e96a","두더지 52마리 잡았어요":"aceaa218b1","두더지 53마리 잡았어요":"2046bbac34","두더지 54마리 잡았어요":"1ba22f312d","두더지 55마리 잡았어요":"bf0e789b30","두더지 56마리 잡았어요":"19c5f01f6f","두더지 57마리 잡았어요":"4e98eea259","두더지 58마리 잡았어요":"a1927a82cf","두더지 59마리 잡았어요":"72130bdc35","두더지 60마리 잡았어요":"303bf5ef1e","두더지 61마리 잡았어요":"981349e630","두더지 62마리 잡았어요":"952e9241bd","두더지 63마리 잡았어요":"6d73cd001b","두더지 64마리 잡았어요":"daf8d65d4a","두더지 65마리 잡았어요":"cc5e73bef2","두더지 66마리 잡았어요":"30e2590be1","두더지 67마리 잡았어요":"6b224330da","두더지 68마리 잡았어요":"24d7d155e6","두더지 69마리 잡았어요":"c545f996c0","두더지 70마리 잡았어요":"a2063d4e4e","두더지 71마리 잡았어요":"9aeac53a6c","두더지 72마리 잡았어요":"55c876b023","두더지 73마리 잡았어요":"14fb1fa6cc","두더지 74마리 잡았어요":"9b456d1ced","두더지 75마리 잡았어요":"b17cf76f68","두더지 76마리 잡았어요":"4c9456c510","두더지 77마리 잡았어요":"53c5a3dc80","두더지 78마리 잡았어요":"0c60a92e97","두더지 79마리 잡았어요":"00bf68fb33","두더지 80마리 잡았어요":"4597655859","반짝반짝 작은별":"af3994b519","학교종":"987937809d","나비야":"437696adaf","젖소":"4226b70dea","생쥐":"b00b503272","꽃게":"7a36f30c77","두더지":"507749f9bf","도넛":"56def3367a","막대사탕":"0f3b5e7d40","반짝별":"611124378e","튤립":"e965c1fd6f","꼬마 유령":"fab17c32d4","이빨 친구":"c7cd0c7b78"};
+
+// ───────── 소리 엔진: 녹음 목소리 · 효과음 · 배경음악 ─────────
+// 목소리: VOICE_MAP(문장 → 파일) 에 있으면 녹음 파일 재생, 없으면 폰 음성으로 대신 읽음
+const SND = (() => {
+  let AC = null, master = null, sfxBus = null, musicBus = null, voiceBus = null, echo = null;
+  const st = () => (window.APP && window.APP.S) || { sound: true, music: true };
+  function ctx() {
+    if (!AC) {
+      try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; }
+      master = AC.createGain(); master.connect(AC.destination);
+      sfxBus = AC.createGain(); sfxBus.gain.value = .9; sfxBus.connect(master);
+      voiceBus = AC.createGain(); voiceBus.gain.value = 1; voiceBus.connect(master);
+      musicBus = AC.createGain(); musicBus.gain.value = 0; musicBus.connect(master);
+      // 은은한 메아리
+      echo = AC.createDelay(1); echo.delayTime.value = .19;
+      const fb = AC.createGain(); fb.gain.value = .28; const lp = AC.createBiquadFilter(); lp.frequency.value = 2600;
+      echo.connect(lp).connect(fb).connect(echo); const wet = AC.createGain(); wet.gain.value = .22; lp.connect(wet).connect(master);
+    }
+    if (AC.state === 'suspended') AC.resume();
+    return AC;
+  }
+
+  // ── 효과음 ──
+  function bell(f, t, dur = .9, vol = .16, bus) {
+    const a = ctx(); if (!a) return;
+    const g = a.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .008); g.gain.exponentialRampToValueAtTime(.0008, t + dur);
+    g.connect(bus || sfxBus); g.connect(echo);
+    [[1, 1], [2.01, .32], [3.98, .1]].forEach(([m, v]) => {
+      const o = a.createOscillator(), og = a.createGain(); o.type = 'sine'; o.frequency.value = f * m; og.gain.value = v;
+      o.connect(og).connect(g); o.start(t); o.stop(t + dur + .05);
+    });
+  }
+  function sweep(f1, f2, dur, vol, type = 'sine', t) {
+    const a = ctx(); if (!a) return; t = t ?? a.currentTime;
+    const o = a.createOscillator(), g = a.createGain(); o.type = type;
+    o.frequency.setValueAtTime(f1, t); o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .01); g.gain.exponentialRampToValueAtTime(.0008, t + dur + .05);
+    o.connect(g).connect(sfxBus); o.start(t); o.stop(t + dur + .1);
+  }
+  let noiseBuf = null;
+  function noise(dur, vol, f1, f2, t) {
+    const a = ctx(); if (!a) return; t = t ?? a.currentTime;
+    if (!noiseBuf) { noiseBuf = a.createBuffer(1, a.sampleRate * .6, a.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
+    const s = a.createBufferSource(), bp = a.createBiquadFilter(), g = a.createGain();
+    s.buffer = noiseBuf; bp.type = 'bandpass'; bp.Q.value = 1.4;
+    bp.frequency.setValueAtTime(f1, t); bp.frequency.exponentialRampToValueAtTime(f2, t + dur);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .02); g.gain.exponentialRampToValueAtTime(.0008, t + dur);
+    s.connect(bp).connect(g).connect(sfxBus); s.start(t); s.stop(t + dur + .05);
+  }
+  const on = () => st().sound !== false;
+  const fx = {
+    // 기존 tone() 호출을 부드러운 종소리로
+    note(f, dur = .18, type = 'triangle', vol = .16, delay = 0) {
+      if (!on()) return; const a = ctx(); if (!a) return;
+      const t = a.currentTime + delay;
+      if (type === 'square') { fx.no(); return; }
+      bell(f, t, Math.max(.35, dur * 2.2), vol * .9);
+    },
+    tap() { if (!on()) return; sweep(520, 880, .06, .12); },
+    pop() { if (!on()) return; sweep(380, 1300, .09, .16); noise(.05, .05, 3000, 6000); },
+    ok() { if (!on()) return; const a = ctx(); if (!a) return; const t = a.currentTime; bell(1318.5, t, .7, .15); bell(1760, t + .09, .9, .14); },
+    no() { if (!on()) return; const a = ctx(); if (!a) return; const t = a.currentTime; sweep(330, 210, .22, .13, 'triangle', t); sweep(280, 190, .2, .08, 'triangle', t + .12); },
+    flip() { if (!on()) return; noise(.16, .12, 900, 3200); },
+    star() { if (!on()) return; const a = ctx(); if (!a) return; const t = a.currentTime; [1568, 2093, 2637, 3136].forEach((f, k) => bell(f, t + k * .06, .6, .07)); },
+    win() {
+      if (!on()) return; const a = ctx(); if (!a) return; const t = a.currentTime;
+      [523.25, 659.25, 783.99, 1046.5, 1318.5, 1568].forEach((f, k) => bell(f, t + k * .09, 1.2, .13));
+      [2093, 2637, 3136].forEach((f, k) => bell(f, t + .6 + k * .07, .8, .06));
+      noise(.9, .04, 4000, 9000, t + .5);
+    },
+  };
+
+  // ── 배경음악 (오르골풍, 코드: C–Am–F–G) ──
+  const CH = [[261.63, 329.63, 392, 523.25], [220, 261.63, 329.63, 440], [174.61, 220, 261.63, 349.23], [196, 246.94, 293.66, 392]];
+  const MEL = [[659.25, 0, 783.99, 0], [880, 783.99, 659.25, 0], [698.46, 0, 659.25, 587.33], [587.33, 0, 783.99, 0],
+    [659.25, 783.99, 1046.5, 0], [880, 0, 783.99, 659.25], [698.46, 880, 783.99, 0], [587.33, 659.25, 523.25, 0]];
+  let musicOn = false, nextT = 0, step = 0, timer = null;
+  function schedule() {
+    const a = AC; if (!a || !musicOn) return;
+    const spb = 60 / 92 / 2; // 8분음표
+    while (nextT < a.currentTime + .6) {
+      const bar = (step / 8 | 0) % 8, s8 = step % 8, ch = CH[bar % 4];
+      const arp = [0, 1, 2, 3, 2, 1, 2, 1][s8];
+      bell(ch[arp] * (s8 % 4 === 0 ? 1 : 2), nextT, .9, .05, musicBus);
+      if (s8 % 2 === 0) { const m = MEL[bar][s8 / 2]; if (m) bell(m * 2, nextT, 1.3, .06, musicBus); }
+      if (s8 === 0) { const o = a.createOscillator(), g = a.createGain(); o.type = 'sine'; o.frequency.value = ch[0] / 2;
+        g.gain.setValueAtTime(0, nextT); g.gain.linearRampToValueAtTime(.07, nextT + .03); g.gain.exponentialRampToValueAtTime(.001, nextT + spb * 7);
+        o.connect(g).connect(musicBus); o.start(nextT); o.stop(nextT + spb * 8); }
+      nextT += spb; step++;
+    }
+  }
+  function music(onOff) {
+    const a = ctx(); if (!a) return;
+    if (onOff && !musicOn) {
+      musicOn = true; nextT = a.currentTime + .1; step = 0;
+      musicBus.gain.cancelScheduledValues(a.currentTime); musicBus.gain.setValueAtTime(0, a.currentTime); musicBus.gain.linearRampToValueAtTime(.9, a.currentTime + 1.5);
+      timer = setInterval(schedule, 150); schedule();
+    } else if (!onOff && musicOn) {
+      musicOn = false; clearInterval(timer);
+      musicBus.gain.cancelScheduledValues(a.currentTime); musicBus.gain.linearRampToValueAtTime(0, a.currentTime + .4);
+    }
+  }
+  function duck(on2) {
+    if (!AC || !musicBus || !musicOn) return;
+    const t = AC.currentTime; musicBus.gain.cancelScheduledValues(t);
+    musicBus.gain.setTargetAtTime(on2 ? .25 : .9, t, on2 ? .05 : .4);
+  }
+  // 탭을 떠나면 음악 멈춤
+  document.addEventListener('visibilitychange', () => { if (!AC) return; document.hidden ? AC.suspend() : AC.resume(); });
+
+  // ── 녹음 목소리 ──
+  const MAP = (typeof VOICE_MAP !== 'undefined') ? VOICE_MAP : {};
+  const key = s => s.replace(/[!?.~]+$/g, '').replace(/\s+/g, ' ').trim();
+  const segs = t => String(t).split(/(?<=[!?.])\s+/).map(s => s.trim()).filter(Boolean);
+  const bufs = {}, loading = {};
+  const miss = new Set();
+  function load(id) {
+    if (bufs[id]) return Promise.resolve(bufs[id]);
+    if (loading[id]) return loading[id];
+    const a = ctx(); if (!a) return Promise.reject();
+    return loading[id] = fetch(`v/${id}.m4a`).then(r => { if (!r.ok) throw 0; return r.arrayBuffer(); })
+      .then(b => new Promise((res, rej) => a.decodeAudioData(b, res, rej))).then(b => (bufs[id] = b));
+  }
+  let playing = [], token = 0;
+  function stopVoice() { playing.forEach(s => { try { s.stop(); } catch (e) {} }); playing = []; token++; }
+  function speak(text) {
+    const parts = segs(text), ids = parts.map(p => MAP[key(p)]);
+    if (!parts.length) return true;
+    if (ids.some(x => !x)) { parts.forEach((p, i) => !ids[i] && miss.add(key(p))); return false; }
+    stopVoice(); const my = token;
+    const a = ctx(); if (!a) return false;
+    Promise.all(ids.map(load)).then(list => {
+      if (my !== token) return;
+      let t = a.currentTime + .03; duck(true);
+      list.forEach(b => { const s = a.createBufferSource(); s.buffer = b; s.connect(voiceBus); s.start(t); playing.push(s); t += b.duration + .06; });
+      setTimeout(() => { if (my === token) duck(false); }, (t - a.currentTime) * 1000 + 100);
+    }).catch(() => { if (my === token) ttsFallback(text); });
+    return true;
+  }
+  let koVoice = null;
+  const pickVoice = () => { try { koVoice = speechSynthesis.getVoices().find(v => /^ko/i.test(v.lang)) || null; } catch (e) {} };
+  try { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } catch (e) {}
+  function ttsFallback(t) {
+    try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'ko-KR'; if (koVoice) u.voice = koVoice; u.pitch = 1.3; u.rate = 1; speechSynthesis.speak(u); } catch (e) {}
+  }
+  function say(t) {
+    if (!on()) return;
+    ctx();
+    if (!speak(t)) { stopVoice(); ttsFallback(t); }
+  }
+  // 한가할 때 녹음 파일을 미리 받아 두기 (오프라인 대비)
+  function prefetch() {
+    const ids = [...new Set(Object.values(MAP))]; let i = 0;
+    const next = () => { if (i >= ids.length) return; const id = ids[i++]; fetch(`v/${id}.m4a`).catch(() => {}).finally(() => setTimeout(next, 40)); };
+    for (let k = 0; k < 3; k++) next();
+  }
+  if (Object.keys(MAP).length && location.protocol.startsWith('http')) setTimeout(prefetch, 4000);
+  return { fx, music, say, ctx, segs, key, miss, stopVoice };
+})();
+
+</script>
 <script>
 // ───────── 색칠 그림 도안 (viewBox 0 0 400 480) ─────────
 // 기본 도형 = 칠할 수 있는 칸 / class="n" 선만 / "k" 까만 눈동자 / "w" 하얀 반짝임
@@ -1365,29 +1563,20 @@ PICTURES.unshift(...FAIRY_PICTURES);
   const picState = id => (S.pics[id] ||= { f: {}, p: [] });
 
   // ───── 소리 ─────
-  let AC;
-  function ac() {
-    if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } }
-    if (AC.state === 'suspended') AC.resume();
-    return AC;
-  }
-  function tone(f, dur = .18, type = 'triangle', vol = .16, delay = 0) {
-    if (!S.sound) return; const a = ac(); if (!a) return;
-    const t = a.currentTime + delay, o = a.createOscillator(), g = a.createGain();
-    o.type = type; o.frequency.setValueAtTime(f, t); o.frequency.exponentialRampToValueAtTime(f * 1.5, t + dur * .6);
-    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .015); g.gain.exponentialRampToValueAtTime(.001, t + dur);
-    o.connect(g).connect(a.destination); o.start(t); o.stop(t + dur + .05);
-  }
+  // 소리는 voice.js 의 SND 엔진이 담당 (녹음 목소리·종소리 효과음·배경음악)
+  if (S.music === undefined) S.music = true;
+  const tone = (f, dur, type, vol, delay) => SND.fx.note(f, dur, type, vol, delay);
   const SCALE = [523, 587, 659, 784, 880, 1047, 1175, 1319];
-  const pop = i => tone(SCALE[i % SCALE.length], .2);
-  const tada = () => [523, 659, 784, 1047, 1319].forEach((f, k) => tone(f, .35, 'triangle', .15, k * .11));
-  let koVoice = null;
-  function pickVoice() { try { koVoice = speechSynthesis.getVoices().find(v => /^ko/i.test(v.lang)) || null; } catch (e) {} }
-  try { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } catch (e) {}
-  function say(t) {
-    if (!S.sound) return;
-    try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'ko-KR'; if (koVoice) u.voice = koVoice; u.pitch = 1.35; u.rate = 1; speechSynthesis.speak(u); } catch (e) {}
-  }
+  const pop = i => { SND.fx.pop(); tone(SCALE[i % SCALE.length], .2, 'triangle', .1, .02); };
+  const tada = () => SND.fx.win();
+  const say = t => SND.say(t);
+  const MUSIC_ON = '<svg viewBox="0 0 32 32" fill="none" stroke="#3A2447" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"><path d="M12,24 L12,8 L26,5 L26,21" /><ellipse cx="9" cy="24" rx="4" ry="3.2" fill="#FF5C9A"/><ellipse cx="23" cy="21" rx="4" ry="3.2" fill="#FF5C9A"/></svg>';
+  const MUSIC_OFF = '<svg viewBox="0 0 32 32" fill="none" stroke="#3A2447" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"><path d="M12,24 L12,8 L26,5 L26,21" opacity=".35"/><ellipse cx="9" cy="24" rx="4" ry="3.2" fill="#E6D2E0"/><ellipse cx="23" cy="21" rx="4" ry="3.2" fill="#E6D2E0"/><path d="M5,5 L28,28"/></svg>';
+  function drawMusicBtn() { $('#musicBtn').innerHTML = S.music ? MUSIC_ON : MUSIC_OFF; }
+  $('#musicBtn').onclick = () => { S.music = !S.music; persist(); drawMusicBtn(); SND.music(S.music); SND.fx.tap(); };
+  drawMusicBtn();
+  // 첫 터치 때 배경음악 시작 (브라우저는 터치 전에는 소리를 못 냄)
+  addEventListener('pointerdown', function first() { removeEventListener('pointerdown', first, true); SND.ctx(); if (S.music) SND.music(true); }, true);
   function drawSoundBtn() {
     $('#soundBtn').innerHTML = S.sound
       ? `<svg viewBox="0 0 32 32" fill="none" stroke="#3A2447" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><path d="M5,12 L10,12 L17,6 L17,26 L10,20 L5,20Z" fill="#FFC83D"/><path d="M21,11 Q25,16 21,21 M24,7 Q31,16 24,25"/></svg>`
@@ -1631,7 +1820,7 @@ PICTURES.unshift(...FAIRY_PICTURES);
     if (earned) { S.stars++; S.done[cur.id] = true; changed = false; }
     if (img) { S.gallery.unshift({ id: cur.id, img, t: Date.now() }); if (S.gallery.length > 30) S.gallery.length = 30; }
     persist();
-    modal(`${BIG_STAR}<h3>${earned ? '별 하나 받았어요!' : '정말 예뻐요!'}</h3>` +
+    modal(`${BIG_STAR}<h3>${earned ? '별 하나 받았어요!' : '정말 예뻐요!'}</h3>${earned && window.APP.stickerHTML ? window.APP.stickerHTML() : ''}` +
       (img ? `<img src="${img}" alt="${cur.name} 색칠 완성 그림"><p class="hint">내 그림에 넣어 두었어요</p>` : '') +
       `<div class="row"><button class="candy mint" id="mMore">계속 칠하기</button><button class="candy" id="mOther">다른 그림</button></div>`);
     $('#mMore').onclick = () => { tone(660); closeModal(); };
@@ -1713,7 +1902,7 @@ PICTURES.unshift(...FAIRY_PICTURES);
   $('#goColor').onclick = () => { tone(660); renderHome(); show('home'); say('색칠공부'); };
   $('#goHangul').onclick = () => { tone(660); window.APP.openHangul(); };
   $('#goNumber').onclick = () => { tone(660); window.APP.openNumbers(); };
-  window.APP = { $, S, persist, tone, say, confetti, show, modal, closeModal, sparkle, goHub };
+  window.APP = { $, S, persist, tone, say, confetti, show, modal, closeModal, sparkle, goHub, COLORS, SPECIALS, fx: SND.fx, data: {} };
   $('#greet').onclick = () => { const g = $('#greet'); g.classList.remove('hi'); void g.offsetWidth; g.classList.add('hi'); tone(784); say('하엘아, 안녕! 오늘은 뭐 하고 놀까?'); };
   buildPalette(); setTool('fill'); renderHome(); goHub();
 })();
@@ -1732,7 +1921,7 @@ const ART = (() => {
   const L = (d, w = 3, c = K) => `<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
   const R = (x, y, w, h, rx, c, rot) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" fill="${c}" ${st}${rot !== undefined ? ` transform="rotate(${rot} ${x + w / 2} ${y + h / 2})"` : ''}/>`;
   const shine = (cx, cy, rx, ry, rot = -30) => Ef(cx, cy, rx, ry, '#fff', rot, .6);
-  const eye = (x, y, s = 1) => `<ellipse cx="${x}" cy="${y}" rx="${3.4 * s}" ry="${4.2 * s}" fill="${K}"/><circle cx="${x + 1.2 * s}" cy="${y - 1.6 * s}" r="${1.4 * s}" fill="#fff"/>`;
+  const eye = (x, y, s = 1) => `<g class="bl"><ellipse cx="${x}" cy="${y}" rx="${3.4 * s}" ry="${4.2 * s}" fill="${K}"/><circle cx="${x + 1.2 * s}" cy="${y - 1.6 * s}" r="${1.4 * s}" fill="#fff"/></g>`;
   const eyes = (a, b, y, s) => eye(a, y, s) + eye(b, y, s);
   const blush = (a, b, y, c = '#FF8FB0') => Ef(a, y, 4.6, 2.8, c, 0, .75) + Ef(b, y, 4.6, 2.8, c, 0, .75);
   const smile = (x, y, w = 5) => L(`M${x - w},${y} Q${x},${y + w * .9} ${x + w},${y}`, 2.6);
@@ -1944,7 +2133,8 @@ const ART = (() => {
   delete out.giraffeShadow;
   return out;
 })();
-const art = k => ART[k] || '';
+// 눈 깜빡임이 모두 같이 움직이지 않도록 시작 시점을 흩뜨림
+const art = k => ART[k] ? ART[k].replace('class="ai"', `class="ai" style="--bd:-${(Math.random() * 5).toFixed(2)}s"`) : '';
 
 // ───────── 한글놀이 · 숫자놀이 (따라쓰기, 글자 찾기, 몇 개일까, 풍선 터뜨리기) ─────────
 (() => {
@@ -1987,6 +2177,7 @@ const art = k => ART[k] || '';
   ].map(j => ({ ...j, key: 'h' + j.ch, say: `${j.name}! ${j.word}의 ${j.word[0]}!` }));
 
   const SINO = ['영', '일', '이', '삼', '사', '오', '육', '칠', '팔', '구', '십'];
+  const COUNTER = ['', '한', '두', '세', '네', '다섯', '여섯', '일곱', '여덟', '아홉', '열'];
   const NATIVE = ['', '하나', '둘', '셋', '넷', '다섯', '여섯', '일곱', '여덟', '아홉', '열'];
   const ITEMS = ['', 'strawberry', 'chick', 'apple', 'tulip', 'star', 'donut', 'fish', 'balloon', 'butterfly', 'lollipop'];
   document.querySelectorAll('[data-art]').forEach(e => e.innerHTML = art(e.dataset.art));
@@ -2064,6 +2255,7 @@ const art = k => ART[k] || '';
   function openHangul() { tileGrid($('#hTiles'), JAMO, i => openTrace(JAMO, i, 'hangul')); show('hangul'); say('한글 놀이'); }
   function openNumbers() { tileGrid($('#nTiles'), NUMS, i => openTrace(NUMS, i, 'numbers')); show('numbers'); say('숫자 놀이'); }
   window.APP.openHangul = openHangul; window.APP.openNumbers = openNumbers;
+  Object.assign(window.APP.data, { JAMO, NUMS, SINO, NATIVE, COUNTER, josa });
   $('#hBack').onclick = $('#nBack').onclick = () => { tone(520); window.APP.goHub(); };
 
   // ───── 따라쓰기 ─────
@@ -2103,7 +2295,7 @@ const art = k => ART[k] || '';
     $('#tPrev').disabled = i === 0; $('#tNext').disabled = i === list.length - 1;
     $('#tNext').classList.remove('pulse');
     show('trace'); fitTrace(); setStroke(0);
-    say(`${it.name}${it.emo ? '' : ''}, 따라 써 볼까요?`);
+    say(`${it.name}, 따라 써 볼까요?`);
   }
   function setStroke(si) {
     tr.si = si; tr.prog = 0; tr.pts = tr.dense[si];
@@ -2184,7 +2376,8 @@ const art = k => ART[k] || '';
     tr.done = true; tr.center.setAttribute('d', ''); tr.startDot.innerHTML = '';
     const it = tr.list[tr.i];
     const got = award(it.key);
-    [523, 659, 784, 1047].forEach((f, k) => tone(f, .3, 'triangle', .14, k * .1));
+    if (got && window.APP.stickerPop) setTimeout(window.APP.stickerPop, 1800);
+    window.APP.fx.win();
     confetti();
     const word = $('#tWord'); word.classList.add('show');
     say((got ? '참 잘했어요! ' : '') + it.say);
@@ -2252,18 +2445,18 @@ const art = k => ART[k] || '';
     }
     qz.busy = true; b.classList.add('right');
     const r = b.getBoundingClientRect(); sparkle(r.left + r.width / 2, r.top + r.height / 2, '#FFC83D');
-    [659, 880].forEach((f, k) => tone(f, .18, 'triangle', .14, k * .09));
+    window.APP.fx.ok();
     if (qz.kind === 'letter') { say(`딩동댕! ${c.name}! ${c.word}`); await wait(1500); }
-    else { await wait(300); await countAloud(c, $('#qPrompt').querySelectorAll('i')); say(`${NATIVE[c]} 개!`); await wait(900); }
+    else { await wait(300); await countAloud(c, $('#qPrompt').querySelectorAll('i')); say(`${COUNTER[c]} 개!`); await wait(900); }
     qz.round++;
     if (qz.round < qz.total) { nextRound(); return; }
     dots(); award(null); confetti();
-    [523, 659, 784, 1047, 1319].forEach((f, k) => tone(f, .35, 'triangle', .15, k * .11));
+    window.APP.fx.win();
     say('와! 다 맞혔어요! 별을 받았어요!');
     endModal(() => startQuiz(qz.kind), () => qz.kind === 'letter' ? openHangul() : openNumbers());
   }
   function endModal(again, out) {
-    modal(`<svg class="big-star" viewBox="0 0 40 40"><path d="M20,3 L25,14 L37,15 L28,23 L31,35 L20,29 L9,35 L12,23 L3,15 L15,14Z" fill="#FFC83D" stroke="#3A2447" stroke-width="2.4" stroke-linejoin="round"/><circle cx="16" cy="19" r="1.6" fill="#3A2447"/><circle cx="24" cy="19" r="1.6" fill="#3A2447"/><path d="M16.5,23 Q20,26 23.5,23" fill="none" stroke="#3A2447" stroke-width="1.6" stroke-linecap="round"/></svg><h3>별 하나 받았어요!</h3><div class="row"><button class="candy mint" id="mAgain">한 번 더</button><button class="candy" id="mOut">그만할래요</button></div>`);
+    modal(`<svg class="big-star" viewBox="0 0 40 40"><path d="M20,3 L25,14 L37,15 L28,23 L31,35 L20,29 L9,35 L12,23 L3,15 L15,14Z" fill="#FFC83D" stroke="#3A2447" stroke-width="2.4" stroke-linejoin="round"/><circle cx="16" cy="19" r="1.6" fill="#3A2447"/><circle cx="24" cy="19" r="1.6" fill="#3A2447"/><path d="M16.5,23 Q20,26 23.5,23" fill="none" stroke="#3A2447" stroke-width="1.6" stroke-linecap="round"/></svg><h3>별 하나 받았어요!</h3>${window.APP.stickerHTML ? window.APP.stickerHTML() : ''}<div class="row"><button class="candy mint" id="mAgain">한 번 더</button><button class="candy" id="mOut">그만할래요</button></div>`);
     $('#mAgain').onclick = () => { closeModal(); again(); };
     $('#mOut').onclick = () => { closeModal(); out(); };
   }
@@ -2298,16 +2491,16 @@ const art = k => ART[k] || '';
     if (b.classList.contains('pop')) return;
     if (n !== bl.next) {
       b.classList.remove('wobble'); void b.offsetWidth; b.classList.add('wobble');
-      tone(220, .2, 'square', .05); say(`${SINO[bl.next]}을 찾아요`); return;
+      tone(220, .2, 'square', .05); say(`${SINO[bl.next]}번 풍선을 찾아요`); return;
     }
     b.classList.add('pop');
     const r = b.getBoundingClientRect(); sparkle(r.left + r.width / 2, r.top + r.height / 2.4, BCOL[n - 1]);
-    tone(300 + n * 70, .12, 'square', .08); say(SINO[n]);
+    window.APP.fx.pop(); tone(440 + n * 60, .12, 'triangle', .08); say(SINO[n]);
     bl.next++;
     $('#bNext').textContent = bl.next <= 10 ? bl.next : '끝';
     if (bl.next > 10) {
       await wait(700); award(null); confetti();
-      [523, 659, 784, 1047, 1319].forEach((f, k) => tone(f, .35, 'triangle', .15, k * .11));
+      window.APP.fx.win();
       say('와! 풍선을 다 터뜨렸어요!');
       endModal(startBalloons, openNumbers);
     }
@@ -2340,15 +2533,15 @@ const art = k => ART[k] || '';
   function stop() { if (cleanup) { cleanup(); cleanup = null; } }
   $('#gBack').onclick = () => { tone(520); stop(); closeModal(); goHub(); };
   $('#gSay').onclick = () => say(sayLine);
-  const fanfare = () => [523, 659, 784, 1047, 1319].forEach((f, k) => tone(f, .35, 'triangle', .15, k * .11));
-  const ding = () => [659, 880].forEach((f, k) => tone(f, .18, 'triangle', .14, k * .09));
-  const buzz = () => tone(220, .2, 'square', .05);
+  const fanfare = () => window.APP.fx.win();
+  const ding = () => window.APP.fx.ok();
+  const buzz = () => window.APP.fx.no();
   function shake(el) { el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }
   function burstAt(el, c = '#FFC83D') { const r = el.getBoundingClientRect(); sparkle(r.left + r.width / 2, r.top + r.height / 2, c); }
   function win(msg, again) {
     S.stars++; persist(); confetti(); fanfare();
     say(`${msg} ${praise()} 별을 받았어요!`);
-    modal(`<svg class="big-star" viewBox="0 0 40 40"><path d="M20,3 L25,14 L37,15 L28,23 L31,35 L20,29 L9,35 L12,23 L3,15 L15,14Z" fill="#FFC83D" stroke="#3A2447" stroke-width="2.4" stroke-linejoin="round"/><circle cx="16" cy="19" r="1.6" fill="#3A2447"/><circle cx="24" cy="19" r="1.6" fill="#3A2447"/><path d="M16.5,23 Q20,26 23.5,23" fill="none" stroke="#3A2447" stroke-width="1.6" stroke-linecap="round"/></svg><h3>${msg}</h3><div class="row"><button class="candy mint" id="mAgain">한 번 더</button><button class="candy" id="mOut">다른 놀이</button></div>`);
+    modal(`<svg class="big-star" viewBox="0 0 40 40"><path d="M20,3 L25,14 L37,15 L28,23 L31,35 L20,29 L9,35 L12,23 L3,15 L15,14Z" fill="#FFC83D" stroke="#3A2447" stroke-width="2.4" stroke-linejoin="round"/><circle cx="16" cy="19" r="1.6" fill="#3A2447"/><circle cx="24" cy="19" r="1.6" fill="#3A2447"/><path d="M16.5,23 Q20,26 23.5,23" fill="none" stroke="#3A2447" stroke-width="1.6" stroke-linecap="round"/></svg><h3>${msg}</h3>${window.APP.stickerHTML ? window.APP.stickerHTML() : ''}<div class="row"><button class="candy mint" id="mAgain">한 번 더</button><button class="candy" id="mOut">다른 놀이</button></div>`);
     $('#mAgain').onclick = () => { closeModal(); tone(660); again(); };
     $('#mOut').onclick = () => { closeModal(); tone(520); stop(); goHub(); };
   }
@@ -2403,7 +2596,7 @@ const art = k => ART[k] || '';
       b.innerHTML = `<span class="in"><span class="face back"></span><span class="face front">${art(e)}</span></span>`;
       b.onclick = async () => {
         if (lock || b.classList.contains('up')) return;
-        b.classList.add('up'); tone(700, .08, 'sine', .08);
+        b.classList.add('up'); window.APP.fx.flip();
         if (!first) { first = { b, e }; return; }
         if (first.e === e) {
           b.classList.add('got'); first.b.classList.add('got'); first = null; found++;
@@ -2493,7 +2686,7 @@ const art = k => ART[k] || '';
     holes.forEach(h => h.onclick = () => {
       if (!h.classList.contains('up') || h.classList.contains('hit')) return;
       h.classList.add('hit'); score++; $('#gScore').innerHTML = art('mole') + `<b>${score}</b>`;
-      tone(880, .12, 'square', .07); burstAt(h);
+      window.APP.fx.pop(); burstAt(h);
       setTimeout(() => h.classList.remove('up', 'hit'), 350);
     });
     const spawn = () => {
@@ -2655,6 +2848,7 @@ const art = k => ART[k] || '';
     say('조각을 끌어서 알맞은 자리에 놓아요!');
   }
 
+  Object.assign(window.APP.data, { MEM, SH, AN, COLS, SHP, SONGS, PRAISE });
   // ───── 메인 화면 카드 ─────
   const GAMES = [
     ['짝 맞추기', '같은 그림 찾기', art('cards'), '#FF8A4C', '#D9662A', memory],
@@ -2673,6 +2867,93 @@ const art = k => ART[k] || '';
     b.onclick = () => { tone(660); fn(); };
     cards.appendChild(b);
   });
+})();
+
+</script>
+<script>
+// ───────── 스티커북: 별을 모을 때마다 새 스티커 친구가 생김 ─────────
+(() => {
+  const { $, S, show, goHub } = window.APP;
+  const say = t => window.APP.say(t);
+  const fx = window.APP.fx;
+  const STK = [['dog', '강아지'], ['cat', '고양이'], ['rabbit', '토끼'], ['chick', '병아리'], ['panda', '판다'], ['fox', '여우'], ['lion', '사자'],
+    ['pig', '돼지'], ['frog', '개구리'], ['penguin', '펭귄'], ['unicorn', '유니콘'], ['elephant', '코끼리'], ['giraffe', '기린'], ['cow', '젖소'],
+    ['sheep', '양'], ['mouse', '생쥐'], ['duck', '오리'], ['chicken', '닭'], ['horse', '말'], ['hippo', '하마'], ['squirrel', '다람쥐'],
+    ['turtle', '거북이'], ['snail', '달팽이'], ['fish', '물고기'], ['octopus', '문어'], ['crab', '꽃게'], ['butterfly', '나비'], ['dino', '공룡'],
+    ['mole', '두더지'], ['strawberry', '딸기'], ['apple', '사과'], ['banana', '바나나'], ['grapes', '포도'], ['watermelon', '수박'], ['pear', '배'],
+    ['icecream', '아이스크림'], ['donut', '도넛'], ['lollipop', '막대사탕'], ['cheese', '치즈'], ['milk', '우유'], ['rainbow', '무지개'],
+    ['star', '반짝별'], ['balloon', '풍선'], ['tulip', '튤립'], ['car', '자동차'], ['plane', '비행기'], ['umbrella', '우산'], ['hat', '모자'],
+    ['ghost', '꼬마 유령'], ['tooth', '이빨 친구'], ['baby', '아기']];
+  const got = () => Math.min(S.stars, STK.length);
+
+  // 별을 막 받았을 때 팝업 안에 넣을 "새 스티커"
+  window.APP.stickerHTML = () => {
+    const i = S.stars - 1; if (i < 0 || i >= STK.length) return '';
+    setTimeout(() => fx.star(), 900);
+    return `<button class="newstk" onclick="window.APP.say('${STK[i][1]}')"><span class="stk-art">${art(STK[i][0])}</span><span>새 스티커<b>${STK[i][1]}</b></span></button>`;
+  };
+  // 팝업 없이 별을 받을 때(따라쓰기) 잠깐 보여주기
+  window.APP.stickerPop = () => {
+    const i = S.stars - 1; if (i < 0 || i >= STK.length) return;
+    const d = document.createElement('div'); d.className = 'stkpop';
+    d.innerHTML = `<span class="stk-art">${art(STK[i][0])}</span><span>새 스티커<b>${STK[i][1]}</b></span>`;
+    document.body.appendChild(d); fx.star();
+    setTimeout(() => d.classList.add('out'), 2400); setTimeout(() => d.remove(), 2800);
+  };
+
+  function openBook() {
+    show('game');
+    $('#gTitle').textContent = '스티커북'; $('#gScore').hidden = true; $('#gSay').hidden = true;
+    const body = $('#gBody'); body.className = 'gbody';
+    const n = got();
+    body.innerHTML = `<div class="stkhead"><div class="stkbar"><i style="width:${n / STK.length * 100}%"></i></div><b>${n} / ${STK.length}</b></div>
+      <p class="stkhint">${n < STK.length ? '별을 하나 더 모으면 새 친구가 와요!' : '스티커를 다 모았어요!'}</p>
+      <div class="stkgrid">${STK.map(([k, name], i) => i < n
+        ? `<button class="stk" data-i="${i}"><span class="stk-art">${art(k)}</span><small>${name}</small></button>`
+        : `<div class="stk locked"><span class="stk-art">${art(k)}</span><small>?</small></div>`).join('')}</div>`;
+    body.querySelectorAll('button.stk').forEach(b => b.onclick = () => {
+      const [, name] = STK[+b.dataset.i];
+      b.classList.remove('boing'); void b.offsetWidth; b.classList.add('boing'); fx.pop(); say(name);
+    });
+    say(n ? '하엘이의 스티커북!' : '별을 모으면 스티커가 생겨요!');
+  }
+  window.APP.openBook = openBook;
+  $('#starBtn').onclick = () => { fx.tap(); openBook(); };
+  const b = document.createElement('button'); b.className = 'hub-card';
+  b.style.setProperty('--c', '#FFB020'); b.style.setProperty('--cd', '#D48A0A');
+  b.innerHTML = `<span class="art emo">${art('star')}</span><span class="lbl">스티커북<small>모은 스티커 보기</small></span>`;
+  b.onclick = () => { fx.tap(); openBook(); };
+  $('.hub-cards').appendChild(b);
+  window.APP.data.STK = STK;
+
+  // ───── 녹음할 문장 목록 뽑기 (개발용: ?dumplines) ─────
+  if (location.search.includes('dumplines')) {
+    const D = window.APP.data, L = [], add = t => SND.segs(t).forEach(s => L.push(s));
+    const josa = D.josa;
+    [
+      '소리 켰어요', '색칠공부', '하엘아, 안녕! 오늘은 뭐 하고 놀까?', '콕 칠하기', '붓으로 그리기', '지우개', '와! 정말 예뻐요! 별을 받았어요!',
+      '한글 놀이', '숫자 놀이', '참 잘했어요!', '몇 개일까요?', '다시 찾아볼까요?', '딩동댕!', '와! 다 맞혔어요! 별을 받았어요!',
+      '일부터 차례대로 풍선을 터뜨려요!', '와! 풍선을 다 터뜨렸어요!', '다시 해볼까요?', '별을 받았어요!',
+      '몇 장으로 할까요?', '몇 조각으로 할까요?', '어떤 그림으로 할까요?', '같은 그림 두 개를 찾아요!', '이 그림자는 누구일까요?',
+      '누구 소리일까요?', '두더지가 나오면 콕 눌러요!', '시작!', '반짝이는 건반을 따라 눌러요', '마음대로 쳐 봐요!', '실로폰을 쳐 봐요!',
+      '노래를 다 쳤어요!', '다른 자리일까요?', '조각을 끌어서 알맞은 자리에 놓아요!', '퍼즐을 다 맞췄어요!', '짝을 다 찾았어요!',
+      '그림자를 다 찾았어요!', '동물 소리를 다 맞혔어요!', '색깔이랑 모양을 다 찾았어요!', '하엘이의 스티커북!', '별을 모으면 스티커가 생겨요!',
+    ].forEach(add);
+    PICTURES.forEach(p => add(p.name));
+    window.APP.COLORS.forEach(c => add(c[1])); window.APP.SPECIALS.forEach(c => add(c[1]));
+    D.JAMO.forEach(j => { add(`${j.name}, 따라 써 볼까요?`); add(j.say); add(j.word); add(`${j.name}${josa(j.name)} 찾아요!`); });
+    D.NUMS.forEach(n => { add(`${n.name}, 따라 써 볼까요?`); add(n.say); });
+    D.NATIVE.forEach(x => x && add(x)); D.COUNTER.forEach(c => c && add(`${c} 개!`));
+    D.SINO.forEach(s => { add(s); add(`${s}번 풍선을 찾아요`); });
+    D.PRAISE.forEach(add);
+    D.MEM.forEach(m => add(m[1])); D.SH.forEach(s => add(s[1])); D.AN.forEach(a => { add(a[1]); add(a[2]); });
+    D.COLS.forEach(c => add(`${c[0]}${josa(c[0])} 찾아요!`)); D.SHP.forEach(s => add(`${s[0]}${josa(s[0])} 찾아요!`));
+    D.COLS.forEach(c => D.SHP.forEach(s => add(`${c[1]} ${s[0]}${josa(s[0])} 찾아요!`)));
+    for (let i = 0; i <= 80; i++) add(`두더지 ${i}마리 잡았어요!`);
+    D.SONGS.forEach(s => add(s[0])); STK.forEach(s => add(s[1]));
+    const seen = new Map(); L.forEach(s => { const k = SND.key(s); if (k && !seen.has(k)) seen.set(k, s); });
+    document.body.innerHTML = `<pre id="lines">${JSON.stringify([...seen.entries()])}</pre>`;
+  }
 })();
 
 </script>
