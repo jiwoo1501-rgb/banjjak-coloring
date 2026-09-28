@@ -4035,7 +4035,7 @@ const PLAY = (() => {
             const bb = it.getBBox(), at = [bb.x + bb.width / 2, bb.y + bb.height / 2];
             sparkAt(ctx, at, s.color); fx().pop();
             if (s.onTap) s.onTap(ctx, it); else { it.classList.add('pgone'); setTimeout(() => it.remove(), 400); }
-            if (--left === 0) setTimeout(res, 350);
+            if (--left === 0 || s.one) setTimeout(res, 350);
           });
         });
       });
@@ -4770,7 +4770,7 @@ const PLAY = (() => {
     const mini = c.add('over', `<g>${place('baby_' + S.baby.kind, 200, 200, 120)}</g>`);
     let pickI = 0;
     const ok = await run(c, [
-      { t: 'tap', items: () => gs, say: '엄마가 와요! 아기를 어디에 숨길까요?', onTap: (c2, it) => { pickI = gs.indexOf(it); gs.forEach(g => g.style.pointerEvents = 'none'); mini.classList.add('pgone'); gs.forEach(g => g._gone = true); } },
+      { t: 'tap', one: true, items: () => gs, say: '엄마가 와요! 아기를 어디에 숨길까요?', onTap: (c2, it) => { pickI = gs.indexOf(it); gs.forEach(g => g.style.pointerEvents = 'none'); mini.classList.add('pgone'); gs.forEach(g => g._gone = true); } },
     ]);
     if (!ok) return;
     const mom = c.add('fx', `<g class="mom">${place('momFace', 200, 90, 110)}</g>`);
