@@ -3975,21 +3975,21 @@ const PLAY = (() => {
     drag(ctx, s) {
       return new Promise(res => {
         const ring = hintRing(ctx, s.at, s.r || 55); let pr = null, t0 = 0, raf = 0, stop;
-        const finish = () => { cancelAnimationFrame(raf); stop(); ring.remove(); pr && pr.remove(); sparkAt(ctx, s.at); fx().ok(); res(); };
+        const finish = () => { clearTimeout(raf); stop(); ring.remove(); pr && pr.remove(); sparkAt(ctx, s.at); fx().ok(); res(); };
         const tick = () => {
           const p = Math.min(1, (performance.now() - t0) / s.hold); pr.set(p);
           if (s.progress) s.progress(ctx, p);
-          if (p >= 1) finish(); else raf = requestAnimationFrame(tick);
+          if (p >= 1) finish(); else raf = setTimeout(tick, 40);
         };
         stop = grabTool(ctx, s.tool, {
           move(p) {
             const inside = dist(p, s.at) <= (s.r || 55);
             if (!s.hold) return;
-            if (inside && !t0) { t0 = performance.now(); pr = progressRing(ctx, s.at); raf = requestAnimationFrame(tick); }
-            if (!inside && t0) { cancelAnimationFrame(raf); t0 = 0; pr && pr.remove(); pr = null; }
+            if (inside && !t0) { t0 = performance.now(); pr = progressRing(ctx, s.at); raf = setTimeout(tick, 40); }
+            if (!inside && t0) { clearTimeout(raf); t0 = 0; pr && pr.remove(); pr = null; }
           },
           up(p) {
-            if (s.hold) { if (t0) { cancelAnimationFrame(raf); t0 = 0; pr && pr.remove(); pr = null; } return; }
+            if (s.hold) { if (t0) { clearTimeout(raf); t0 = 0; pr && pr.remove(); pr = null; } return; }
             if (p && dist(p, s.at) <= (s.r || 55)) finish();
           },
         });
@@ -4409,7 +4409,7 @@ const PLAY = (() => {
       ctx.svg.addEventListener('pointerdown', steer);
       ctx.say && 0;
       const loop = now => {
-        if (!ctx.live()) { cancelAnimationFrame(raf); return; }
+        if (!ctx.live()) { clearTimeout(raf); return; }
         const dt = Math.min(50, now - last); last = now;
         const slow = now < hitT ? .35 : 1, v = .22 * slow * dt;
         dist += v; road.setAttribute('transform', `translate(0 ${(dist % 60).toFixed(1)})`);
@@ -4425,9 +4425,9 @@ const PLAY = (() => {
         });
         bar.querySelector('.gb').setAttribute('width', (360 * Math.min(1, dist / goal)).toFixed(1));
         if (dist >= goal) { ctx.svg.removeEventListener('pointerdown', steer); fx().ok(); res(); return; }
-        raf = requestAnimationFrame(loop);
+        raf = setTimeout(() => loop(performance.now()), 30);
       };
-      raf = requestAnimationFrame(loop);
+      raf = setTimeout(() => loop(performance.now()), 30);
     }) }];
   }
 
