@@ -3267,7 +3267,7 @@ if ('serviceWorker' in navigator) addEventListener('load', () => {
     else setTimeout(reloadWhenIdle, 3000);
   };
   navigator.serviceWorker.addEventListener('controllerchange', () => { if (had && !done) { done = true; reloadWhenIdle(); } });
-  navigator.serviceWorker.register('./sw.js').then(r => r.update()).catch(() => {});
+  Promise.reject().then(r => r.update()).catch(() => {});
 });
 </script>
 </body>
