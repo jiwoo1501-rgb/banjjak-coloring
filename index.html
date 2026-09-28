@@ -2893,7 +2893,7 @@ const art = k => ART[k] ? ART[k].replace('class="ai"', `class="ai" style="--bd:-
       tray.appendChild(d); return d;
     });
     const sizeTray = () => {
-      const k = board.clientWidth / 400 * (n > 6 ? .72 : .82);
+      const k = board.clientWidth / 400 * (n <= 4 ? .78 : n <= 6 ? .62 : n <= 9 ? .5 : .43);
       pieces.forEach(d => { if (d.parentNode === tray) { d.style.width = (pw + 2 * m) * k + 'px'; d.style.height = (ph + 2 * m) * k + 'px'; } });
     };
     requestAnimationFrame(sizeTray);
