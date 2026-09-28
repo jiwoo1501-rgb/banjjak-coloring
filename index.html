@@ -1940,7 +1940,11 @@ PICTURES.unshift(...FAIRY_PICTURES);
 
 </script>
 <script>
-if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+if ('serviceWorker' in navigator) addEventListener('load', () => {
+  const had = !!navigator.serviceWorker.controller; let done = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (had && !done) { done = true; location.reload(); } });
+  navigator.serviceWorker.register('./sw.js').then(r => r.update()).catch(() => {});
+});
 </script>
 </body>
 </html>
