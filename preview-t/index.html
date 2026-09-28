@@ -321,7 +321,7 @@
   .holes .hole:nth-child(-n+3) { transform: scale(.84); } .holes .hole:nth-child(n+4):nth-child(-n+6) { transform: scale(.92); }
   .hbg, .hfg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
   .hfg { z-index: 2; }
-  .hpop { position: absolute; left: 13%; right: 13%; bottom: 36%; top: -55%; overflow: hidden; z-index: 1; pointer-events: none; }
+  .hpop { position: absolute; left: 7%; right: 7%; bottom: 36%; top: -70%; overflow: hidden; z-index: 1; pointer-events: none; }
   .hpop .mole { position: absolute; left: 0; right: 0; bottom: -4%; height: auto; aspect-ratio: 1; transform: translateY(105%); transition: transform .16s cubic-bezier(.3,1.4,.5,1); }
   .hole.up .hpop .mole { transform: translateY(0); }
   .hole.hit .hpop .mole { transform: translateY(12%) scaleY(.88); transition-duration: .08s; }
@@ -2795,8 +2795,8 @@ const art = k => ART[k] ? ART[k].replace('class="ai"', `class="ai" style="--bd:-
   }
 
   // ───── 5. 두더지 잡기 (들판 · 구멍 · 뿅망치) ─────
-  const HOLE_BACK = `<svg class="hbg" viewBox="0 0 120 100" preserveAspectRatio="xMidYMax meet" aria-hidden="true"><ellipse cx="60" cy="66" rx="50" ry="20" fill="#9C6B43"/><ellipse cx="60" cy="63" rx="42" ry="14" fill="#2E1B10"/><ellipse cx="60" cy="61" rx="34" ry="9" fill="#1C0F08"/></svg>`;
-  const HOLE_FRONT = `<svg class="hfg" viewBox="0 0 120 100" preserveAspectRatio="xMidYMax meet" aria-hidden="true"><path d="M8,64 Q10,92 60,94 Q110,92 112,64 Q104,78 60,79 Q16,78 8,64Z" fill="#B07A4C" stroke="#3A2447" stroke-width="2.5" stroke-linejoin="round"/><path d="M20,74 Q60,84 100,74" fill="none" stroke="#C99064" stroke-width="3" stroke-linecap="round"/><path d="M6,90 l4,-9 l3,9 M104,92 l4,-10 l3,10 M52,99 l3,-7 l3,7" fill="none" stroke="#4E9B3A" stroke-width="3" stroke-linecap="round"/></svg>`;
+  const HOLE_BACK = `<svg class="hbg" viewBox="0 0 120 100" preserveAspectRatio="xMidYMax meet" aria-hidden="true"><ellipse cx="60" cy="66" rx="57" ry="22" fill="#9C6B43"/><ellipse cx="60" cy="63" rx="49" ry="15" fill="#2E1B10"/><ellipse cx="60" cy="61" rx="40" ry="10" fill="#1C0F08"/></svg>`;
+  const HOLE_FRONT = `<svg class="hfg" viewBox="0 0 120 100" preserveAspectRatio="xMidYMax meet" aria-hidden="true"><path d="M2,64 Q4,94 60,96 Q116,94 118,64 Q108,79 60,80 Q12,79 2,64Z" fill="#B07A4C" stroke="#3A2447" stroke-width="2.5" stroke-linejoin="round"/><path d="M20,74 Q60,84 100,74" fill="none" stroke="#C99064" stroke-width="3" stroke-linecap="round"/><path d="M6,90 l4,-9 l3,9 M104,92 l4,-10 l3,10 M52,99 l3,-7 l3,7" fill="none" stroke="#4E9B3A" stroke-width="3" stroke-linecap="round"/></svg>`;
   const MALLET = `<svg viewBox="0 0 100 100" aria-hidden="true"><rect x="45" y="36" width="10" height="60" rx="5" fill="#E8B06A" stroke="#3A2447" stroke-width="3"/><rect x="14" y="10" width="72" height="34" rx="14" fill="#FF5C7A" stroke="#3A2447" stroke-width="3"/><rect x="14" y="10" width="14" height="34" rx="6" fill="#FFD447" stroke="#3A2447" stroke-width="3"/><rect x="72" y="10" width="14" height="34" rx="6" fill="#FFD447" stroke="#3A2447" stroke-width="3"/><ellipse cx="44" cy="19" rx="12" ry="3.5" fill="#fff" opacity=".55"/></svg>`;
   function mole() {
     open('두더지 잡기', () => {
