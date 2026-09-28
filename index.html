@@ -218,9 +218,9 @@
   .tnav { display: flex; gap: 12px; justify-content: center; }
   .tnav .candy { height: 58px; min-width: 64px; font-size: 21px; }
   .tnav .candy:disabled { opacity: .35; }
-  .pulse { animation: pulse 2.2s ease-in-out infinite; }
+  .pulse { box-shadow: 0 5px 0 var(--cd), 0 0 0 5px #FFD447 !important; }
   @keyframes pulse { 50% { transform: scale(1.06); } }
-  @keyframes float { 50% { transform: translateY(-5px); } }
+  @keyframes float { from { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -5px, 0); } to { transform: translate3d(0, 0, 0); } }
   @keyframes breathe { 50% { transform: scale(1.03); } }
 
   /* ───── 퀴즈 ───── */
@@ -248,7 +248,7 @@
   .bnext { font-size: 20px; gap: 8px; }
   .bnext b { font-size: 28px; font-weight: 400; color: var(--pink); }
   .bsky { position: relative; min-height: 0; }
-  .balloon { position: absolute; width: 25%; max-width: 110px; aspect-ratio: 60 / 84; animation: float 5s ease-in-out infinite; }
+  .balloon { position: absolute; width: 25%; max-width: 110px; aspect-ratio: 60 / 84; animation: float 5s ease-in-out infinite; will-change: transform; backface-visibility: hidden; }
   .balloon svg { width: 100%; height: 100%; display: block; overflow: visible; }
   .balloon b { position: absolute; left: 0; right: 0; top: 18%; text-align: center; font-weight: 400; font-size: clamp(26px, 8vw, 44px); color: #fff; -webkit-text-stroke: 1.5px var(--ink); paint-order: stroke fill; }
   .balloon.pop { animation: burst2 .35s forwards; pointer-events: none; }
@@ -310,7 +310,7 @@
 
   /* 두더지: 들판과 구멍 */
   .mintro { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: auto; text-align: center; }
-  .mintro .mi-art { width: 140px; height: 140px; animation: float 4s ease-in-out infinite; }
+  .mintro .mi-art { width: 140px; height: 140px; }
   .timebar { height: 16px; border-radius: 8px; background: #fff; box-shadow: inset 0 0 0 3px #E6D2E0; overflow: hidden; flex: none; }
   .timebar i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, #2FBF9F, #FFC83D); border-radius: 8px; transition: width .1s linear; }
   .mfield { flex: 1 1 auto; display: flex; align-items: center; justify-content: center; border-radius: 28px; padding: 18px 6px 10px; touch-action: none;
@@ -360,9 +360,9 @@
   .xb.ring::after { content: ''; position: absolute; inset: 0; border-radius: 12px; background: #fff; animation: flash .32s ease-out forwards; pointer-events: none; }
   @keyframes xring { 25% { transform: translateY(5px) scaleY(.97); } 60% { transform: translateY(-2px); } }
   @keyframes flash { from { opacity: .7; } to { opacity: 0; } }
-  .xb.next { outline: 5px solid #fff; outline-offset: 3px; animation: breathe 2.2s ease-in-out infinite; z-index: 1; }
+  .xb.next { outline: 5px solid #fff; outline-offset: 3px; z-index: 1; }
   .xb.next::before { content: ''; position: absolute; left: 50%; top: -26px; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%;
-    background: #FFD447; box-shadow: 0 0 0 3px var(--ink); animation: float 1.8s ease-in-out infinite; }
+    background: #FFD447; box-shadow: 0 0 0 3px var(--ink); }
   .xfx { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
   .fnote { position: absolute; width: 32px; height: 32px; animation: fnote 1.8s ease-out forwards; }
   .fnote svg { width: 100%; height: 100%; }
@@ -394,7 +394,7 @@
   .ai { display: block; width: 100%; height: 100%; }
   .greet { display: flex; align-items: center; gap: 12px; max-width: 1000px; width: 100%; margin: 0 auto 14px; padding: 10px 16px 10px 10px;
     border-radius: 26px; background: #fff; box-shadow: 0 5px 0 #EBCFDF; text-align: left; }
-  .greet .gm { flex: none; width: 64px; height: 64px; animation: float 4.5s ease-in-out infinite; }
+  .greet .gm { flex: none; width: 64px; height: 64px; }
   .greet .gt { display: flex; flex-direction: column; font-size: 24px; line-height: 1.2; }
   .greet small { font-size: 17px; color: var(--ink-soft); }
   .greet.hi .gm { animation: hop .8s; }
@@ -433,7 +433,6 @@
   .qc { height: 120px; }
 
   /* ───── 살아있는 느낌: 눈 깜빡임 · 젤리 ───── */
-  .ai .bl { transform-box: fill-box; transform-origin: center; animation: blink 5s var(--bd, 0s) infinite; }
   @keyframes blink { 0%, 93%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
   .gc.right .ai, .qc.right, .mcard.got .face.front .ai, .stk.boing .stk-art, .greet.hi .gm { animation: jelly .7s; }
   @keyframes jelly { 30% { transform: scale(1.22, .8); } 50% { transform: scale(.86, 1.14); } 70% { transform: scale(1.08, .95); } 100% { transform: scale(1); } }
@@ -478,7 +477,7 @@
   @keyframes deal { from { opacity: 0; transform: translateY(-40px) rotate(-12deg) scale(.6); } }
   button.bubble { cursor: pointer; } button.bubble:active { transform: scale(.96); }
   .bubble.ring .ai { animation: ring2 1.1s ease-in-out infinite; }
-  @keyframes ring2 { 50% { transform: scale(1.18) rotate(-6deg); } }
+  @keyframes ring2 { 50% { opacity: .45; } }
   .stk.new { box-shadow: 0 4px 0 #EBCFDF, 0 0 0 3px #FFC83D; position: relative; }
   .stk.new::after { content: 'NEW'; position: absolute; top: -8px; right: -4px; padding: 1px 7px; border-radius: 10px; background: #FF5C9A; color: #fff; font-size: 12px; }
   .credits-link { display: block; margin: 22px auto 0; padding: 8px 16px; border-radius: 16px; color: var(--ink-soft); font-size: 15px; text-decoration: underline; text-underline-offset: 3px; }
