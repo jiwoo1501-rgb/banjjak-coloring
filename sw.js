@@ -1,5 +1,5 @@
 // 오프라인에서도 열리도록 캐시. 그림을 고친 뒤 배포할 때는 VERSION 숫자를 올린다.
-const VERSION = 'banjjak-14';
+const VERSION = 'banjjak-15';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 self.addEventListener('install', e => e.waitUntil(caches.open(VERSION).then(c => c.addAll(CORE)).then(() => self.skipWaiting())));

@@ -559,6 +559,43 @@
   .gift span { position: absolute; inset: 0; }
   .gift .g2 { opacity: 0; } .gift .g2 .ai:last-child { position: absolute; left: 25%; top: 2%; width: 50%; height: 50%; }
   .gift.open .g1 { opacity: 0; } .gift.open .g2 { opacity: 1; animation: pop .45s cubic-bezier(.3,1.6,.5,1); }
+
+  /* ───── 자연스러운 움직임 (탄성 곡선 · 반응형 · 느린 숨쉬기) ───── */
+  :root { --spring: cubic-bezier(.34, 1.56, .64, 1); --soft: cubic-bezier(.22, .8, .3, 1); }
+  .L-char.m-breathe { transform-box: fill-box; transform-origin: 50% 100%; animation: breathe2 5.5s ease-in-out infinite; will-change: transform; }
+  @keyframes breathe2 { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.008, 1.016); } }
+  .L-char.m-sway { transform-box: fill-box; transform-origin: 50% 100%; animation: sway2 5s ease-in-out infinite; }
+  @keyframes sway2 { 0%, 100% { transform: rotate(-1deg); } 50% { transform: rotate(1deg); } }
+  .L-char.m-squash { transform-box: fill-box; transform-origin: 50% 100%; animation: squash2 .6s var(--spring); }
+  @keyframes squash2 { 0% { transform: scale(1, 1); } 25% { transform: scale(1.06, .92); } 55% { transform: scale(.97, 1.05); } 100% { transform: scale(1, 1); } }
+  .L-char.m-hop { transform-box: fill-box; transform-origin: 50% 100%; animation: hop2 .85s var(--soft); }
+  @keyframes hop2 { 0% { transform: none; } 18% { transform: scale(1.06, .9); } 48% { transform: translateY(-34px) scale(.96, 1.05); } 78% { transform: translateY(0) scale(1.05, .95); } 100% { transform: none; } }
+  .L-char.m-enter { transform-box: fill-box; transform-origin: 50% 100%; animation: enter2 .8s var(--spring) backwards; }
+  @keyframes enter2 { from { transform: translateY(90px) scale(.85); opacity: 0; } }
+  .ai .bl, .stage2 .bl { transform-box: fill-box; transform-origin: center; transition: transform .07s ease-in; }
+  .bl.shut { transform: scaleY(.08); }
+  .stage2 .hring { transform-box: fill-box; transform-origin: center; animation: ringIn .5s var(--spring) backwards; }
+  @keyframes ringIn { from { transform: scale(.3); opacity: 0; } }
+  .stage2 .m-float { transform-box: fill-box; transform-origin: center; animation: floatUp 1.8s var(--soft) forwards; }
+  @keyframes floatUp { 0% { transform: translateY(12px) scale(.3); opacity: 0; } 20% { transform: translateY(0) scale(1.1); opacity: 1; } 100% { transform: translateY(-130px) scale(1); opacity: 0; } }
+  .ptool { transition: transform .3s var(--spring), opacity .3s, box-shadow .3s, background .3s; }
+  .ptool.now { transform: translateY(-4px); }
+  .ptool.nudge { animation: nudge2 .8s var(--soft); }
+  @keyframes nudge2 { 20% { transform: translateY(-12px) rotate(-8deg); } 45% { transform: translateY(-5px) rotate(6deg); } 70% { transform: translateY(-7px) rotate(-3deg); } 100% { transform: translateY(-4px); } }
+  .ptray.fresh .ptool { animation: toolIn .5s var(--spring) backwards; animation-delay: calc(var(--i, 0) * .06s); }
+  @keyframes toolIn { from { transform: translateY(26px) scale(.5); opacity: 0; } }
+  .pghost { left: 0 !important; top: 0 !important; will-change: transform; }
+  .pghost.drop { transition: transform .3s var(--soft), opacity .3s; opacity: 0; }
+  .pghost.home { transition: transform .38s var(--soft), opacity .38s; opacity: .2; }
+  .psteps i { transition: background .3s, transform .35s var(--spring); }
+  .psteps i.cur { transform: scale(1.3); }
+  .screen:not([hidden]) { animation: screenIn .42s var(--soft); }
+  @keyframes screenIn { from { opacity: 0; transform: translateY(16px) scale(.985); } }
+  .sheet { animation: pop .5s var(--spring); }
+  .candy, .hub-card, .tool, .mode, .lvl, .deck, .bact, .hcase, .htab, .song, .gc, .qc, .ltile, .card, .sw, .chip, .stk, .bcard { transition: transform .25s var(--spring), box-shadow .2s; }
+  .hub-card:active, .bact:active, .hcase:active, .gc:active, .qc:active, .ltile:active, .bcard:active, .stk:active { transform: translateY(4px) scale(.96); }
+  .mcard.got .in { animation: matchHop .6s var(--spring); }
+  @keyframes matchHop { 40% { transform: rotateY(180deg) translateY(-10px) scale(1.08); } 100% { transform: rotateY(180deg); } }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition: none !important; } }
 </style>
 </head>
@@ -2130,10 +2167,25 @@ PICTURES.unshift(...FAIRY_PICTURES);
   $('#goColor').onclick = () => { tone(660); renderHome(); show('home'); say('색칠공부'); };
   $('#goHangul').onclick = () => { tone(660); window.APP.openHangul(); };
   $('#goNumber').onclick = () => { tone(660); window.APP.openNumbers(); };
-  window.APP = { $, S, persist, flush: writeNow, tone, say, confetti, show, modal, closeModal, sparkle, goHub, COLORS, SPECIALS, fx: SND.fx, data: {}, epoch: () => EPOCH, bump: () => ++EPOCH };
+  // 한 번만 재생되는 움직임 붙이기
+  function anim(el, cls, ms = 900) {
+    if (!el) return; el.classList.remove(cls); void el.getBoundingClientRect(); el.classList.add(cls);
+    clearTimeout(el['_a' + cls]); el['_a' + cls] = setTimeout(() => el.classList.remove(cls), ms);
+  }
+  // 가끔 눈 깜빡이기 (한 캐릭터만, 불규칙하게)
+  function blinker(root) {
+    const tick = () => {
+      if (!root.isConnected) return;
+      if (!document.hidden) { const eyes = root.querySelectorAll('.bl'); eyes.forEach(e => e.classList.add('shut')); setTimeout(() => eyes.forEach(e => e.classList.remove('shut')), 140); }
+      setTimeout(tick, 2600 + Math.random() * 3800);
+    };
+    setTimeout(tick, 1200 + Math.random() * 2000);
+  }
+  window.APP = { $, S, persist, flush: writeNow, anim, blinker, tone, say, confetti, show, modal, closeModal, sparkle, goHub, COLORS, SPECIALS, fx: SND.fx, data: {}, epoch: () => EPOCH, bump: () => ++EPOCH };
   const hr = new Date().getHours();
   const GREET = hr < 11 ? '하엘아, 좋은 아침!' : hr < 17 ? '하엘아, 안녕!' : hr < 20 ? '하엘아, 즐거운 저녁!' : '하엘아, 잘 시간이 다 됐어요!';
   $('#greetTop').textContent = GREET;
+  blinker($('#greet'));
   $('#greet').onclick = () => { const g = $('#greet'); g.classList.remove('hi'); void g.offsetWidth; g.classList.add('hi'); SND.fx.tap(); say(`${GREET} 오늘은 뭐 하고 놀까?`); };
   setTimeout(() => { const sp = $('#splash'); sp && sp.classList.add('out'); setTimeout(() => sp && sp.remove(), 600); }, 1100);
   buildPalette(); setTool('fill'); renderHome(); goHub();
@@ -3886,16 +3938,37 @@ const PLAY = (() => {
     if (lastCtx && lastCtx.ro) lastCtx.ro.disconnect();
     body.className = 'gbody pbody';
     body.innerHTML = `<div class="pscene"><div class="pstage"><svg class="stage2" viewBox="0 0 400 480" xmlns="${NS}">
-        <g class="L-bg"></g><g class="L-actor"></g><g class="L-over"></g><g class="L-fx"></g></svg>
+        <g class="L-bg"></g><g class="L-char"><g class="L-actor"></g><g class="L-over"></g></g><g class="L-fx"></g></svg>
         <div class="phint" hidden></div></div>
       <div class="psteps"></div><div class="ptray"></div></div>`;
     const svg = body.querySelector('.stage2');
-    const L = { bg: svg.querySelector('.L-bg'), actor: svg.querySelector('.L-actor'), over: svg.querySelector('.L-over'), fx: svg.querySelector('.L-fx') };
+    const L = { char: svg.querySelector('.L-char'), bg: svg.querySelector('.L-bg'), actor: svg.querySelector('.L-actor'), over: svg.querySelector('.L-over'), fx: svg.querySelector('.L-fx') };
     const ctx = {
       body, svg, L, tray: body.querySelector('.ptray'), stepsEl: body.querySelector('.psteps'),
       add: (layer, markup) => el(L[layer], markup),
       clear: layer => { L[layer].innerHTML = ''; },
       place, my: A().bump(),
+      // 캐릭터가 있는 장면: 숨쉬기 + 깜빡임 + 반응
+      alive(opts = {}) {
+        this.hasChar = true; L.char.classList.add('m-enter');
+        setTimeout(() => { L.char.classList.remove('m-enter'); L.char.classList.add('m-breathe'); }, 800);
+        A().blinker(L.char);
+        if (opts.sick) this.setSick(true);
+      },
+      setSick(on) { this.sick = on; L.char.classList.toggle('m-sway', !!on); L.char.classList.toggle('m-breathe', !on && this.hasChar); },
+      react(kind) {
+        if (!this.hasChar) return;
+        const cls = kind === 'win' ? 'm-hop' : 'm-squash', keep = this.sick ? 'm-sway' : 'm-breathe';
+        L.char.classList.remove(keep); A().anim(L.char, cls, kind === 'win' ? 900 : 650);
+        setTimeout(() => { if (L.char.isConnected) L.char.classList.add(this.sick ? 'm-sway' : 'm-breathe'); }, kind === 'win' ? 900 : 650);
+      },
+      floaters(keys, around = [200, 220]) {
+        keys.forEach((k, i) => setTimeout(() => {
+          if (!this.live()) return;
+          const x = around[0] + (i % 2 ? 1 : -1) * (40 + Math.random() * 90), y = around[1] + Math.random() * 60 - 30;
+          const g = el(L.fx, place(k, x, y, 40 + Math.random() * 16)); g.classList.add('m-float'); setTimeout(() => g.remove(), 1900);
+        }, i * 160));
+      },
     };
     const stage = body.querySelector('.pstage');
     const fit = () => {
@@ -3916,9 +3989,15 @@ const PLAY = (() => {
 
   // ── 도구함 ──
   function setTray(ctx, keys, current) {
-    ctx.tray.innerHTML = '';
-    keys.forEach(k => {
-      const b = document.createElement('button'); b.className = 'ptool' + (k === current ? ' now' : ''); b.dataset.k = k;
+    const sig = keys.join(',');
+    if (ctx.traySig === sig) { // 같은 도구함이면 강조만 옮기기
+      ctx.tray.classList.remove('fresh');
+      ctx.tray.querySelectorAll('.ptool').forEach(b => b.classList.toggle('now', b.dataset.k === current));
+      A().anim(ctx.tray.querySelector('.now'), 'nudge', 820); return;
+    }
+    ctx.traySig = sig; ctx.tray.innerHTML = ''; ctx.tray.classList.add('fresh');
+    keys.forEach((k, i) => {
+      const b = document.createElement('button'); b.className = 'ptool' + (k === current ? ' now' : ''); b.dataset.k = k; b.style.setProperty('--i', i);
       b.innerHTML = ART[k] || ''; b.setAttribute('aria-label', k);
       ctx.tray.appendChild(b);
     });
@@ -3937,12 +4016,30 @@ const PLAY = (() => {
 
   // ── 도구 들고 움직이기 (도구함에서 끌거나, 장면을 직접 눌러도 됨) ──
   function grabTool(ctx, key, handlers) {
-    let ghost = null, pid = null, active = true;
-    const make = (x, y) => {
-      ghost = document.createElement('div'); ghost.className = 'pghost'; ghost.innerHTML = ART[key] || '';
-      document.body.appendChild(ghost); moveG(x, y);
+    let ghost = null, pid = null, active = true, tx = 0, ty = 0, gx = 0, gy = 0, loopT = 0, from = null;
+    const paint = (tilt = 0, sc = 1.08) => { if (ghost) ghost.style.transform = `translate3d(${(gx - 44).toFixed(1)}px, ${(gy - 96).toFixed(1)}px, 0) rotate(${tilt.toFixed(1)}deg) scale(${sc})`; };
+    const loop = () => {
+      if (!ghost) return;
+      const dx = tx - gx; gx += dx * .45; gy += (ty - gy) * .45;
+      paint(Math.max(-14, Math.min(14, dx * .5)));
+      loopT = requestAnimationFrame(loop);
     };
-    const moveG = (x, y) => { ghost.style.left = (x - 44) + 'px'; ghost.style.top = (y - 96) + 'px'; };
+    const make = (x, y, btn) => {
+      ghost = document.createElement('div'); ghost.className = 'pghost'; ghost.innerHTML = ART[key] || '';
+      document.body.appendChild(ghost);
+      const b = btn || ctx.tray.querySelector('.ptool.now'); from = b ? b.getBoundingClientRect() : null;
+      gx = tx = x; gy = ty = y; paint(); loopT = requestAnimationFrame(loop);
+    };
+    const moveG = (x, y) => { tx = x; ty = y; if (document.hidden) { gx = x; gy = y; paint(); } };
+    // mode: 'in' = 제자리에 쏙, 'back' = 도구함으로 돌아가기
+    const release = mode => {
+      const g = ghost; ghost = null; cancelAnimationFrame(loopT); if (!g) return;
+      if (mode === 'back' && from) {
+        g.classList.add('home');
+        g.style.transform = `translate3d(${(from.left + from.width / 2 - 44).toFixed(1)}px, ${(from.top + from.height / 2 - 44).toFixed(1)}px, 0) scale(.7)`;
+      } else { g.classList.add('drop'); g.style.transform = `translate3d(${(gx - 44).toFixed(1)}px, ${(gy - 96).toFixed(1)}px, 0) scale(.5) rotate(-10deg)`; }
+      setTimeout(() => g.remove(), 420);
+    };
     const pt = (x, y) => toScene(ctx, x, y - 52); // 도구 가운데 = 손가락보다 조금 위
     const down = e => {
       if (!ctx.live()) { detach(); return; } // 이미 떠난 장면이면 스스로 정리
@@ -3950,19 +4047,20 @@ const PLAY = (() => {
       const fromTray = e.target.closest && e.target.closest('.ptool');
       if (fromTray && fromTray.dataset.k !== key) { wrongTool(ctx, fromTray); return; }
       if (!fromTray && !e.target.closest('.pstage')) return;
-      e.preventDefault(); pid = e.pointerId; make(e.clientX, e.clientY); fx().tap();
+      e.preventDefault(); pid = e.pointerId; make(e.clientX, e.clientY, fromTray); fx().tap();
       handlers.move && handlers.move(pt(e.clientX, e.clientY), true);
     };
     const move = e => { if (e.pointerId !== pid) return; e.preventDefault(); moveG(e.clientX, e.clientY); handlers.move && handlers.move(pt(e.clientX, e.clientY)); };
     const up = e => {
       if (e.pointerId !== pid) return;
-      pid = null; if (ghost) ghost.remove(); ghost = null;
-      handlers.up && handlers.up(e.type === 'pointercancel' ? null : pt(e.clientX, e.clientY));
+      pid = null;
+      const ok = handlers.up && handlers.up(e.type === 'pointercancel' ? null : pt(e.clientX, e.clientY));
+      release(ok ? 'in' : 'back');
     };
     ctx.body.addEventListener('pointerdown', down);
     addEventListener('pointermove', move, { passive: false }); addEventListener('pointerup', up); addEventListener('pointercancel', up);
     function detach() {
-      active = false; if (ghost) ghost.remove(); ghost = null;
+      active = false; release('in');
       ctx.body.removeEventListener('pointerdown', down);
       removeEventListener('pointermove', move); removeEventListener('pointerup', up); removeEventListener('pointercancel', up);
     }
@@ -3997,7 +4095,7 @@ const PLAY = (() => {
           },
           up(p) {
             if (s.hold) { if (t0) { clearTimeout(raf); t0 = 0; pr && pr.remove(); pr = null; } return; }
-            if (p && dist(p, s.at) <= (s.r || 55)) finish();
+            if (p && dist(p, s.at) <= (s.r || 55)) { finish(); return true; }
           },
         });
       });
@@ -4076,9 +4174,9 @@ const PLAY = (() => {
     },
     choose(ctx, s) {
       return new Promise(res => {
-        ctx.tray.innerHTML = '';
-        s.options.forEach(([k, label]) => {
-          const b = document.createElement('button'); b.className = 'ptool now choice'; b.innerHTML = ART[k] || ''; b.setAttribute('aria-label', label);
+        ctx.traySig = null; ctx.tray.innerHTML = ''; ctx.tray.classList.add('fresh');
+        s.options.forEach(([k, label], i) => {
+          const b = document.createElement('button'); b.className = 'ptool now choice'; b.style.setProperty('--i', i); b.innerHTML = ART[k] || ''; b.setAttribute('aria-label', label);
           b.onclick = () => { fx().ok(); if (label) say(label); s.pick(ctx, k); res(); };
           ctx.tray.appendChild(b);
         });
@@ -4104,26 +4202,31 @@ const PLAY = (() => {
       return new Promise(res => {
         let left = s.pairs.length;
         const rings = s.pairs.map(([, at]) => hintRing(ctx, at, s.r || 40));
-        ctx.tray.innerHTML = '';
+        ctx.traySig = null; ctx.tray.innerHTML = ''; ctx.tray.classList.add('fresh');
         s.pairs.forEach(([k, at], i) => {
-          const b = document.createElement('button'); b.className = 'ptool now'; b.dataset.k = k; b.innerHTML = ART[k] || '';
+          const b = document.createElement('button'); b.className = 'ptool now'; b.dataset.k = k; b.innerHTML = ART[k] || ''; b.style.setProperty('--i', i);
           ctx.tray.appendChild(b);
           b.addEventListener('pointerdown', e => {
             if (!e.isPrimary || b._done) return; e.preventDefault();
             const pid = e.pointerId, ghost = document.createElement('div'); ghost.className = 'pghost'; ghost.innerHTML = ART[k] || '';
             document.body.appendChild(ghost);
-            const mv = ev => { if (ev.pointerId !== pid) return; ghost.style.left = (ev.clientX - 44) + 'px'; ghost.style.top = (ev.clientY - 96) + 'px'; };
+            const mv = ev => { if (ev.pointerId !== pid) return; ghost.style.transform = `translate3d(${ev.clientX - 44}px, ${ev.clientY - 96}px, 0) scale(1.08)`; };
             mv(e);
             const upH = ev => {
               if (ev.pointerId !== pid) return;
-              removeEventListener('pointermove', mv); removeEventListener('pointerup', upH); removeEventListener('pointercancel', upH); ghost.remove();
-              if (ev.type === 'pointercancel') return;
+              removeEventListener('pointermove', mv); removeEventListener('pointerup', upH); removeEventListener('pointercancel', upH);
+              const gr = ghost; setTimeout(() => gr.remove(), 380);
+              if (ev.type === 'pointercancel') { gr.remove(); return; }
               const p = toScene(ctx, ev.clientX, ev.clientY - 52);
               if (dist(p, at) <= (s.r || 40) + 12) {
+                gr.classList.add('drop'); gr.style.transform += ' scale(.5)';
                 b._done = true; b.classList.add('used'); rings[i].remove(); fx().ok(); sparkAt(ctx, at);
                 s.onPlace && s.onPlace(ctx, k, at, i);
                 if (--left === 0) setTimeout(res, 300);
-              } else if (s.pairs.some(([, a2], j) => j !== i && dist(p, a2) <= (s.r || 40))) { fx().no(); say('다른 자리일까요?'); }
+              } else {
+                const br = b.getBoundingClientRect(); gr.classList.add('home'); gr.style.transform = `translate3d(${br.left + br.width / 2 - 44}px, ${br.top + br.height / 2 - 44}px, 0) scale(.7)`;
+                if (s.pairs.some(([, a2], j) => j !== i && dist(p, a2) <= (s.r || 40))) { fx().no(); say('다른 자리일까요?'); }
+              }
             };
             addEventListener('pointermove', mv); addEventListener('pointerup', upH); addEventListener('pointercancel', upH);
           });
@@ -4146,9 +4249,12 @@ const PLAY = (() => {
       ctx.cur = s; window.__pctx = ctx;
       if (s.start) s.start(ctx);
       if (s.say) say(s.say);
+      const idle = setInterval(() => { if (!ctx.live()) return clearInterval(idle); A().anim(ctx.tray.querySelector('.now'), 'nudge', 820); }, 7000);
       await STEP[s.t](ctx, s);
+      clearInterval(idle);
       if (!ctx.live()) return false;
       if (s.done) await s.done(ctx);
+      if (s.t !== 'wait' && s.t !== 'choose') ctx.react('ok');
       await W(s.after ?? 350);
     }
     [...ctx.stepsEl.children].forEach(d => d.className = 'on');
@@ -4159,6 +4265,7 @@ const PLAY = (() => {
   function finish(ctx, msg, again, out, opts = {}) {
     if (!ctx.live()) return;
     const S = A().S; S.stars++; A().persist();
+    ctx.react('win'); ctx.floaters(opts.floaters || ['heartBig', 'star', 'heartBig', 'star', 'heartBig', 'star']);
     A().confetti(); fx().win();
     say(`${msg} 별을 받았어요!`);
     setTimeout(() => {
@@ -4211,7 +4318,7 @@ const PLAY = (() => {
   const fade = (ctx, name, p) => { const g = ctx.o && ctx.o[name]; if (g) g.style.opacity = String(Math.max(0, 1 - p)); };
   const sweat = () => `<path d="M270,146 q8,12 0,17 q-8,-5 0,-17Z" fill="#7CCBFF" stroke="${K}" stroke-width="2"/><path d="M130,160 q7,10 0,14 q-7,-4 0,-14Z" fill="#7CCBFF" stroke="${K}" stroke-width="2"/>`;
   const bubbleText = (ctx, at, text, color = '#FF5C6C') => ctx.add('fx', `<g class="pbubble"><rect x="${at[0] - 38}" y="${at[1] - 22}" width="76" height="34" rx="17" fill="#fff" stroke="${K}" stroke-width="2.5"/><text x="${at[0]}" y="${at[1] + 3}" text-anchor="middle" font-size="19" font-family="Jua,sans-serif" fill="${color}">${text}</text></g>`);
-  const happy = ctx => { ['sick', 'sweat'].forEach(n => rm(ctx, n)); ctx.add('fx', place('heartBig', 300, 110, 50) + place('heartBig', 104, 250, 38)); };
+  const happy = ctx => { ['sick', 'sweat'].forEach(n => rm(ctx, n)); ctx.setSick(false); };
   const band = (at, rot = 0) => `<g transform="rotate(${rot} ${at[0]} ${at[1]})"><rect x="${at[0] - 24}" y="${at[1] - 9}" width="48" height="18" rx="9" fill="#FFD6B0" stroke="${K}" stroke-width="2.5"/><rect x="${at[0] - 9}" y="${at[1] - 7}" width="18" height="14" rx="3" fill="#FFBF8F"/></g>`;
   const dots = (cx, cy, n, r, c) => Array.from({ length: n }, (_, i) => { const a = i * 2.4, d = 6 + (i % 3) * 7; return `<circle cx="${(cx + Math.cos(a) * d).toFixed(1)}" cy="${(cy + Math.sin(a) * d).toFixed(1)}" r="${r}" fill="${c}"/>`; }).join('');
 
@@ -4457,11 +4564,11 @@ const PLAY = (() => {
   async function treat(cs) {
     show('game'); $('#gTitle').textContent = cs.name; back(home);
     const c = mount($('#gBody'), { bg: ROOM + DOC });
-    patient(c, cs.pt, cs.i); cs.setup(c);
+    patient(c, cs.pt, cs.i); cs.setup(c); c.alive({ sick: cs.id !== 'checkup' });
     const ok = await run(c, [{ t: 'wait', ms: 2200, say: cs.intro }, ...cs.steps]);
     if (!ok) return;
     happy(c); S.hosp['c-' + cs.id] = 1;
-    finish(c, '다 나았어요! 고마워요!', () => treat(cs), home, { outLabel: '다른 친구' });
+    finish(c, '다 나았어요! 고마워요!', () => treat(cs), home, { outLabel: '다른 친구', floaters: ['heartBig', 'sticker', 'heartBig', 'star', 'heartBig', 'sticker'] });
   }
   async function chore(ch) {
     show('game'); $('#gTitle').textContent = ch.name; back(home);
@@ -4532,7 +4639,7 @@ const PLAY = (() => {
     // 얼굴
     if (mood === 'sleep') h += `<path d="M160,206 q12,10 24,0 M216,206 q12,10 24,0" fill="none" ${st}/>`;
     else if (mood === 'cry') h += `<path d="M160,200 q12,-8 24,2 M216,202 q12,-10 24,-2" fill="none" ${st}/><path d="M166,212 q-6,18 2,26 q8,-8 -2,-26Z M234,212 q6,18 -2,26 q-8,-8 2,-26Z" fill="#7CCBFF" ${st}/>`;
-    else h += `<ellipse cx="172" cy="204" rx="9" ry="11" fill="${K}"/><ellipse cx="228" cy="204" rx="9" ry="11" fill="${K}"/><circle cx="175" cy="199" r="3.6" fill="#fff"/><circle cx="231" cy="199" r="3.6" fill="#fff"/>`;
+    else h += `<g class="bl"><ellipse cx="172" cy="204" rx="9" ry="11" fill="${K}"/><circle cx="175" cy="199" r="3.6" fill="#fff"/></g><g class="bl"><ellipse cx="228" cy="204" rx="9" ry="11" fill="${K}"/><circle cx="231" cy="199" r="3.6" fill="#fff"/></g>`;
     h += `<ellipse cx="152" cy="232" rx="14" ry="8" fill="#FF8FB0" opacity=".75"/><ellipse cx="248" cy="232" rx="14" ry="8" fill="#FF8FB0" opacity=".75"/>`;
     if (kind === 'penguin') h += `<path d="M190,222 L210,222 L200,234Z" fill="#FFA53C" ${st}/>`;
     else h += `<ellipse cx="200" cy="224" rx="6" ry="4.5" fill="${kind === 'bunny' ? '#FF8FB0' : K}"/>`;
@@ -4547,7 +4654,12 @@ const PLAY = (() => {
     return h;
   }
   const B = { mouth: [200, 244], head: [200, 150], belly: [200, 330], bottom: [200, 392], armL: [120, 340], armR: [280, 340], back: [200, 300] };
-  const setBaby = (c, s) => { c.bs = { ...(c.bs || {}), ...s }; c.babyG.innerHTML = babySVG(S.baby.kind, c.bs); };
+  const setBaby = (c, s) => {
+    const was = c.bs && c.bs.mood;
+    c.bs = { ...(c.bs || {}), ...s }; c.babyG.innerHTML = babySVG(S.baby.kind, c.bs);
+    if (c.setSick) c.setSick(c.bs.mood === 'cry');
+    if (was && was !== c.bs.mood && c.react) c.react(c.bs.mood === 'happy' ? 'win' : 'ok');
+  };
 
   // ── 배경들 ──
   const ROOM = `<rect width="400" height="480" fill="#FFF3F8"/>${Array.from({ length: 8 }, (_, i) => `<circle cx="${25 + i * 50}" cy="${40 + (i % 2) * 40}" r="6" fill="#FFD9E8"/>`).join('')}
@@ -4580,10 +4692,10 @@ const PLAY = (() => {
     { id: 'craft', name: '만들기', icon: 'crownRing', play: craft },
     { id: 'hide', name: '숨바꼭질', icon: 'hideBox', play: hide },
   ];
-  function scene(title, bg) {
+  function scene(title, bg, withBaby = true) {
     show('game'); $('#gTitle').textContent = title; back(room);
     const c = mount($('#gBody'), { bg });
-    c.babyG = c.add('actor', ''); return c;
+    c.babyG = c.add('actor', ''); if (withBaby) c.alive(); return c;
   }
 
   async function feed() {
@@ -4670,7 +4782,7 @@ const PLAY = (() => {
     ]);
     if (!ok) return;
     // 꿈나라: 떨어지는 별 모으기
-    const c2 = scene('꿈나라', NIGHT);
+    const c2 = scene('꿈나라', NIGHT, false);
     ok = await run(c2, [{ t: 'custom', say: '꿈나라에서 반짝이는 별을 모아요!', run: ctx => dream(ctx) }]);
     if (!ok) return;
     fill('sleep');
@@ -4705,7 +4817,7 @@ const PLAY = (() => {
     ]);
     if (!ok) return;
     const hat = c.bs.hat, cl = c.bs.clothes;
-    const c2 = scene('공원', PARK);
+    const c2 = scene('공원', PARK, false);
     c2.add('bg', place('stroller', 110, 390, 170));
     ok = await run(c2, [{ t: 'custom', say: '공원에 왔어요! 비눗방울을 톡톡 터뜨려요!', run: ctx => bubbleGame(ctx) }]);
     if (!ok) return;
@@ -4728,7 +4840,7 @@ const PLAY = (() => {
   }
 
   async function train() {
-    const c = scene('기차놀이', ROOM.replace('<ellipse cx="200" cy="440" rx="170" ry="30" fill="#CDEBFF"/>', ''));
+    const c = scene('기차놀이', ROOM.replace('<ellipse cx="200" cy="440" rx="170" ry="30" fill="#CDEBFF"/>', ''), false);
     c.add('bg', `<path d="M10,360 H390" stroke="#8B5A3C" stroke-width="10"/>${Array.from({ length: 13 }, (_, i) => `<rect x="${14 + i * 30}" y="352" width="14" height="22" rx="3" fill="#B07A4C"/>`).join('')}`);
     c.add('actor', place(ART['baby_' + S.baby.kind] ? 'baby_' + S.baby.kind : 'teddy', 330, 190, 120));
     const tr = c.add('over', '');
@@ -4771,7 +4883,7 @@ const PLAY = (() => {
   }
 
   async function hide() {
-    const c = scene('숨바꼭질', ROOM);
+    const c = scene('숨바꼭질', ROOM, false);
     const spots = [['hideBox', [90, 380]], ['hideCurtain', [310, 250]], ['hideBasket', [200, 400]]];
     const gs = spots.map(([k, [x, y]]) => c.add('actor', `<g class="spot">${place(k, x, y, 130)}</g>`));
     const mini = c.add('over', `<g>${place('baby_' + S.baby.kind, 200, 200, 120)}</g>`);
@@ -4820,7 +4932,7 @@ const PLAY = (() => {
     const c = mount($('#gBody'), { bg: ROOM });
     c.body.classList.add('broom');
     c.add('bg', shelf());
-    c.babyG = c.add('actor', ''); setBaby(c, { mood: needy() ? 'cry' : 'happy' });
+    c.babyG = c.add('actor', ''); c.alive(); setBaby(c, { mood: needy() ? 'cry' : 'happy' });
     const needsEl = document.createElement('div'); needsEl.className = 'bneeds';
     needsEl.innerHTML = NEEDS.map(([k, icon]) => { const v = level(k); return `<div class="bneed${v < 25 ? ' low' : ''}"><span>${ART[icon]}</span><i><b style="width:${v}%"></b></i></div>`; }).join('');
     c.body.querySelector('.pscene').insertBefore(needsEl, c.body.querySelector('.pstage'));
@@ -4829,7 +4941,7 @@ const PLAY = (() => {
     c.tray.innerHTML = ACTS.map((a, i) => `<button class="bact${a.need && level(a.need) < 25 ? ' need' : ''}" data-i="${i}">${ART[a.icon] || ''}<b>${a.name}</b></button>`).join('') +
       `<button class="bact small" data-i="-1">${ART.teddy}<b>아기 바꾸기</b></button>`;
     c.tray.querySelectorAll('.bact').forEach(x => x.onclick = () => { fx().tap(); const i = +x.dataset.i; i < 0 ? pickBaby() : ACTS[i].play(); });
-    c.babyG.addEventListener('pointerdown', () => { fx().pop(); say(needy() ? '으앙, 돌봐 주세요!' : '까르르!'); });
+    c.babyG.addEventListener('pointerdown', () => { fx().pop(); c.react(needy() ? 'ok' : 'win'); if (!needy()) c.floaters(['heartBig', 'star', 'heartBig'], [200, 180]); say(needy() ? '으앙, 돌봐 주세요!' : '까르르!'); });
     const low = NEEDS.find(([k]) => level(k) < 25);
     say(low ? { food: '배고파요!', diaper: '기저귀가 축축해요!', bath: '목욕하고 싶어요!', sleep: '졸려요!' }[low[0]] : `${KINDS[S.baby.kind].short}${iga(KINDS[S.baby.kind].short)} 웃어요!`);
   }
